@@ -9,7 +9,7 @@ from app.core.database import Base
 class Merchant(Base):
     __tablename__ = "merchants"
 
-    id = Column(Integer, primary_order=True, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=False, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
