@@ -128,5 +128,5 @@ pytest ../tests
 - [x] **Phase 1: Foundation** — Skeleton, 15 DB models, FastAPI backend, React frontend, health check, Docker & config.
 - [x] **Phase 2: Realistic Merchant Data Intelligence** — 12-month synthetic dataset (21,900 sales records across 3 store locations & 20 products), stockout-censored demand estimation, baseline forecaster & evaluation suite.
 - [x] **Phase 3: Profit Leakage Engine & Decision Simulator** — 5-category leakage detector (Stockout, Overstock, Expiry, Discount Inefficiency, Supplier), Monte Carlo decision simulator (order & discount), policy guardrail engine, and REST API endpoints.
-- [ ] **Phase 4: AI Agent, Policy Guardrails & Audit Trail** — Tool-calling agent, policy engine, merchant approval workflow, audit trail.
-- [ ] **Phase 5: Razorpay Integration & Failure Recovery** — Test-mode Razorpay integration, failure recording, outcome comparison, and UI dashboard polish.
+- [x] **Phase 4: AI Revenue Decision Agent & Policy Approvals** — Tool-calling agent, provider abstraction (mock/OpenAI/Anthropic/Gemini), policy approval workflow, audit trail, conversational interface, and interactive React dashboard integration.
+- [ ] **Phase 5: Razorpay Integration & Failure Recovery** — Test-mode Razorpay integration, failure recording, outcome comparison, and final UI polish.
