@@ -1,0 +1,24 @@
+# Environment variables
+.env
+*.env
+
+# Python / Pytest
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+venv/
+.venv/
+*.db
+*.sqlite3
+
+# Node / Vite / Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+dist/
+.ds_store
+
+# IDE
+.vscode/
+.idea/
