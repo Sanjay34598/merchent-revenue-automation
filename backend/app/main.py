@@ -5,6 +5,8 @@ from app.core.database import Base, engine
 from app.api.health import router as health_router
 from app.api.opportunities import router as opportunities_router
 from app.api.simulations import router as simulations_router
+from app.api.agent import router as agent_router
+from app.api.actions import router as actions_router
 from app.schemas.health import HealthResponse
 
 # Create database tables automatically
@@ -34,6 +36,8 @@ def health_root():
 app.include_router(health_router, prefix="/api", tags=["Health"])
 app.include_router(opportunities_router, prefix="/api", tags=["Opportunities"])
 app.include_router(simulations_router, prefix="/api", tags=["Simulations"])
+app.include_router(agent_router, prefix="/api", tags=["Agent"])
+app.include_router(actions_router, prefix="/api", tags=["Actions"])
 
 if __name__ == "__main__":
     import uvicorn
