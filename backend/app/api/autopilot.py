@@ -1,9 +1,10 @@
+from datetime import datetime, date
 from typing import Optional, Dict, Any, List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.models.models import AgentAction, ActionApproval, ActionOutcome, FailureEvent
+from app.models.models import AgentAction, ActionApproval, ActionOutcome, FailureEvent, Product, InventorySnapshot
 from agent.unified_engine import RevenueDecisionEngine
 from agent.revenue_opportunity import RevenueOpportunityEngine
 from agent.executor import ActionExecutor
@@ -38,7 +39,8 @@ def simulate_custom(req: CustomSimulateRequest, db: Session = Depends(get_db)):
     engine = RevenueDecisionEngine(db)
     # Build candidate comparison between Status Quo (DO_NOTHING) and Custom Proposed Strategy
     # Fetch forecast
-    fc = engine.forecaster.predict_demand(req.store_id, req.product_id)
+    target_date_obj = date.today()
+    fc = engine.forecaster.predict_demand(req.store_id, req.product_id, target_date_obj)
     expected_demand = fc["expected_demand"]
 
     product = db.query(Product).filter(Product.id == req.product_id).first()
@@ -136,7 +138,7 @@ def execute_action(action_id: int, req: Optional[ExecuteActionRequest] = None, d
     Executes an approved action safely in MOCK or RAZORPAY_TEST_MODE.
     Checks approval status and blocks duplicate executions.
     """
-    mode = req.execution_mode if req else "RAZORPAY_TEST_MODE"
+    mode = req.execution_mode if req else "MOCK"
     executor = ActionExecutor(db)
     res = executor.execute_action(action_id=action_id, execution_mode=mode)
     
