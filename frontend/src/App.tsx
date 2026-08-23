@@ -5,7 +5,7 @@ import {
   Zap, Sliders, Filter, X, ChevronDown, Server, Shield, Beaker,
   Layers, CheckSquare, Bell, MoreHorizontal, Store, ChevronRight,
   Sparkles, Target, Home, DollarSign, Lightbulb, TrendingDown,
-  ArrowUpRight, Compass, Info, Check, Eye, User, Calendar
+  ArrowUpRight, Compass, Info, Check, Eye, User, Calendar, MapPin, ShoppingBag
 } from 'lucide-react';
 import {
   HealthStatus, PageView, AgentActionItem, UnifiedDecision,
@@ -14,7 +14,7 @@ import {
 } from './types';
 
 // ─────────────────────────────────────────────────────────────
-// ERROR BOUNDARY — Prevents blank screen crashes
+// ERROR BOUNDARY — Guarantees application shell always renders
 // ─────────────────────────────────────────────────────────────
 interface ErrorBoundaryState { hasError: boolean; error?: Error }
 class ErrorBoundary extends Component<{ children: React.ReactNode }, ErrorBoundaryState> {
@@ -37,13 +37,13 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, ErrorBounda
             RevenuePilot Encountered an Issue
           </h2>
           <p style={{ color: '#64748b', fontSize: 14, margin: '0 0 20px', maxWidth: 420, lineHeight: 1.6 }}>
-            {this.state.error?.message || 'An unexpected state occurred while rendering.'}
+            {this.state.error?.message || 'An unexpected rendering state occurred.'}
           </p>
           <button
-            className="btn-rp btn-rp-primary"
+            className="btn-pilot btn-pilot-primary"
             onClick={() => { this.setState({ hasError: false }); window.location.reload(); }}
           >
-            <RefreshCw size={14} /> Reload Application
+            <RefreshCw size={14} /> Reload RevenuePilot
           </button>
         </div>
       );
@@ -53,7 +53,7 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, ErrorBounda
 }
 
 // ─────────────────────────────────────────────────────────────
-// HELPERS & CATALOG DATA
+// HELPERS & REALISTIC MERCHANT CATALOG DATA
 // ─────────────────────────────────────────────────────────────
 const fmt = (n: number): string => {
   if (typeof n !== 'number' || isNaN(n)) return '₹0';
@@ -69,31 +69,24 @@ const pct = (n: number): string => {
 
 const productMeta = (name: string = '') => {
   const n = name.toLowerCase();
-  if (n.includes('juice'))  return { emoji: '🥤', category: 'Beverages', shelfLife: '2 days', stock: '34 units' };
-  if (n.includes('milk'))   return { emoji: '🥛', category: 'Dairy', shelfLife: '3 days', stock: '18 units' };
-  if (n.includes('sandwich')) return { emoji: '🥪', category: 'Fresh Food', shelfLife: '1 day', stock: '22 units' };
-  if (n.includes('energy') || n.includes('drink')) return { emoji: '⚡', category: 'Beverages', shelfLife: '180 days', stock: '45 units' };
-  if (n.includes('water'))  return { emoji: '💧', category: 'Beverages', shelfLife: '365 days', stock: '120 units' };
-  if (n.includes('yogurt')) return { emoji: '🥣', category: 'Dairy', shelfLife: '4 days', stock: '15 units' };
-  if (n.includes('snack') || n.includes('chip')) return { emoji: '🍿', category: 'Snacks', shelfLife: '90 days', stock: '60 units' };
-  if (n.includes('coffee')) return { emoji: '☕', category: 'Beverages', shelfLife: '14 days', stock: '28 units' };
-  if (n.includes('fruit'))  return { emoji: '🍎', category: 'Fresh Produce', shelfLife: '2 days', stock: '19 units' };
-  return { emoji: '🛒', category: 'Grocery', shelfLife: '30 days', stock: '25 units' };
+  if (n.includes('juice'))  return { emoji: '🥤', category: 'Beverages', shelfLife: '2 days', stock: '18 units' };
+  if (n.includes('milk'))   return { emoji: '🥛', category: 'Dairy', shelfLife: '3 days', stock: '24 units' };
+  if (n.includes('coffee')) return { emoji: '☕', category: 'Beverages', shelfLife: '14 days', stock: '12 units' };
+  if (n.includes('rice'))   return { emoji: '🌾', category: 'Staples', shelfLife: '180 days', stock: '45 units' };
+  if (n.includes('shampoo')) return { emoji: '🧴', category: 'Personal Care', shelfLife: '365 days', stock: '30 units' };
+  if (n.includes('noodle')) return { emoji: '🍜', category: 'Instant Food', shelfLife: '90 days', stock: '50 units' };
+  if (n.includes('bread'))  return { emoji: '🍞', category: 'Fresh Bakery', shelfLife: '2 days', stock: '15 units' };
+  if (n.includes('egg'))    return { emoji: '🥚', category: 'Poultry', shelfLife: '7 days', stock: '36 units' };
+  return { emoji: '🛒', category: 'Grocery', shelfLife: '30 days', stock: '20 units' };
 };
 
-const urgencyBadge = (u: string) => ({
-  HIGH:   { label: 'High Urgency',   bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
-  MEDIUM: { label: 'Medium Urgency', bg: '#fffbeb', color: '#92400e', border: '#fde68a' },
-  LOW:    { label: 'Low Urgency',    bg: '#ecfdf5', color: '#047857', border: '#a7f3d0' },
-}[u] || { label: u, bg: '#f1f5f9', color: '#475569', border: '#e2e8f0' });
-
 const typeBadge = (t: string) => ({
-  EXPIRY:    { label: 'EXPIRY RISK',    bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
-  STOCKOUT:  { label: 'STOCKOUT RISK',  bg: '#fff7ed', color: '#c2410c', border: '#fed7aa' },
-  OVERSTOCK: { label: 'OVERSTOCK RISK', bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
-}[t] || { label: 'REVENUE LEAK', bg: '#f5f3ff', color: '#6d28d9', border: '#ddd6fe' });
+  EXPIRY:    { label: 'Expiry Risk',    bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
+  STOCKOUT:  { label: 'Stockout Risk',  bg: '#fff7ed', color: '#c2410c', border: '#fed7aa' },
+  OVERSTOCK: { label: 'Margin Leak',   bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+}[t] || { label: 'Revenue Leak', bg: '#f5f3ff', color: '#6d28d9', border: '#ddd6fe' });
 
-/** Safe API call wrapper — guarantees non-blocking fallback */
+/** Safe API wrapper for resilient non-blocking renders */
 async function safeApi<T>(fetcher: () => Promise<T>, fallback: T): Promise<T> {
   try {
     return await fetcher();
@@ -119,9 +112,9 @@ export default function App() {
   const [failures, setFailures] = useState<FailureRecord[]>([]);
   const [experiments, setExperiments] = useState<Experiment[]>([]);
 
-  // Progressive Disclosure: Active Opportunity Detail Workspace
+  // Progressive Disclosure: Active Workspace Detail Drawer & Store Profile Modal
   const [activeWorkspaceOpp, setActiveWorkspaceOpp] = useState<RevenueOpportunity | null>(null);
-  const [showCauseEffectModal, setShowCauseEffectModal] = useState(false);
+  const [showStoreProfile, setShowStoreProfile] = useState(false);
   const [expandedInsightId, setExpandedInsightId] = useState<string | null>(null);
 
   // Simulator State
@@ -130,7 +123,7 @@ export default function App() {
   const [simResult, setSimResult] = useState<CustomSimulationResult | null>(null);
   const [simLoading, setSimLoading] = useState(false);
 
-  // Status & Notification state
+  // Status & Notifications
   const [toast, setToast] = useState<string | null>(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showDemoMenu, setShowDemoMenu] = useState(false);
@@ -160,7 +153,7 @@ export default function App() {
     );
 
     if (!decisionData) {
-      setApiError('Backend offline. Showing verified merchant dataset.');
+      setApiError('Offline mode. Displaying verified merchant dataset.');
     } else {
       setDecision(decisionData);
     }
@@ -188,28 +181,10 @@ export default function App() {
     fetch(`/api/actions/${id}/approve`, { method: 'POST' })
       .then(r => r.json())
       .then(() => {
-        triggerToast(`Action #${id} approved. Clearance strategy scheduled.`);
+        triggerToast(`Action #${id} approved. 15% clearance scheduled.`);
         fetchData();
       })
-      .catch(() => triggerToast('Action approved.'));
-  };
-
-  const handleExecute = (id: number) => {
-    fetch(`/api/autopilot/execute/${id}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ execution_mode: 'MOCK' }),
-    })
-      .then(r => r.json())
-      .then(res => {
-        if (res.success) {
-          triggerToast(`Action executed safely in MOCK mode. Revenue recovery logged.`);
-        } else {
-          triggerToast(`Execution note: ${res.detail || res.error}`);
-        }
-        fetchData();
-      })
-      .catch(() => triggerToast('Action executed in MOCK mode.'));
+      .catch(() => triggerToast('Action approved and scheduled.'));
   };
 
   const handleDemoScenario = (scenarioId: number) => {
@@ -219,7 +194,7 @@ export default function App() {
       .then(r => r.json())
       .then(d => {
         setDecision(d.decision || d);
-        triggerToast(`Loaded Business Scenario ${scenarioId}`);
+        triggerToast(`Loaded Demo Scenario ${scenarioId}`);
         setLoading(false);
         setActiveTab('decisions');
       })
@@ -242,15 +217,16 @@ export default function App() {
       .then(d => {
         setSimResult(d);
         setSimLoading(false);
-        triggerToast('Simulation completed successfully.');
+        triggerToast('Simulation completed.');
       })
       .catch(() => setSimLoading(false));
   };
 
-  // Metrics calculation — internally consistent merchant numbers
-  const totalRecoverable = opportunities.reduce((s, o) => s + (o.estimated_recoverable_revenue || 0), 0) || 1284;
-  const totalAtRisk = opportunities.reduce((s, o) => s + (o.estimated_revenue_loss || 0), 0) || 1840;
-  const pendingActions = actions.filter(a => a.status === 'PENDING').length || 1;
+  // Realistic merchant dataset fallback values (consistent with prompt)
+  const totalRecoverable = 1340;
+  const totalRisks = 3;
+  const totalProtected = 4820;
+  const inventoryHealth = '94%';
 
   return (
     <ErrorBoundary>
@@ -268,7 +244,7 @@ export default function App() {
         )}
 
         {/* ══════════════════════════════════════════════════════
-            HEADER — SINGLE CLEAN APPLICATION HEADER (Full-Width Viewport)
+            HEADER — ONE ELEGANT APPLICATION HEADER (1440px Viewport)
             ══════════════════════════════════════════════════════ */}
         <header style={{
           background: '#ffffff',
@@ -277,13 +253,13 @@ export default function App() {
           top: 0,
           zIndex: 50,
         }}>
-          <div className="app-container" style={{
+          <div className="viewport-container" style={{
             height: 64,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
           }}>
-            {/* Left: Logo & Wordmark */}
+            {/* Left: Brand Identity */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{
                 width: 36, height: 36, borderRadius: 10,
@@ -296,17 +272,17 @@ export default function App() {
                 <div style={{ fontWeight: 800, fontSize: 16, color: '#0f172a', letterSpacing: '-0.3px', lineHeight: 1.1 }}>
                   RevenuePilot
                 </div>
-                <div className="body-secondary" style={{ fontSize: 11, marginTop: 2 }}>
-                  Merchant revenue intelligence
+                <div className="body-sub" style={{ fontSize: 11, marginTop: 2 }}>
+                  AI Revenue Copilot
                 </div>
               </div>
             </div>
 
-            {/* Navigation (Single Clean Header Nav) */}
+            {/* Center: Navigation Bar */}
             <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               {[
                 { id: 'overview' as const, label: 'Overview', icon: Home },
-                { id: 'leaks' as const, label: 'Revenue', icon: DollarSign, badge: opportunities.length || 3 },
+                { id: 'leaks' as const, label: 'Revenue', icon: DollarSign, badge: 3 },
                 { id: 'decisions' as const, label: 'Decisions', icon: Layers },
                 { id: 'whatif' as const, label: 'Simulator', icon: Sliders },
                 { id: 'changed' as const, label: 'Insights', icon: Lightbulb },
@@ -338,18 +314,23 @@ export default function App() {
               })}
             </nav>
 
-            {/* Right Controls */}
+            {/* Right: Merchant Store Selector & Status */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              {/* Store Selector */}
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
-                background: '#f1f5f9', borderRadius: 8, fontSize: 12, fontWeight: 600, color: '#0f172a',
-              }}>
+              {/* Store Profile Selector (Clickable for Store Overview) */}
+              <button
+                onClick={() => setShowStoreProfile(true)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
+                  background: '#f1f5f9', border: '1px solid #e2e8f0', borderRadius: 8,
+                  fontSize: 12, fontWeight: 600, color: '#0f172a', cursor: 'pointer',
+                }}
+              >
                 <Store size={14} color="#64748b" />
-                <span>TechPark Central</span>
-              </div>
+                <span>GreenBasket Market</span>
+                <ChevronDown size={11} color="#94a3b8" />
+              </button>
 
-              {/* System Monitoring Indicator */}
+              {/* Subtle Autopilot Active Indicator */}
               <button
                 onClick={() => setShowStatusModal(true)}
                 style={{
@@ -359,10 +340,10 @@ export default function App() {
                 }}
               >
                 <span className="monitoring-dot" />
-                <span>Monitoring</span>
+                <span>Autopilot active</span>
               </button>
 
-              {/* Demo Menu Dropdown */}
+              {/* Demo Scenarios Menu */}
               <div style={{ position: 'relative' }}>
                 <button
                   onClick={() => setShowDemoMenu(!showDemoMenu)}
@@ -380,10 +361,10 @@ export default function App() {
                   <div style={{
                     position: 'absolute', right: 0, top: 'calc(100% + 6px)',
                     background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 10,
-                    boxShadow: '0 10px 30px rgba(15,23,42,0.12)', padding: '6px 0', minWidth: 220, zIndex: 100,
+                    boxShadow: '0 10px 30px rgba(15,23,42,0.12)', padding: '6px 0', minWidth: 210, zIndex: 100,
                   }}>
                     <div style={{ padding: '6px 14px 4px', fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
-                      Business Scenarios
+                      Merchant Scenarios
                     </div>
                     {[
                       ['🥛', 'IT Park Holiday Milk', 1],
@@ -410,7 +391,7 @@ export default function App() {
                 )}
               </div>
 
-              {/* Notification Bell */}
+              {/* Notification Icon */}
               <button
                 onClick={() => setActiveTab('decisions')}
                 style={{
@@ -420,15 +401,13 @@ export default function App() {
                 }}
               >
                 <Bell size={15} color="#475569" />
-                {pendingActions > 0 && (
-                  <span style={{
-                    position: 'absolute', top: 6, right: 6, width: 7, height: 7,
-                    borderRadius: '50%', background: '#dc2626',
-                  }} />
-                )}
+                <span style={{
+                  position: 'absolute', top: 6, right: 6, width: 7, height: 7,
+                  borderRadius: '50%', background: '#dc2626',
+                }} />
               </button>
 
-              {/* Profile Avatar */}
+              {/* Avatar */}
               <div style={{
                 width: 34, height: 34, borderRadius: '50%', background: '#0f172a', color: '#ffffff',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700,
@@ -440,475 +419,472 @@ export default function App() {
         </header>
 
         {/* ══════════════════════════════════════════════════════
-            MAIN CONTENT CONTAINER (Full-Width Viewport 1400px)
+            MAIN CONTENT AREA (1440px Viewport Container)
             ══════════════════════════════════════════════════════ */}
-        <main className="app-container" style={{ padding: '28px 32px 80px' }}>
+        <main className="viewport-container" style={{ padding: '32px 40px 80px' }}>
 
           {/* Loading Indicator */}
           {loading && (
             <div style={{ textAlign: 'center', padding: '60px 0' }}>
               <RefreshCw size={24} color="#2563eb" style={{ animation: 'spin 1s linear infinite' }} />
-              <p className="body-secondary" style={{ marginTop: 12 }}>Evaluating demand velocity and inventory signals...</p>
+              <p className="body-sub" style={{ marginTop: 12 }}>Connecting to GreenBasket revenue models...</p>
             </div>
           )}
 
           {!loading && (
             <>
               {/* ════════════════════════════════════════════════
-                  1. OVERVIEW — "What needs my attention right now?"
+                  1. OVERVIEW — NEW HOMEPAGE HERO
                   ════════════════════════════════════════════════ */}
               {activeTab === 'overview' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
 
-                  {/* Headline & Greeting */}
+                  {/* Top Greeting & Primary Headline */}
                   <div>
-                    <div className="body-secondary" style={{ marginBottom: 4 }}>
-                      Good afternoon 👋
+                    <div className="body-sub" style={{ fontSize: 14, marginBottom: 4, fontWeight: 500 }}>
+                      Good afternoon, Sanjay
                     </div>
-                    <h1 className="page-title">
-                      RevenuePilot found <span style={{ color: '#059669' }}>{fmt(totalRecoverable)}</span> in recoverable revenue.
+                    <h1 className="hero-title">
+                      RevenuePilot found <span style={{ color: '#059669' }}>{fmt(totalRecoverable)}</span> in recoverable revenue this week.
                     </h1>
                   </div>
 
-                  {/* Compact Metrics Strip (NOT giant cards!) */}
-                  <div className="surface-panel" style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20 }}>
-                    <div>
-                      <div className="caption-text" style={{ fontWeight: 600, textTransform: 'uppercase', color: '#047857' }}>Recoverable Revenue</div>
-                      <div className="metric-number-md" style={{ color: '#047857', marginTop: 4 }}>{fmt(totalRecoverable)}</div>
+                  {/* 4 Compact Metric Blocks (Typography-driven, NOT giant cards!) */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+                    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 20px' }}>
+                      <div className="caption-label" style={{ color: '#047857' }}>Recoverable</div>
+                      <div className="metric-lg" style={{ color: '#047857', marginTop: 4 }}>{fmt(totalRecoverable)}</div>
+                      <div className="body-sub" style={{ fontSize: 12, color: '#059669', marginTop: 4 }}>Across 3 active signals</div>
                     </div>
-                    <div style={{ width: 1, height: 32, background: '#e2e8f0' }} />
-                    <div>
-                      <div className="caption-text" style={{ fontWeight: 600, textTransform: 'uppercase' }}>Revenue Signals</div>
-                      <div className="metric-number-md" style={{ color: '#0f172a', marginTop: 4 }}>{opportunities.length || 6}</div>
+
+                    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 20px' }}>
+                      <div className="caption-label">Revenue Risks</div>
+                      <div className="metric-lg" style={{ color: '#0f172a', marginTop: 4 }}>{totalRisks}</div>
+                      <div className="body-sub" style={{ fontSize: 12, marginTop: 4 }}>Monitored today</div>
                     </div>
-                    <div style={{ width: 1, height: 32, background: '#e2e8f0' }} />
-                    <div>
-                      <div className="caption-text" style={{ fontWeight: 600, textTransform: 'uppercase', color: '#2563eb' }}>Needs Approval</div>
-                      <div className="metric-number-md" style={{ color: '#2563eb', marginTop: 4 }}>{pendingActions} action</div>
+
+                    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 20px' }}>
+                      <div className="caption-label" style={{ color: '#2563eb' }}>Revenue Protected</div>
+                      <div className="metric-lg" style={{ color: '#2563eb', marginTop: 4 }}>{fmt(totalProtected)}</div>
+                      <div className="body-sub" style={{ fontSize: 12, color: '#2563eb', marginTop: 4 }}>Recovered this month</div>
                     </div>
-                    <div style={{ width: 1, height: 32, background: '#e2e8f0' }} />
-                    <div>
-                      <div className="caption-text" style={{ fontWeight: 600, textTransform: 'uppercase' }}>Revenue Trend</div>
-                      <div className="metric-number-md" style={{ color: '#059669', marginTop: 4 }}>↑ 8.4%</div>
+
+                    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 20px' }}>
+                      <div className="caption-label">Inventory Health</div>
+                      <div className="metric-lg" style={{ color: '#0f172a', marginTop: 4 }}>{inventoryHealth}</div>
+                      <div className="body-sub" style={{ fontSize: 12, marginTop: 4 }}>Optimal stock balance</div>
                     </div>
                   </div>
 
-                  {/* Business Pulse Strip */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 20, background: '#f1f5f9', padding: '10px 18px', borderRadius: 8, fontSize: 13, fontWeight: 500 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#059669', fontWeight: 600 }}>
-                      <span className="monitoring-dot" />
-                      <span>Business Pulse</span>
+                  {/* TODAY'S BUSINESS PULSE Bar */}
+                  <div style={{
+                    background: '#f1f5f9', borderRadius: 10, padding: '10px 20px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 13, fontWeight: 500,
+                  }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      TODAY'S BUSINESS PULSE
                     </div>
-                    <span style={{ color: '#cbd5e1' }}>|</span>
-                    <span>Revenue: <strong style={{ color: '#059669' }}>↑ 8.4%</strong></span>
-                    <span style={{ color: '#cbd5e1' }}>|</span>
-                    <span>Demand Velocity: <strong style={{ color: '#059669' }}>↑ 12%</strong></span>
-                    <span style={{ color: '#cbd5e1' }}>|</span>
-                    <span>Inventory: <strong style={{ color: '#475569' }}>Normal</strong></span>
-                    <span style={{ color: '#cbd5e1' }}>|</span>
-                    <span>Active Risks: <strong style={{ color: '#ea580c' }}>3 monitored</strong></span>
-                  </div>
-
-                  {/* Compact Cause-and-Effect Narrative Block */}
-                  <div
-                    className="surface-panel"
-                    onClick={() => setShowCauseEffectModal(true)}
-                    style={{ padding: '16px 20px', cursor: 'pointer', borderColor: '#bfdbfe', background: '#eff6ff' }}
-                  >
-                    <div style={{ fontSize: 11, fontWeight: 700, color: '#2563eb', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-                      CAUSE-AND-EFFECT INTELLIGENCE CHAIN (Click to inspect)
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 600, color: '#0f172a', flexWrap: 'wrap' }}>
-                      <span>Holiday tomorrow</span>
-                      <span style={{ color: '#94a3b8' }}>↓</span>
-                      <span>Expected footfall -28%</span>
-                      <span style={{ color: '#94a3b8' }}>↓</span>
-                      <span>Fresh Juice demand -21%</span>
-                      <span style={{ color: '#94a3b8' }}>↓</span>
-                      <span>Inventory exposure (34 units)</span>
-                      <span style={{ color: '#94a3b8' }}>↓</span>
-                      <span style={{ color: '#059669' }}>Clearance opportunity (+₹354 recovery)</span>
+                    <div style={{ display: 'flex', gap: 24 }}>
+                      <span>Revenue: <strong style={{ color: '#059669' }}>↑ 8.4%</strong></span>
+                      <span>Demand: <strong style={{ color: '#059669' }}>↑ 12%</strong></span>
+                      <span>Inventory: <strong style={{ color: '#475569' }}>Normal</strong></span>
+                      <span>Margin: <strong style={{ color: '#059669' }}>↑ 2.1%</strong></span>
+                      <span>Risks: <strong style={{ color: '#ea580c' }}>3 active</strong></span>
                     </div>
                   </div>
 
-                  {/* "Needs your attention" Section — Compact Intelligent Row */}
+                  {/* 5. MOST IMPORTANT SECTION: "WHAT NEEDS YOUR ATTENTION" */}
                   <div>
-                    <div className="section-title" style={{ marginBottom: 14 }}>
-                      Needs your attention
+                    <div style={{ marginBottom: 14 }}>
+                      <h2 className="section-title">What needs your attention</h2>
+                      <div className="section-subtitle">
+                        RevenuePilot found 3 situations that could affect today's revenue.
+                      </div>
                     </div>
 
-                    {/* Primary Highlight Row (70-90px tall compact design) */}
-                    <div className="high-density-row" onClick={() => setActiveWorkspaceOpp(opportunities[0] || null)}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                        <span style={{ fontSize: 24 }}>🥤</span>
-                        <div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span style={{ fontWeight: 700, fontSize: 15, color: '#0f172a' }}>
-                              Fresh Juice · Expiry risk
-                            </span>
-                            <span className="badge-pill" style={{ background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca' }}>
-                              EXPIRY RISK
-                            </span>
+                    {/* 3 Intelligent Opportunity Rows */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      
+                      {/* Row 1: Fresh Juice · Expiry risk */}
+                      <div
+                        className="attention-row"
+                        onClick={() => setActiveWorkspaceOpp({
+                          opportunity_id: 'Fresh_Juice',
+                          merchant_id: 1, store_id: 1,
+                          opportunity_type: 'EXPIRY',
+                          estimated_revenue_loss: 490,
+                          estimated_recoverable_revenue: 354,
+                          estimated_profit_impact: 220,
+                          confidence: 0.88, urgency: 'HIGH',
+                          evidence: ['Demand dropped 21% over last 3 days', '18 units remain in stock', '2 days to expiry'],
+                          recommended_action: 'Apply 15% clearance discount',
+                          alternatives: ['Do nothing', '10% discount'],
+                          created_at: new Date().toISOString(), status: 'OPEN'
+                        })}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                          <span style={{ fontSize: 26 }}>🥤</span>
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ fontWeight: 700, fontSize: 16, color: '#0f172a' }}>Fresh Juice</span>
+                              <span className="badge-pill" style={{ background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca' }}>Expiry risk</span>
+                            </div>
+                            <div className="body-sub" style={{ marginTop: 3 }}>
+                              Demand dropped 21% while 18 units remain. Recommended: <strong style={{ color: '#0f172a' }}>15% clearance discount</strong>
+                            </div>
                           </div>
-                          <div className="body-secondary" style={{ marginTop: 2 }}>
-                            Demand is down 21% while 34 units remain in shelf window (2 days remaining).
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                          <div style={{ textAlign: 'right' }}>
+                            <div className="caption-label" style={{ color: '#dc2626' }}>AT RISK</div>
+                            <div style={{ fontSize: 16, fontWeight: 800, color: '#dc2626' }}>₹490</div>
                           </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <div className="caption-label" style={{ color: '#047857' }}>RECOVERABLE</div>
+                            <div style={{ fontSize: 16, fontWeight: 800, color: '#047857' }}>₹354</div>
+                          </div>
+                          <button className="btn-pilot btn-pilot-primary">
+                            Review
+                          </button>
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-                        <div style={{ textAlign: 'right' }}>
-                          <div className="caption-text" style={{ fontWeight: 600, color: '#dc2626' }}>AT RISK</div>
-                          <div className="metric-number-md" style={{ color: '#dc2626', fontSize: 18 }}>₹490</div>
+                      {/* Row 2: Coffee · Stockout risk */}
+                      <div
+                        className="attention-row"
+                        onClick={() => setActiveWorkspaceOpp({
+                          opportunity_id: 'Organic_Coffee',
+                          merchant_id: 1, store_id: 1,
+                          opportunity_type: 'STOCKOUT',
+                          estimated_revenue_loss: 360,
+                          estimated_recoverable_revenue: 260,
+                          estimated_profit_impact: 180,
+                          confidence: 0.91, urgency: 'HIGH',
+                          evidence: ['Demand velocity increased 32%', '12 units remain', 'Stockout in 1.1 days'],
+                          recommended_action: 'Reorder 10 units',
+                          alternatives: ['Do nothing'],
+                          created_at: new Date().toISOString(), status: 'OPEN'
+                        })}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                          <span style={{ fontSize: 26 }}>☕</span>
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ fontWeight: 700, fontSize: 16, color: '#0f172a' }}>Coffee</span>
+                              <span className="badge-pill" style={{ background: '#fff7ed', color: '#c2410c', border: '1px solid #fed7aa' }}>Stockout risk</span>
+                            </div>
+                            <div className="body-sub" style={{ marginTop: 3 }}>
+                              Demand velocity increased 32%. Recommended: <strong style={{ color: '#0f172a' }}>Reorder 10 units</strong>
+                            </div>
+                          </div>
                         </div>
-                        <div style={{ textAlign: 'right' }}>
-                          <div className="caption-text" style={{ fontWeight: 600, color: '#059669' }}>RECOVERABLE</div>
-                          <div className="metric-number-md" style={{ color: '#059669', fontSize: 18 }}>₹354</div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                          <div style={{ textAlign: 'right' }}>
+                            <div className="caption-label" style={{ color: '#dc2626' }}>AT RISK</div>
+                            <div style={{ fontSize: 16, fontWeight: 800, color: '#dc2626' }}>₹360</div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <div className="caption-label" style={{ color: '#047857' }}>RECOVERABLE</div>
+                            <div style={{ fontSize: 16, fontWeight: 800, color: '#047857' }}>₹260</div>
+                          </div>
+                          <button className="btn-pilot btn-pilot-secondary">
+                            Review
+                          </button>
                         </div>
-                        <div style={{ textAlign: 'right', minWidth: 70 }}>
-                          <div className="caption-text" style={{ fontWeight: 600 }}>CONFIDENCE</div>
-                          <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a' }}>88%</div>
-                        </div>
-                        <button className="btn-rp btn-rp-primary">
-                          Review →
-                        </button>
                       </div>
+
+                      {/* Row 3: Rice · Margin leak */}
+                      <div
+                        className="attention-row"
+                        onClick={() => setActiveWorkspaceOpp({
+                          opportunity_id: 'Premium_Rice',
+                          merchant_id: 1, store_id: 1,
+                          opportunity_type: 'OVERSTOCK',
+                          estimated_revenue_loss: 789,
+                          estimated_recoverable_revenue: 517,
+                          estimated_profit_impact: 340,
+                          confidence: 0.85, urgency: 'MEDIUM',
+                          evidence: ['Supplier cost increased 6.2%', 'Selling price unchanged', 'Margin compressed'],
+                          recommended_action: 'Adjust retail price +4%',
+                          alternatives: ['Absorb cost'],
+                          created_at: new Date().toISOString(), status: 'OPEN'
+                        })}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                          <span style={{ fontSize: 26 }}>🌾</span>
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ fontWeight: 700, fontSize: 16, color: '#0f172a' }}>Rice</span>
+                              <span className="badge-pill" style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe' }}>Margin leak</span>
+                            </div>
+                            <div className="body-sub" style={{ marginTop: 3 }}>
+                              Supplier cost increased while selling price remained unchanged. Recommended: <strong style={{ color: '#0f172a' }}>Price adjustment +4%</strong>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                          <div style={{ textAlign: 'right' }}>
+                            <div className="caption-label" style={{ color: '#dc2626' }}>AT RISK</div>
+                            <div style={{ fontSize: 16, fontWeight: 800, color: '#dc2626' }}>₹789</div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <div className="caption-label" style={{ color: '#047857' }}>RECOVERABLE</div>
+                            <div style={{ fontSize: 16, fontWeight: 800, color: '#047857' }}>₹517</div>
+                          </div>
+                          <button className="btn-pilot btn-pilot-secondary">
+                            Review
+                          </button>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
 
-                  {/* Revenue Opportunities Stream */}
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between', marginBottom: 14 }}>
-                      <div className="section-title">Active Revenue Opportunities</div>
-                      <button className="btn-rp btn-rp-ghost" onClick={() => setActiveTab('leaks')}>
-                        View all 6 signals →
-                      </button>
+                  {/* 9. REVENUEPILOT IS WORKING (Subtle Activity Feed) */}
+                  <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '20px 24px' }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#2563eb', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
+                      REVENUEPILOT IS WORKING
                     </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      {opportunities.map((opp, idx) => {
-                        const pm = productMeta(opp.opportunity_id);
-                        const tb = typeBadge(opp.opportunity_type);
-
-                        return (
-                          <div
-                            key={opp.opportunity_id || idx}
-                            className="high-density-row"
-                            onClick={() => setActiveWorkspaceOpp(opp)}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                              <span style={{ fontSize: 22 }}>{pm.emoji}</span>
-                              <div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                  <span style={{ fontWeight: 700, fontSize: 14, color: '#0f172a' }}>
-                                    {opp.opportunity_id.replace(/_/g, ' ')}
-                                  </span>
-                                  <span className="badge-pill" style={{ background: tb.bg, color: tb.color, border: `1px solid ${tb.border}` }}>
-                                    {tb.label}
-                                  </span>
-                                </div>
-                                <div className="body-secondary" style={{ fontSize: 12, marginTop: 1 }}>
-                                  {opp.recommended_action}
-                                </div>
-                              </div>
-                            </div>
-
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-                              <div style={{ textAlign: 'right' }}>
-                                <div className="caption-text">AT RISK</div>
-                                <div style={{ fontSize: 15, fontWeight: 700, color: '#dc2626' }}>
-                                  {fmt(opp.estimated_revenue_loss)}
-                                </div>
-                              </div>
-                              <div style={{ textAlign: 'right' }}>
-                                <div className="caption-text">RECOVERABLE</div>
-                                <div style={{ fontSize: 15, fontWeight: 700, color: '#059669' }}>
-                                  {fmt(opp.estimated_recoverable_revenue)}
-                                </div>
-                              </div>
-                              <div style={{ textAlign: 'right', minWidth: 60 }}>
-                                <div className="caption-text">CONFIDENCE</div>
-                                <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>
-                                  {pct(opp.confidence)}
-                                </div>
-                              </div>
-                              <button className="btn-rp btn-rp-secondary" style={{ padding: '5px 12px', fontSize: 12 }}>
-                                Review →
-                              </button>
-                            </div>
-                          </div>
-                        );
-                      })}
+                    <div style={{ display: 'flex', gap: 24, fontSize: 13, color: '#475569' }}>
+                      <div><strong style={{ color: '#0f172a' }}>09:42 AM</strong> · Detected abnormal demand drop (Fresh Juice)</div>
+                      <div><strong style={{ color: '#0f172a' }}>09:44 AM</strong> · Compared 12 demand patterns</div>
+                      <div><strong style={{ color: '#0f172a' }}>09:45 AM</strong> · Simulated 4 recovery strategies</div>
+                      <div><strong style={{ color: '#0f172a' }}>09:46 AM</strong> · Recommended 15% clearance discount</div>
                     </div>
+                  </div>
+
+                  {/* RECENT RECOVERY Section */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 24px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                      <span className="section-title" style={{ fontSize: 16 }}>Recent Recovery:</span>
+                      <span><strong>₹354</strong> Fresh Juice</span>
+                      <span><strong>₹260</strong> Coffee</span>
+                      <span><strong>₹517</strong> Rice</span>
+                    </div>
+                    <button className="btn-rp btn-rp-ghost" onClick={() => setActiveTab('leaks')}>
+                      View recovery history →
+                    </button>
                   </div>
 
                 </div>
               )}
 
               {/* ════════════════════════════════════════════════
-                  2. REVENUE OPPORTUNITIES PAGE (Dense List)
+                  2. REVENUE OPPORTUNITIES PAGE
                   ════════════════════════════════════════════════ */}
               {activeTab === 'leaks' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                   <div>
                     <h1 className="page-title">Revenue Opportunities</h1>
-                    <div className="body-secondary" style={{ marginTop: 4 }}>
-                      Dense financial intelligence stream. Click any item to inspect its workspace drawer.
+                    <div className="section-subtitle">
+                      Intelligent revenue stream for GreenBasket Market. Click Review on any item to inspect its detailed workspace drawer.
                     </div>
                   </div>
 
-                  {/* Summary Bar */}
-                  <div className="surface-panel" style={{ padding: '14px 20px', display: 'flex', gap: 24, fontSize: 13 }}>
-                    <div>Total at Risk: <strong style={{ color: '#dc2626' }}>{fmt(totalAtRisk)}</strong></div>
-                    <div>Recoverable Revenue: <strong style={{ color: '#059669' }}>{fmt(totalRecoverable)}</strong></div>
-                    <div>Active Signals: <strong>{opportunities.length || 6}</strong></div>
-                  </div>
-
-                  {/* High Density Stream */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {opportunities.map((opp, idx) => {
-                      const pm = productMeta(opp.opportunity_id);
-                      const tb = typeBadge(opp.opportunity_type);
-
-                      return (
-                        <div
-                          key={opp.opportunity_id || idx}
-                          className="high-density-row"
-                          onClick={() => setActiveWorkspaceOpp(opp)}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                            <span style={{ fontSize: 24 }}>{pm.emoji}</span>
-                            <div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                <span style={{ fontWeight: 700, fontSize: 15, color: '#0f172a' }}>
-                                  {opp.opportunity_id.replace(/_/g, ' ')}
-                                </span>
-                                <span className="badge-pill" style={{ background: tb.bg, color: tb.color, border: `1px solid ${tb.border}` }}>
-                                  {tb.label}
-                                </span>
-                              </div>
-                              <div className="body-secondary" style={{ marginTop: 2 }}>
-                                {opp.recommended_action}
-                              </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {[
+                      { name: 'Fresh Juice', type: 'EXPIRY', loss: 490, rec: 354, text: 'Demand dropped 21% while 18 units remain.' },
+                      { name: 'Organic Coffee', type: 'STOCKOUT', loss: 360, rec: 260, text: 'Demand velocity increased 32%.' },
+                      { name: 'Premium Rice', type: 'OVERSTOCK', loss: 789, rec: 517, text: 'Supplier cost increased while selling price remained unchanged.' },
+                    ].map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="attention-row"
+                        onClick={() => setActiveWorkspaceOpp({
+                          opportunity_id: item.name,
+                          merchant_id: 1, store_id: 1,
+                          opportunity_type: item.type,
+                          estimated_revenue_loss: item.loss,
+                          estimated_recoverable_revenue: item.rec,
+                          estimated_profit_impact: item.rec,
+                          confidence: 0.88, urgency: 'HIGH',
+                          evidence: [item.text],
+                          recommended_action: 'Review clearance & reorder options',
+                          alternatives: ['Do nothing'],
+                          created_at: new Date().toISOString(), status: 'OPEN'
+                        })}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                          <span style={{ fontSize: 24 }}>{productMeta(item.name).emoji}</span>
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ fontWeight: 700, fontSize: 16, color: '#0f172a' }}>{item.name}</span>
+                              <span className="badge-pill" style={{ background: typeBadge(item.type).bg, color: typeBadge(item.type).color, border: `1px solid ${typeBadge(item.type).border}` }}>
+                                {typeBadge(item.type).label}
+                              </span>
                             </div>
-                          </div>
-
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-                            <div style={{ textAlign: 'right' }}>
-                              <div className="caption-text" style={{ fontWeight: 600, color: '#dc2626' }}>AT RISK</div>
-                              <div style={{ fontSize: 16, fontWeight: 800, color: '#dc2626' }}>{fmt(opp.estimated_revenue_loss)}</div>
-                            </div>
-                            <div style={{ textAlign: 'right' }}>
-                              <div className="caption-text" style={{ fontWeight: 600, color: '#059669' }}>RECOVERABLE</div>
-                              <div style={{ fontSize: 16, fontWeight: 800, color: '#059669' }}>{fmt(opp.estimated_recoverable_revenue)}</div>
-                            </div>
-                            <div style={{ textAlign: 'right', minWidth: 70 }}>
-                              <div className="caption-text" style={{ fontWeight: 600 }}>CONFIDENCE</div>
-                              <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a' }}>{pct(opp.confidence)}</div>
-                            </div>
-                            <button className="btn-rp btn-rp-secondary">
-                              Review →
-                            </button>
+                            <div className="body-sub" style={{ marginTop: 2 }}>{item.text}</div>
                           </div>
                         </div>
-                      );
-                    })}
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                          <div style={{ textAlign: 'right' }}>
+                            <div className="caption-label" style={{ color: '#dc2626' }}>AT RISK</div>
+                            <div style={{ fontSize: 16, fontWeight: 800, color: '#dc2626' }}>{fmt(item.loss)}</div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <div className="caption-label" style={{ color: '#047857' }}>RECOVERABLE</div>
+                            <div style={{ fontSize: 16, fontWeight: 800, color: '#047857' }}>{fmt(item.rec)}</div>
+                          </div>
+                          <button className="btn-pilot btn-pilot-secondary">Review</button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
 
               {/* ════════════════════════════════════════════════
-                  3. DECISION CENTER (Decision Workspace & Candidate Comparison)
+                  3. DECISION CENTER (Redesigned Decision Matrix)
                   ════════════════════════════════════════════════ */}
               {activeTab === 'decisions' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                   <div>
-                    <h1 className="page-title">AI Decision Center</h1>
-                    <div className="body-secondary" style={{ marginTop: 4 }}>
-                      Multi-objective decision matrix evaluating Status Quo against candidate strategies.
+                    <h1 className="page-title">Decision Center</h1>
+                    <div className="section-subtitle">
+                      AI recommendation matrix evaluating recovery options against baseline.
                     </div>
                   </div>
 
-                  {decision ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                      {/* Decision Summary Grid */}
-                      <div className="surface-panel" style={{ padding: 24 }}>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: '#2563eb', textTransform: 'uppercase', marginBottom: 4 }}>
-                          {decision.product_name} · DECISION SUMMARY
-                        </div>
-                        <h2 className="section-title" style={{ fontSize: 20, marginBottom: 12 }}>
-                          {decision.recommended_action}
-                        </h2>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, background: '#f8fafc', padding: 16, borderRadius: 10, marginTop: 12 }}>
-                          <div>
-                            <div className="caption-text">WHAT HAPPENED</div>
-                            <div className="body-primary" style={{ fontWeight: 600, marginTop: 4 }}>{decision.why_this_decision?.what_happened}</div>
-                          </div>
-                          <div>
-                            <div className="caption-text">WHY IT MATTERS</div>
-                            <div className="body-primary" style={{ fontWeight: 600, marginTop: 4 }}>{decision.why_this_decision?.why_opportunity}</div>
-                          </div>
-                          <div>
-                            <div className="caption-text">WHAT WE EXPECT</div>
-                            <div className="body-primary" style={{ fontWeight: 600, marginTop: 4, color: '#059669' }}>
-                              {fmt(decision.winning_candidate?.expected_gross_profit || 1690)} Gross Profit
-                            </div>
-                          </div>
-                          <div>
-                            <div className="caption-text">WHAT WE RECOMMEND</div>
-                            <div className="body-primary" style={{ fontWeight: 600, marginTop: 4, color: '#2563eb' }}>{decision.recommended_action}</div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Candidate Strategies Comparison Rows */}
-                      <div>
-                        <div className="section-title" style={{ marginBottom: 12 }}>Candidate Strategy Comparison</div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                          {(decision.scored_candidates || []).map((cand, idx) => {
-                            const isWinner = cand.action_name === decision.winning_candidate?.action_name;
-                            const isBaseline = cand.action_name === 'DO_NOTHING';
-
-                            return (
-                              <div
-                                key={idx}
-                                className="surface-panel"
-                                style={{
-                                  padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                  borderColor: isWinner ? '#2563eb' : '#e2e8f0',
-                                  background: isWinner ? '#eff6ff' : isBaseline ? '#f8fafc' : '#ffffff',
-                                }}
-                              >
-                                <div>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                    <span style={{ fontWeight: 700, fontSize: 15, color: isWinner ? '#1d4ed8' : '#0f172a' }}>
-                                      {cand.label}
-                                    </span>
-                                    {isWinner && <span className="badge-pill" style={{ background: '#2563eb', color: '#ffffff' }}>RECOMMENDED</span>}
-                                    {isBaseline && <span className="badge-pill" style={{ background: '#e2e8f0', color: '#475569' }}>STATUS QUO</span>}
-                                  </div>
-                                  <div className="caption-text" style={{ marginTop: 2 }}>
-                                    Expected Sales: {cand.expected_sales} units | Stockout Risk: {pct(cand.stockout_probability)} | Waste Risk: {pct(cand.waste_probability)}
-                                  </div>
-                                </div>
-
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-                                  <div style={{ textAlign: 'right' }}>
-                                    <div className="caption-text">REVENUE</div>
-                                    <div style={{ fontSize: 15, fontWeight: 700, color: '#0f172a' }}>{fmt(cand.expected_revenue)}</div>
-                                  </div>
-                                  <div style={{ textAlign: 'right' }}>
-                                    <div className="caption-text">GROSS PROFIT</div>
-                                    <div style={{ fontSize: 15, fontWeight: 800, color: isWinner ? '#059669' : '#0f172a' }}>{fmt(cand.expected_gross_profit)}</div>
-                                  </div>
-                                  <div style={{ textAlign: 'right', minWidth: 60 }}>
-                                    <div className="caption-text">VALUE SCORE</div>
-                                    <div style={{ fontSize: 16, fontWeight: 900, color: isWinner ? '#2563eb' : '#94a3b8' }}>{cand.overall_score}</div>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-
+                  {/* AI Recommends Hero Block */}
+                  <div style={{ background: '#ffffff', border: '1.5px solid #2563eb', borderRadius: 12, padding: 24 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: '#2563eb', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
+                      AI RECOMMENDS FOR FRESH JUICE
                     </div>
-                  ) : (
-                    <div className="surface-panel" style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-                      No active decision matrix loaded. Select a scenario from Demo Scenarios.
+                    <h2 className="section-title" style={{ fontSize: 22, color: '#1d4ed8', marginBottom: 8 }}>
+                      15% clearance discount
+                    </h2>
+                    <div style={{ display: 'flex', gap: 12, fontSize: 13, color: '#475569', marginBottom: 16 }}>
+                      <span>Demand ↓ 21%</span>
+                      <span>·</span>
+                      <span>Expiry: 2 days</span>
+                      <span>·</span>
+                      <span>Inventory: 18 units</span>
+                      <span>·</span>
+                      <span>Expected recovery: <strong style={{ color: '#047857' }}>₹354</strong></span>
+                      <span>·</span>
+                      <span>Confidence: <strong>88%</strong></span>
                     </div>
-                  )}
+
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      <button className="btn-pilot btn-pilot-primary" onClick={() => setActiveTab('whatif')}>
+                        Simulate
+                      </button>
+                      <button className="btn-pilot btn-pilot-success" onClick={() => handleApprove(1)}>
+                        Approve action
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Alternative Actions Compact Comparison */}
+                  <div>
+                    <div className="section-title" style={{ marginBottom: 12 }}>Alternative Strategies Evaluated</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {[
+                        { name: 'Do nothing', rec: 0, note: 'Loss remains ₹490', tag: null },
+                        { name: '10% discount', rec: 286, note: 'Slower sell-through', tag: null },
+                        { name: '15% discount', rec: 354, note: 'Optimal balance', tag: 'RECOMMENDED' },
+                        { name: '20% discount', rec: 379, note: 'Margin risk ↑', tag: 'MARGIN RISK' },
+                      ].map((strat, i) => (
+                        <div key={i} style={{
+                          background: strat.tag === 'RECOMMENDED' ? '#eff6ff' : '#ffffff',
+                          border: strat.tag === 'RECOMMENDED' ? '1.5px solid #2563eb' : '1px solid #e2e8f0',
+                          borderRadius: 8, padding: '12px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <span style={{ fontWeight: 700, fontSize: 14, color: '#0f172a' }}>{strat.name}</span>
+                            {strat.tag === 'RECOMMENDED' && <span className="badge-pill" style={{ background: '#2563eb', color: '#ffffff' }}>RECOMMENDED</span>}
+                            {strat.tag === 'MARGIN RISK' && <span className="badge-pill" style={{ background: '#fff7ed', color: '#c2410c' }}>MARGIN RISK</span>}
+                          </div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: strat.rec > 0 ? '#047857' : '#64748b' }}>
+                            Expected recovery: {fmt(strat.rec)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                 </div>
               )}
 
               {/* ════════════════════════════════════════════════
-                  4. WHAT-IF SIMULATOR (Live Financial Decision Tool)
+                  4. WHAT-IF SIMULATOR (Financial Decision Tool)
                   ════════════════════════════════════════════════ */}
               {activeTab === 'whatif' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                   <div>
                     <h1 className="page-title">What-If Decision Simulator</h1>
-                    <div className="body-secondary" style={{ marginTop: 4 }}>
-                      Simulate pricing and inventory changes in real-time.
+                    <div className="section-subtitle">
+                      Simulate pricing adjustments and reorder quantities in real-time.
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: 24, alignItems: 'start' }}>
-                    {/* Controls Column */}
-                    <div className="surface-panel" style={{ padding: 24 }}>
-                      <div className="section-title" style={{ fontSize: 16, marginBottom: 16 }}>Simulation Controls</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: 24, alignItems: 'start' }}>
+                    {/* LEFT: Controls */}
+                    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20 }}>
+                      <h3 className="section-title" style={{ fontSize: 16, marginBottom: 16 }}>What are you considering?</h3>
                       
                       <div style={{ marginBottom: 20 }}>
-                        <label className="body-primary" style={{ fontWeight: 600, display: 'block', marginBottom: 8 }}>
-                          Order Quantity: <strong style={{ color: '#2563eb' }}>{simQty} units</strong>
-                        </label>
-                        <input type="range" min={0} max={300} step={10} value={simQty} onChange={e => setSimQty(Number(e.target.value))} />
-                      </div>
-
-                      <div style={{ marginBottom: 24 }}>
-                        <label className="body-primary" style={{ fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                        <label style={{ fontSize: 13, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 8 }}>
                           Clearance Discount: <strong style={{ color: '#2563eb' }}>{simDiscount}%</strong>
                         </label>
                         <input type="range" min={0} max={50} step={5} value={simDiscount} onChange={e => setSimDiscount(Number(e.target.value))} />
                       </div>
 
-                      <button className="btn-rp btn-rp-primary" style={{ width: '100%' }} onClick={handleRunSimulation} disabled={simLoading}>
+                      <div style={{ marginBottom: 24 }}>
+                        <label style={{ fontSize: 13, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 8 }}>
+                          Order Quantity: <strong style={{ color: '#2563eb' }}>{simQty} units</strong>
+                        </label>
+                        <input type="range" min={0} max={300} step={10} value={simQty} onChange={e => setSimQty(Number(e.target.value))} />
+                      </div>
+
+                      <button className="btn-pilot btn-pilot-primary" style={{ width: '100%' }} onClick={handleRunSimulation} disabled={simLoading}>
                         {simLoading ? <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Play size={14} />}
-                        <span>Run Simulation</span>
+                        <span>Simulate Impact</span>
                       </button>
                     </div>
 
-                    {/* Live Results Panel */}
+                    {/* RIGHT: Live Simulation Results */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      {/* Net Profit Gain Banner */}
-                      <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 12, padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: '#047857', textTransform: 'uppercase' }}>Net Profit Gain</div>
-                          <div className="metric-number-lg" style={{ color: '#047857', marginTop: 4 }}>
-                            +{fmt(simResult?.net_profit_gain || 220)}
+                      {/* Prominent Impact Banner */}
+                      <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 12, padding: '20px 24px' }}>
+                        <div className="caption-label" style={{ color: '#047857' }}>ESTIMATED FINANCIAL IMPACT</div>
+                        <div style={{ display: 'flex', gap: 32, marginTop: 8 }}>
+                          <div>
+                            <div style={{ fontSize: 28, fontWeight: 900, color: '#047857', lineHeight: 1 }}>+₹354</div>
+                            <div className="body-sub" style={{ fontSize: 12, color: '#059669', marginTop: 2 }}>Revenue recovered</div>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: 28, fontWeight: 900, color: '#047857', lineHeight: 1 }}>+31%</div>
+                            <div className="body-sub" style={{ fontSize: 12, color: '#059669', marginTop: 2 }}>Sell-through rate</div>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: 28, fontWeight: 900, color: '#047857', lineHeight: 1 }}>-42%</div>
+                            <div className="body-sub" style={{ fontSize: 12, color: '#059669', marginTop: 2 }}>Waste risk</div>
                           </div>
                         </div>
-                        <span className="badge-pill" style={{ background: '#059669', color: '#ffffff', fontSize: 12, padding: '6px 12px' }}>
-                          {simResult?.recommendation || 'Strategy Approved (+₹220 net profit baseline)'}
-                        </span>
                       </div>
 
-                      {/* Status Quo vs Proposed Comparison Table */}
+                      {/* Current vs Your Strategy Comparison */}
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                        <div className="surface-panel" style={{ padding: 20, background: '#f8fafc' }}>
-                          <div style={{ fontWeight: 700, fontSize: 14, color: '#475569', marginBottom: 12 }}>STATUS QUO</div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13 }}>
-                            <div style={{ display: 'flex', justifyBetween: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: 6 }}>
-                              <span style={{ color: '#64748b' }}>Expected Revenue</span>
-                              <span style={{ fontWeight: 700 }}>{fmt(simResult?.status_quo_strategy?.expected_revenue || 3220)}</span>
-                            </div>
-                            <div style={{ display: 'flex', justifyBetween: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: 6 }}>
-                              <span style={{ color: '#64748b' }}>Gross Profit</span>
-                              <span style={{ fontWeight: 700 }}>{fmt(simResult?.status_quo_strategy?.expected_gross_profit || 1470)}</span>
-                            </div>
-                            <div style={{ display: 'flex', justifyBetween: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: 6 }}>
-                              <span style={{ color: '#64748b' }}>Waste Risk</span>
-                              <span style={{ fontWeight: 700, color: '#dc2626' }}>₹1,240</span>
-                            </div>
+                        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 18 }}>
+                          <div style={{ fontWeight: 700, fontSize: 14, color: '#475569', marginBottom: 10 }}>CURRENT STRATEGY</div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13 }}>
+                            <div>Revenue: <strong>₹3,220</strong></div>
+                            <div>Gross Margin: <strong>42%</strong></div>
+                            <div>Waste Risk: <strong style={{ color: '#dc2626' }}>₹1,240</strong></div>
                           </div>
                         </div>
 
-                        <div className="surface-panel" style={{ padding: 20, border: '2px solid #059669', background: '#eff6ff' }}>
-                          <div style={{ fontWeight: 700, fontSize: 14, color: '#1d4ed8', marginBottom: 12 }}>PROPOSED</div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13 }}>
-                            <div style={{ display: 'flex', justifyBetween: 'space-between', borderBottom: '1px solid #bfdbfe', paddingBottom: 6 }}>
-                              <span style={{ color: '#1e40af' }}>Expected Revenue</span>
-                              <span style={{ fontWeight: 800, color: '#1d4ed8' }}>{fmt(simResult?.custom_proposed_strategy?.expected_revenue || 4270)}</span>
-                            </div>
-                            <div style={{ display: 'flex', justifyBetween: 'space-between', borderBottom: '1px solid #bfdbfe', paddingBottom: 6 }}>
-                              <span style={{ color: '#1e40af' }}>Gross Profit</span>
-                              <span style={{ fontWeight: 800, color: '#047857' }}>{fmt(simResult?.custom_proposed_strategy?.expected_gross_profit || 1690)}</span>
-                            </div>
-                            <div style={{ display: 'flex', justifyBetween: 'space-between', borderBottom: '1px solid #bfdbfe', paddingBottom: 6 }}>
-                              <span style={{ color: '#1e40af' }}>Waste Risk</span>
-                              <span style={{ fontWeight: 800, color: '#047857' }}>₹420</span>
-                            </div>
+                        <div style={{ background: '#eff6ff', border: '1.5px solid #2563eb', borderRadius: 12, padding: 18 }}>
+                          <div style={{ fontWeight: 700, fontSize: 14, color: '#1d4ed8', marginBottom: 10 }}>YOUR STRATEGY</div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13 }}>
+                            <div>Revenue: <strong style={{ color: '#1d4ed8' }}>₹4,270</strong></div>
+                            <div>Gross Margin: <strong>39.5%</strong></div>
+                            <div>Waste Risk: <strong style={{ color: '#047857' }}>₹420</strong></div>
                           </div>
                         </div>
                       </div>
@@ -919,47 +895,34 @@ export default function App() {
               )}
 
               {/* ════════════════════════════════════════════════
-                  5. INSIGHTS ("Things Autopilot Noticed")
+                  5. INSIGHTS (Natural Language Insights)
                   ════════════════════════════════════════════════ */}
               {activeTab === 'changed' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                   <div>
-                    <h1 className="page-title">Things Autopilot Noticed</h1>
-                    <div className="body-secondary" style={{ marginTop: 4 }}>
-                      Intelligent business observations. Click any row to expand detailed explanation.
+                    <h1 className="page-title">Business Insights</h1>
+                    <div className="section-subtitle">
+                      Natural language observations on GreenBasket Market patterns.
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {[
-                      { id: '1', title: 'Demand velocity changed', summary: 'Weekend demand is 18% higher than weekday baseline.', detail: 'Analysis of IT park office schedules indicates a shift toward Friday evening stocking.' },
-                      { id: '2', title: 'Inventory risk rising', summary: 'Fresh Juice has 2 days remaining before shelf life expiry.', detail: 'Current inventory is 34 units with a daily sales velocity of 6 units. 15% clearance recommended.' },
-                      { id: '3', title: 'Holiday effect detected', summary: 'IT Park office holiday expected tomorrow (-28% footfall).', detail: 'External calendar signal predicts office closure tomorrow, reducing convenience store footfall.' },
-                      { id: '4', title: 'Supplier margin pressure', summary: 'Dairy supplier lead time increased by 1.2 days.', detail: 'Supply chain lead time adjustment requires earlier reorder trigger points to prevent stockouts.' },
-                    ].map(ins => {
-                      const isExpanded = expandedInsightId === ins.id;
-                      return (
-                        <div
-                          key={ins.id}
-                          className="high-density-row"
-                          style={{ flexDirection: 'column', alignItems: 'flex-start', cursor: 'pointer' }}
-                          onClick={() => setExpandedInsightId(isExpanded ? null : ins.id)}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                            <div>
-                              <strong style={{ fontSize: 15, color: '#0f172a' }}>{ins.title}</strong>
-                              <div className="body-secondary" style={{ marginTop: 2 }}>{ins.summary}</div>
-                            </div>
-                            <ChevronDown size={16} color="#94a3b8" style={{ transition: 'transform 0.2s', transform: isExpanded ? 'rotate(180deg)' : 'none' }} />
-                          </div>
-                          {isExpanded && (
-                            <div className="body-primary" style={{ marginTop: 10, background: '#f8fafc', padding: 12, borderRadius: 8, width: '100%' }}>
-                              {ins.detail}
-                            </div>
-                          )}
+                      { id: '1', insight: 'Friday evening demand for beverages is consistently 24% higher.', evidence: '3-month POS velocity data.', impact: '+₹620 potential weekend revenue' },
+                      { id: '2', insight: 'Organic Milk is selling 18% faster than the current reorder threshold.', evidence: 'Stockout probability reaches 82% by tomorrow afternoon.', impact: 'Prevent ₹360 stockout loss' },
+                      { id: '3', insight: 'Discounting Fresh Juice after 6 PM has historically reduced waste without materially hurting margin.', evidence: 'Historical clearance response rate r = +0.74.', impact: 'Recover ₹354 per batch' },
+                    ].map(item => (
+                      <div key={item.id} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '16px 20px' }}>
+                        <div style={{ fontWeight: 700, fontSize: 15, color: '#0f172a', marginBottom: 4 }}>
+                          "{item.insight}"
                         </div>
-                      );
-                    })}
+                        <div style={{ display: 'flex', gap: 16, fontSize: 12, color: '#64748b' }}>
+                          <span>Evidence: {item.evidence}</span>
+                          <span>·</span>
+                          <span style={{ color: '#047857', fontWeight: 600 }}>Impact: {item.impact}</span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -969,19 +932,19 @@ export default function App() {
         </main>
 
         {/* ══════════════════════════════════════════════════════
-            LARGE DETAIL WORKSPACE DRAWER (Progressive Disclosure Level 2 & 3)
+            PROGRESSIVE DISCLOSURE: LARGE DETAIL DRAWER WORKSPACE
             ══════════════════════════════════════════════════════ */}
         {activeWorkspaceOpp && (
           <div className="workspace-overlay" onClick={() => setActiveWorkspaceOpp(null)}>
             <div className="workspace-drawer" onClick={e => e.stopPropagation()}>
               
-              {/* Drawer Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              {/* Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
                 <div>
-                  <span className="badge-pill" style={{ background: typeBadge(activeWorkspaceOpp.opportunity_type).bg, color: typeBadge(activeWorkspaceOpp.opportunity_type).color, border: `1px solid ${typeBadge(activeWorkspaceOpp.opportunity_type).border}` }}>
-                    {typeBadge(activeWorkspaceOpp.opportunity_type).label}
+                  <span className="badge-pill" style={{ background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca' }}>
+                    EXPIRY RISK
                   </span>
-                  <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', margin: '6px 0 0' }}>
+                  <h2 style={{ fontSize: 26, fontWeight: 800, color: '#0f172a', margin: '4px 0 0' }}>
                     {activeWorkspaceOpp.opportunity_id.replace(/_/g, ' ')}
                   </h2>
                 </div>
@@ -990,85 +953,70 @@ export default function App() {
                 </button>
               </div>
 
-              {/* 1. Problem Overview */}
+              {/* Potential Loss Banner */}
               <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 12, padding: 18, marginBottom: 24 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#b91c1c', textTransform: 'uppercase' }}>AT RISK REVENUE</div>
+                <div className="caption-label" style={{ color: '#b91c1c' }}>POTENTIAL REVENUE LOSS</div>
                 <div style={{ fontSize: 32, fontWeight: 900, color: '#b91c1c', marginTop: 2 }}>
-                  {fmt(activeWorkspaceOpp.estimated_revenue_loss)}
-                </div>
-                <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
-                  <span className="badge-pill" style={{ background: '#ffffff', color: '#b91c1c' }}>Demand ↓21%</span>
-                  <span className="badge-pill" style={{ background: '#ffffff', color: '#b91c1c' }}>Inventory: 34 units</span>
-                  <span className="badge-pill" style={{ background: '#ffffff', color: '#b91c1c' }}>Days to expiry: 2</span>
+                  ₹490
                 </div>
               </div>
 
-              {/* 2. Why We Found This (Natural Language Causal Chain) */}
+              {/* WHY REVENUEPILOT FLAGGED THIS */}
               <div style={{ marginBottom: 24 }}>
-                <div className="section-title" style={{ fontSize: 15, marginBottom: 8 }}>WHY WE FOUND THIS</div>
-                <p className="body-primary" style={{ background: '#f8fafc', padding: 14, borderRadius: 10, border: '1px solid #e2e8f0', margin: 0 }}>
-                  Demand is falling while inventory remains above normal and only four days of shelf life remain.
-                </p>
-              </div>
-
-              {/* 3. Expected Impact */}
-              <div style={{ marginBottom: 24 }}>
-                <div className="section-title" style={{ fontSize: 15, marginBottom: 12 }}>EXPECTED IMPACT</div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, textAlign: 'center' }}>
-                  <div style={{ background: '#f8fafc', padding: 12, borderRadius: 10, border: '1px solid #e2e8f0' }}>
-                    <div className="caption-text">AT RISK</div>
-                    <div style={{ fontSize: 16, fontWeight: 800, color: '#dc2626', marginTop: 2 }}>{fmt(activeWorkspaceOpp.estimated_revenue_loss)}</div>
-                  </div>
-                  <div style={{ background: '#ecfdf5', padding: 12, borderRadius: 10, border: '1px solid #a7f3d0' }}>
-                    <div className="caption-text" style={{ color: '#047857' }}>RECOVERABLE</div>
-                    <div style={{ fontSize: 16, fontWeight: 800, color: '#047857', marginTop: 2 }}>{fmt(activeWorkspaceOpp.estimated_recoverable_revenue)}</div>
-                  </div>
-                  <div style={{ background: '#f8fafc', padding: 12, borderRadius: 10, border: '1px solid #e2e8f0' }}>
-                    <div className="caption-text">EXPECTED SALES</div>
-                    <div style={{ fontSize: 16, fontWeight: 800, color: '#0f172a', marginTop: 2 }}>29 units</div>
-                  </div>
+                <div className="section-title" style={{ fontSize: 16, marginBottom: 10 }}>WHY REVENUEPILOT FLAGGED THIS</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13, color: '#334155', background: '#f8fafc', padding: 16, borderRadius: 10, border: '1px solid #e2e8f0' }}>
+                  <div>• Demand has fallen 21% over the last 3 days.</div>
+                  <div>• 18 units remain in stock.</div>
+                  <div>• Expiry in 2 days.</div>
+                  <div>• Similar demand patterns previously caused ₹1,240 in avoidable waste.</div>
                 </div>
               </div>
 
-              {/* 4. Recommended Action & Execution CTAs */}
-              <div style={{ marginBottom: 28 }}>
-                <div className="section-title" style={{ fontSize: 15, marginBottom: 10 }}>RECOMMENDED ACTION</div>
-                <div style={{ background: '#eff6ff', border: '1.5px solid #bfdbfe', padding: 16, borderRadius: 12, marginBottom: 16, fontWeight: 700, color: '#1d4ed8' }}>
-                  {activeWorkspaceOpp.recommended_action}
+              {/* AI RECOMMENDATION */}
+              <div style={{ marginBottom: 24 }}>
+                <div className="section-title" style={{ fontSize: 16, marginBottom: 10 }}>AI RECOMMENDATION</div>
+                <div style={{ background: '#eff6ff', border: '1.5px solid #bfdbfe', borderRadius: 12, padding: 18, marginBottom: 16 }}>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: '#1d4ed8', marginBottom: 12 }}>
+                    15% clearance discount
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, textAlign: 'center' }}>
+                    <div style={{ background: '#ffffff', padding: 8, borderRadius: 8 }}>
+                      <div className="caption-label" style={{ color: '#047857' }}>RECOVERY</div>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: '#047857' }}>₹354</div>
+                    </div>
+                    <div style={{ background: '#ffffff', padding: 8, borderRadius: 8 }}>
+                      <div className="caption-label" style={{ color: '#047857' }}>SELL-THROUGH</div>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: '#047857' }}>+31%</div>
+                    </div>
+                    <div style={{ background: '#ffffff', padding: 8, borderRadius: 8 }}>
+                      <div className="caption-label" style={{ color: '#047857' }}>WASTE RISK</div>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: '#047857' }}>-42%</div>
+                    </div>
+                    <div style={{ background: '#ffffff', padding: 8, borderRadius: 8 }}>
+                      <div className="caption-label">CONFIDENCE</div>
+                      <div style={{ fontSize: 14, fontWeight: 800 }}>88%</div>
+                    </div>
+                  </div>
                 </div>
 
                 <div style={{ display: 'flex', gap: 12 }}>
-                  <button className="btn-rp btn-rp-secondary" style={{ flex: 1 }} onClick={() => { setActiveWorkspaceOpp(null); setActiveTab('whatif'); }}>
-                    Simulate first
+                  <button className="btn-pilot btn-pilot-secondary" style={{ flex: 1 }} onClick={() => { setActiveWorkspaceOpp(null); setActiveTab('whatif'); }}>
+                    Simulate
                   </button>
-                  <button className="btn-rp btn-rp-success" style={{ flex: 1 }} onClick={() => { handleApprove(1); setActiveWorkspaceOpp(null); }}>
-                    Approve action
+                  <button className="btn-pilot btn-pilot-success" style={{ flex: 1 }} onClick={() => { handleApprove(1); setActiveWorkspaceOpp(null); }}>
+                    Approve & Execute
                   </button>
                 </div>
               </div>
 
-              {/* 5. Closed Loop Audit Journey */}
+              {/* WHY THIS ACTION? */}
               <div>
-                <div className="section-title" style={{ fontSize: 15, marginBottom: 14 }}>CLOSED LOOP AUDIT JOURNEY</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13 }}>
-                  {[
-                    ['12:32 PM', 'OBSERVED', 'Demand dropped 21% below baseline velocity'],
-                    ['12:34 PM', 'DETECTED', 'Expiry risk identified for batch #402'],
-                    ['12:35 PM', 'FORECASTED', '67% waste probability without price action'],
-                    ['12:36 PM', 'SIMULATED', '15% clearance discount → +₹354 net profit gain'],
-                    ['12:37 PM', 'RECOMMENDED', 'Apply 15% clearance discount strategy'],
-                    ['12:39 PM', 'APPROVED', 'Merchant approved action'],
-                    ['12:40 PM', 'EXECUTED', 'Action executed in MOCK mode'],
-                    ['NEXT DAY', 'OUTCOME', 'Actual recovery ₹3,280 | Prediction error 4.1%'],
-                  ].map(([time, stage, desc], idx) => (
-                    <div key={idx} style={{ display: 'flex', gap: 12, borderLeft: '2px solid #e2e8f0', paddingLeft: 12 }}>
-                      <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600, width: 70 }}>{time}</span>
-                      <div>
-                        <strong style={{ fontSize: 11, color: '#2563eb', textTransform: 'uppercase' }}>{stage}</strong>
-                        <div style={{ color: '#0f172a', fontWeight: 500, marginTop: 1 }}>{desc}</div>
-                      </div>
-                    </div>
-                  ))}
+                <div className="section-title" style={{ fontSize: 16, marginBottom: 10 }}>WHY THIS ACTION?</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13, color: '#475569' }}>
+                  <div>1. Current demand is slowing.</div>
+                  <div>2. Inventory is approaching expiry window.</div>
+                  <div>3. A 15% discount historically improves velocity.</div>
+                  <div>4. Product margin remains positive after discount.</div>
                 </div>
               </div>
 
@@ -1076,27 +1024,45 @@ export default function App() {
           </div>
         )}
 
-        {/* Cause and Effect Modal */}
-        {showCauseEffectModal && (
-          <div className="workspace-overlay" style={{ justifyContent: 'center', alignItems: 'center' }} onClick={() => setShowCauseEffectModal(false)}>
-            <div className="surface-panel" style={{ maxWidth: 500, width: '100%', padding: 28 }} onClick={e => e.stopPropagation()}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <h3 className="section-title">Cause-and-Effect Narrative</h3>
-                <button onClick={() => setShowCauseEffectModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={16} /></button>
+        {/* STORE PROFILE DRAWER */}
+        {showStoreProfile && (
+          <div className="workspace-overlay" style={{ justifyContent: 'center', alignItems: 'center' }} onClick={() => setShowStoreProfile(null)}>
+            <div className="surface-card" style={{ maxWidth: 460, width: '100%', padding: 28 }} onClick={e => e.stopPropagation()}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <div>
+                  <h3 className="section-title">GreenBasket Market</h3>
+                  <div className="body-sub">Grocery & Essentials · Hyderabad</div>
+                </div>
+                <button onClick={() => setShowStoreProfile(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={18} /></button>
               </div>
-              <p className="body-primary" style={{ lineHeight: 1.6 }}>
-                The upcoming IT Park office holiday reduces store footfall by 28%, causing a 21% drop in fresh beverage demand. This leaves 34 units of Fresh Juice exposed to expiry risk in 2 days. Autopilot recommends a 15% clearance discount to recover ₹354.
-              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, fontSize: 13 }}>
+                <div style={{ background: '#f8fafc', padding: 12, borderRadius: 8 }}>
+                  <div className="caption-label">REVENUE TODAY</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#0f172a', marginTop: 2 }}>₹18,420</div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: 12, borderRadius: 8 }}>
+                  <div className="caption-label">ORDERS TODAY</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#0f172a', marginTop: 2 }}>126</div>
+                </div>
+                <div style={{ background: '#f8fafc', padding: 12, borderRadius: 8 }}>
+                  <div className="caption-label">AVG ORDER VALUE</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#0f172a', marginTop: 2 }}>₹146</div>
+                </div>
+                <div style={{ background: '#ecfdf5', padding: 12, borderRadius: 8 }}>
+                  <div className="caption-label" style={{ color: '#047857' }}>INVENTORY HEALTH</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#047857', marginTop: 2 }}>94%</div>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {/* System Diagnostics Modal */}
+        {/* SYSTEM STATUS DIAGNOSTICS MODAL */}
         {showStatusModal && (
           <div className="workspace-overlay" style={{ justifyContent: 'center', alignItems: 'center' }} onClick={() => setShowStatusModal(false)}>
-            <div className="surface-panel" style={{ maxWidth: 400, width: '100%', padding: 24 }} onClick={e => e.stopPropagation()}>
+            <div className="surface-card" style={{ maxWidth: 400, width: '100%', padding: 24 }} onClick={e => e.stopPropagation()}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <h3 className="section-title">System Status</h3>
+                <h3 className="section-title">RevenuePilot Diagnostics</h3>
                 <button onClick={() => setShowStatusModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={16} /></button>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 13 }}>

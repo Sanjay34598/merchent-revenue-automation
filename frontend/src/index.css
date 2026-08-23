@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap');
 
 /* ═══════════════════════════════════════════
-   REVENUEPILOT — FINTECH COCKPIT DESIGN SYSTEM
+   REVENUEPILOT — FINTECH PRODUCT SYSTEM
    ═══════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -40,8 +40,17 @@ input, select {
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
 /* ═══════════════════════════════════════════
-   TYPOGRAPHY HIERARCHY (Explicit Font Sizes)
+   TYPOGRAPHY HIERARCHY
    ═══════════════════════════════════════════ */
+.hero-title {
+  font-size: 34px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.8px;
+  margin: 0;
+  line-height: 1.25;
+}
+
 .page-title {
   font-size: 28px;
   font-weight: 800;
@@ -51,92 +60,100 @@ input, select {
 }
 
 .section-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: #0f172a;
   letter-spacing: -0.3px;
   margin: 0;
 }
 
-.metric-number-lg {
+.section-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.metric-lg {
   font-size: 32px;
   font-weight: 900;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 
-.metric-number-md {
-  font-size: 24px;
+.metric-md {
+  font-size: 22px;
   font-weight: 800;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 
-.body-primary {
+.body-main {
   font-size: 14px;
   line-height: 1.5;
   color: #334155;
 }
 
-.body-secondary {
+.body-sub {
   font-size: 13px;
   line-height: 1.5;
   color: #64748b;
 }
 
-.caption-text {
-  font-size: 12px;
+.caption-label {
+  font-size: 11px;
+  font-weight: 700;
   color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* ═══════════════════════════════════════════
-   FULL-WIDTH DESKTOP LAYOUT (1380px)
+   FULL-WIDTH DESKTOP LAYOUT (1440px)
    ═══════════════════════════════════════════ */
-.app-container {
-  max-width: 1400px;
+.viewport-container {
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 40px;
 }
 
 @media (max-width: 1024px) {
-  .app-container {
+  .viewport-container {
     padding: 0 20px;
   }
 }
 
 /* ═══════════════════════════════════════════
-   CARDS & HIGH-DENSITY ROWS
+   SURFACES & DENSE INTELLIGENCE ROWS
    ═══════════════════════════════════════════ */
-.surface-panel {
+.surface-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15,23,42,0.03);
 }
 
-.high-density-row {
-  min-height: 76px;
+.attention-row {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 12px 20px;
+  border-radius: 12px;
+  padding: 16px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 20px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
   cursor: pointer;
 }
-.high-density-row:hover {
+.attention-row:hover {
   border-color: #94a3b8;
-  box-shadow: 0 4px 12px rgba(15,23,42,0.06);
+  box-shadow: 0 4px 16px rgba(15,23,42,0.06);
   transform: translateY(-1px);
 }
 
 /* ═══════════════════════════════════════════
-   BUTTONS
+   BUTTONS & CTAS
    ═══════════════════════════════════════════ */
-.btn-rp {
+.btn-pilot {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -151,55 +168,46 @@ input, select {
   white-space: nowrap;
 }
 
-.btn-rp-primary {
+.btn-pilot-primary {
   background: #2563eb;
   color: #ffffff;
 }
-.btn-rp-primary:hover {
+.btn-pilot-primary:hover {
   background: #1d4ed8;
   box-shadow: 0 4px 12px rgba(37,99,235,0.25);
 }
 
-.btn-rp-secondary {
+.btn-pilot-secondary {
   background: #ffffff;
   color: #475569;
   border: 1px solid #cbd5e1;
 }
-.btn-rp-secondary:hover {
+.btn-pilot-secondary:hover {
   background: #f8fafc;
   color: #0f172a;
   border-color: #94a3b8;
 }
 
-.btn-rp-success {
+.btn-pilot-success {
   background: #059669;
   color: #ffffff;
 }
-.btn-rp-success:hover {
+.btn-pilot-success:hover {
   background: #047857;
   box-shadow: 0 4px 12px rgba(5,150,105,0.25);
 }
 
-.btn-rp-danger {
-  background: #ffffff;
-  color: #dc2626;
-  border: 1px solid #fecaca;
-}
-.btn-rp-danger:hover {
-  background: #fef2f2;
-}
-
-.btn-rp-ghost {
+.btn-pilot-ghost {
   background: transparent;
   color: #2563eb;
   padding: 6px 10px;
 }
-.btn-rp-ghost:hover {
+.btn-pilot-ghost:hover {
   background: #eff6ff;
 }
 
 /* ═══════════════════════════════════════════
-   BADGES & PILLS
+   BADGES & STATUS INDICATORS
    ═══════════════════════════════════════════ */
 .badge-pill {
   display: inline-flex;
@@ -213,7 +221,6 @@ input, select {
   white-space: nowrap;
 }
 
-/* Status Indicator Pulse */
 .monitoring-dot {
   width: 7px;
   height: 7px;
@@ -227,7 +234,7 @@ input, select {
 }
 
 /* ═══════════════════════════════════════════
-   LARGE DETAIL WORKSPACE DRAWER
+   LARGE DETAIL DRAWER WORKSPACE
    ═══════════════════════════════════════════ */
 .workspace-overlay {
   position: fixed;
@@ -292,7 +299,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 /* ═══════════════════════════════════════════
-   TOAST NOTIFICATION
+   TOAST BANNER
    ═══════════════════════════════════════════ */
 .toast-banner {
   position: fixed;
@@ -321,18 +328,17 @@ input[type="range"]::-webkit-slider-thumb:hover {
   to { transform: rotate(360deg); }
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
-  .app-container {
+  .viewport-container {
     padding: 0 16px;
   }
   .workspace-drawer {
     max-width: 100%;
     padding: 24px 20px;
   }
-  .high-density-row {
+  .attention-row {
     flex-direction: column;
     align-items: flex-start;
-    padding: 16px;
   }
 }
