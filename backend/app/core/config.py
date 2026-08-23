@@ -2,6 +2,9 @@ import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
 
+_ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+_DEFAULT_DB_PATH = os.path.join(_ROOT_DIR, "merchant_autopilot.db").replace("\\", "/")
+
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Merchant Revenue Autopilot"
     API_V1_STR: str = "/api"
@@ -9,7 +12,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "info"
     
     # Database
-    DATABASE_URL: str = "sqlite:///./merchant_autopilot.db"
+    DATABASE_URL: str = f"sqlite:///{_DEFAULT_DB_PATH}"
     
     # AI Provider
     AI_PROVIDER: str = "mock"
