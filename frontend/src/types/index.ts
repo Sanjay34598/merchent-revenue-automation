@@ -11,7 +11,8 @@ export type PageView =
   | 'changed'
   | 'recovered'
   | 'failures'
-  | 'experiments';
+  | 'experiments'
+  | 'whatif';
 
 export interface OpportunityItem {
   category: string;
@@ -176,4 +177,16 @@ export interface Experiment {
   product_name: string;
   strategies: Array<{ arm: string; name: string; description: string }>;
   status: string;
+}
+
+export interface CustomSimulationResult {
+  store_id: number;
+  product_id: number;
+  product_name: string;
+  expected_demand_forecast: number;
+  status_quo_strategy: DecisionCandidate;
+  custom_proposed_strategy: DecisionCandidate;
+  scored_comparison: DecisionCandidate[];
+  net_profit_gain: number;
+  recommendation: string;
 }

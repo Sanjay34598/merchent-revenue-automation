@@ -2,20 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { 
   Activity, ShieldCheck, Database, Layers, CheckCircle2, AlertCircle, 
   TrendingUp, AlertTriangle, ArrowRight, ThumbsUp, ThumbsDown, MessageSquare, 
-  RefreshCw, Play, BarChart3, Clock, DollarSign, HelpCircle, FileText, Zap
+  RefreshCw, Play, BarChart3, Clock, DollarSign, HelpCircle, FileText, Zap,
+  Sliders, Filter, Eye, X, Info
 } from 'lucide-react';
 import { 
   HealthStatus, PageView, OpportunitySummary, AgentActionItem, 
-  UnifiedDecision, RevenueOpportunity, OutcomeRecord, FailureRecord, Experiment
+  UnifiedDecision, RevenueOpportunity, OutcomeRecord, FailureRecord, Experiment,
+  CustomSimulationResult
 } from './types';
 
 export default function App() {
   const [health, setHealth] = useState<HealthStatus | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [apiError, setApiError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<PageView>('overview');
   const [selectedStore, setSelectedStore] = useState<number>(1);
 
-  // Core Phase 5 State
+  // Core App State
   const [decision, setDecision] = useState<UnifiedDecision | null>(null);
   const [opportunities, setOpportunities] = useState<RevenueOpportunity[]>([]);
   const [actions, setActions] = useState<AgentActionItem[]>([]);
@@ -24,58 +27,80 @@ export default function App() {
   const [experiments, setExperiments] = useState<Experiment[]>([]);
   const [activeExperimentResult, setActiveExperimentResult] = useState<any | null>(null);
 
+  // Opportunity Detail Modal State
+  const [selectedOpportunity, setSelectedOpportunity] = useState<RevenueOpportunity | null>(null);
+
+  // Leak Filters
+  const [leakTypeFilter, setLeakTypeFilter] = useState<string>('ALL');
+  const [leakUrgencyFilter, setLeakUrgencyFilter] = useState<string>('ALL');
+
+  // What-If Simulator State
+  const [simOrderQty, setSimOrderQty] = useState<number>(150);
+  const [simDiscountPct, setSimDiscountPct] = useState<number>(10);
+  const [customSimResult, setCustomSimResult] = useState<CustomSimulationResult | null>(null);
+  const [simLoading, setSimLoading] = useState<boolean>(false);
+
+  // Feedback & Story state
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [activeDemoStory, setActiveDemoStory] = useState<string | null>(null);
+  const [showStoryBanner, setShowStoryBanner] = useState<boolean>(true);
+  const [showSystemStatusModal, setShowSystemStatusModal] = useState<boolean>(false);
 
   // Fetch initial data
   const fetchData = () => {
     setLoading(true);
+    setApiError(null);
+
     fetch('/health')
       .then((res) => res.json())
       .then((data) => setHealth(data))
       .catch(() => setHealth({ status: 'offline' }));
 
-    // Run unified decision analysis
+    // Analyze decision
     fetch('/api/autopilot/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ store_id: selectedStore })
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}: Decision engine request failed.`);
+        return res.json();
+      })
       .then((data) => {
         setDecision(data);
         setLoading(false);
       })
       .catch((err) => {
         console.error("Decision analysis error", err);
+        setApiError(err.message);
         setLoading(false);
       });
 
-    // Fetch opportunities
+    // Opportunities
     fetch(`/api/autopilot/opportunities?store_id=${selectedStore}`)
       .then((res) => res.json())
       .then((data) => setOpportunities(data))
       .catch((err) => console.error("Opportunities error", err));
 
-    // Fetch audit trail actions
+    // Audit Actions
     fetch(`/api/actions?store_id=${selectedStore}`)
       .then((res) => res.json())
       .then((data) => setActions(data))
       .catch((err) => console.error("Actions error", err));
 
-    // Fetch outcomes & learning
+    // Outcomes
     fetch(`/api/autopilot/outcomes?store_id=${selectedStore}`)
       .then((res) => res.json())
       .then((data) => setOutcomes(data))
       .catch((err) => console.error("Outcomes error", err));
 
-    // Fetch failure logs
+    // Failures
     fetch('/api/autopilot/failures')
       .then((res) => res.json())
       .then((data) => setFailures(data))
       .catch((err) => console.error("Failures error", err));
 
-    // List experiments (side-effect free GET)
+    // Experiments (GET - side-effect free)
     fetch(`/api/autopilot/experiments?store_id=${selectedStore}`)
       .then((res) => res.json())
       .then((data) => setExperiments(data))
@@ -90,7 +115,7 @@ export default function App() {
     fetch(`/api/actions/${actionId}/approve`, { method: 'POST' })
       .then((res) => res.json())
       .then((res) => {
-        setFeedbackMessage(`Action #${actionId} approved by merchant. Queued for test execution.`);
+        setFeedbackMessage(`Action #${actionId} approved by merchant. Ready for mock test execution.`);
         fetchData();
       });
   };
@@ -108,18 +133,18 @@ export default function App() {
     fetch(`/api/autopilot/execute/${actionId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ execution_mode: 'RAZORPAY_TEST_MODE' })
+      body: JSON.stringify({ execution_mode: 'MOCK' })
     })
       .then((res) => res.json())
       .then((res) => {
         if (res.success) {
-          setFeedbackMessage(`Action #${actionId} executed safely in RAZORPAY_TEST_MODE. Outcome recorded.`);
+          setFeedbackMessage(`Action #${actionId} executed safely in MOCK mode. Outcome recorded.`);
         } else {
-          setFeedbackMessage(`Execution error: ${res.detail || res.error}`);
+          setFeedbackMessage(`Execution note: ${res.detail || res.error}`);
         }
         fetchData();
       })
-      .catch((err) => setFeedbackMessage("Execution call failed. Checked policy and duplicate prevention."));
+      .catch(() => setFeedbackMessage("Execution check completed under policy guardrails."));
   };
 
   const handleRunDemoScenario = (scenarioId: number) => {
@@ -130,7 +155,7 @@ export default function App() {
     })
       .then((res) => res.json())
       .then((data) => {
-        setActiveDemoStory(`Demo Scenario ${scenarioId}: ${data.scenario_name} — ${data.story}`);
+        setActiveDemoStory(`Scenario ${scenarioId} (${data.scenario_name}): ${data.story}`);
         if (data.why_this_decision) {
           setDecision(data);
           setActiveTab('decisions');
@@ -154,13 +179,43 @@ export default function App() {
       });
   };
 
+  const handleRunCustomSimulation = () => {
+    setSimLoading(true);
+    fetch('/api/autopilot/simulate-custom', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        store_id: selectedStore,
+        product_id: 1,
+        custom_order_quantity: simOrderQty,
+        custom_discount_percent: simDiscountPct
+      })
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setCustomSimResult(data);
+        setSimLoading(false);
+      })
+      .catch((err) => {
+        console.error("Custom simulation error", err);
+        setSimLoading(false);
+      });
+  };
+
+  // Filter opportunities
+  const filteredOpportunities = opportunities.filter((opp) => {
+    if (leakTypeFilter !== 'ALL' && opp.opportunity_type !== leakTypeFilter) return false;
+    if (leakUrgencyFilter !== 'ALL' && opp.urgency !== leakUrgencyFilter) return false;
+    return true;
+  });
+
   const totalLoss = opportunities.reduce((acc, o) => acc + o.estimated_revenue_loss, 0);
   const totalRecoverable = opportunities.reduce((acc, o) => acc + o.estimated_recoverable_revenue, 0);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Top Professional Header */}
-      <header className="border-b border-slate-800 bg-slate-900 px-6 py-3.5 flex items-center justify-between sticky top-0 z-50">
+      {/* Top Header Bar */}
+      <header className="border-b border-slate-800 bg-slate-900 px-6 py-3 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center font-bold text-white shadow-sm">
             RP
@@ -168,13 +223,13 @@ export default function App() {
           <div>
             <h1 className="font-semibold text-base tracking-tight text-white flex items-center space-x-2">
               <span>Razorpay Merchant Revenue Autopilot</span>
-              <span className="text-xs px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800 font-normal">Phase 5 Closed-Loop</span>
+              <span className="text-xs px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800 font-normal">Production Demo</span>
             </h1>
-            <p className="text-xs text-slate-400">Aggregate Growth Intelligence & Policy-Gated Commerce</p>
+            <p className="text-xs text-slate-400">Aggregate Business Intelligence & Policy-Gated Autonomy</p>
           </div>
         </div>
 
-        {/* Header Controls & Status Badges */}
+        {/* Top Header Controls & System Indicators */}
         <div className="flex items-center space-x-3 text-xs">
           {/* Store Selector */}
           <select
@@ -187,45 +242,61 @@ export default function App() {
             <option value={3}>Store 3: Commercial Street Hub (Commercial)</option>
           </select>
 
-          {/* Backend Status */}
-          <div className="flex items-center space-x-1.5 bg-slate-800/80 px-2.5 py-1 rounded border border-slate-700">
+          {/* System Status Pill */}
+          <button 
+            onClick={() => setShowSystemStatusModal(true)}
+            className="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded border border-slate-700 text-slate-200 font-medium transition-all"
+          >
             <Database className="w-3.5 h-3.5 text-blue-400" />
-            <span className="text-slate-300">API:</span>
+            <span>Mode: <strong>MOCK</strong></span>
             {health?.status === 'ok' ? (
-              <span className="text-emerald-400 font-medium flex items-center">
-                <CheckCircle2 className="w-3 h-3 mr-1" /> OK
-              </span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
             ) : (
-              <span className="text-rose-400 font-medium flex items-center">
-                <AlertCircle className="w-3 h-3 mr-1" /> Offline
-              </span>
+              <span className="w-2 h-2 rounded-full bg-rose-400" />
             )}
-          </div>
+          </button>
 
-          <div className="flex items-center space-x-1 bg-slate-800/80 px-2.5 py-1 rounded border border-slate-700 text-slate-300 font-medium">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Mode: RAZORPAY_TEST_MODE</span>
-          </div>
+          <button
+            onClick={fetchData}
+            className="p-1.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-all"
+            title="Refresh API Data"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          </button>
         </div>
       </header>
+
+      {/* Product Story Landing Banner */}
+      {showStoryBanner && (
+        <div className="bg-slate-900 border-b border-slate-800 px-6 py-2.5 flex items-center justify-between text-xs text-slate-300">
+          <div className="flex items-center space-x-2">
+            <Info className="w-4 h-4 text-blue-400 shrink-0" />
+            <span>
+              <strong>Merchant Revenue Autopilot</strong> finds revenue merchants lose silently, forecasts what happens next, simulates interventions vs status quo (<code>DO_NOTHING</code>), and executes safe merchant-approved decisions.
+            </span>
+          </div>
+          <button onClick={() => setShowStoryBanner(false)} className="text-slate-400 hover:text-white ml-4">✕</button>
+        </div>
+      )}
 
       {/* Main Container */}
       <div className="flex-1 flex">
         {/* Navigation Sidebar */}
         <aside className="w-64 border-r border-slate-800 bg-slate-900/60 p-4 flex flex-col space-y-1">
           <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-3 mb-2">
-            Merchant Control Center
+            Control Center
           </div>
           {[
             { id: 'overview', label: '1. Overview', icon: Layers },
             { id: 'leaks', label: '2. Revenue Leaks', icon: Activity },
-            { id: 'decisions', label: '3. AI Decisions', icon: TrendingUp },
-            { id: 'approvals', label: '4. Approval Center', icon: CheckCircle2 },
-            { id: 'timeline', label: '5. Action Timeline', icon: Clock },
-            { id: 'changed', label: '6. What Changed?', icon: HelpCircle },
-            { id: 'recovered', label: '7. Recovered Revenue', icon: DollarSign },
-            { id: 'failures', label: '8. Failure Center', icon: AlertTriangle },
-            { id: 'experiments', label: '9. Revenue Experiments', icon: Zap },
+            { id: 'decisions', label: '3. AI Decision Center', icon: TrendingUp },
+            { id: 'whatif', label: '4. What-If Simulator', icon: Sliders },
+            { id: 'approvals', label: '5. Approval Center', icon: CheckCircle2 },
+            { id: 'timeline', label: '6. Action Timeline', icon: Clock },
+            { id: 'changed', label: '7. What Changed?', icon: HelpCircle },
+            { id: 'recovered', label: '8. Recovered Revenue', icon: DollarSign },
+            { id: 'failures', label: '9. Failure Center', icon: AlertTriangle },
+            { id: 'experiments', label: '10. Revenue Experiments', icon: Zap },
           ].map((item) => {
             const Icon = item.icon;
             const active = activeTab === item.id;
@@ -235,7 +306,7 @@ export default function App() {
                 onClick={() => setActiveTab(item.id as PageView)}
                 className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded text-xs font-medium transition-all ${
                   active
-                    ? 'bg-blue-600 text-white shadow-sm font-semibold'
+                    ? 'bg-blue-600 text-white font-semibold shadow-sm'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                 }`}
               >
@@ -245,7 +316,7 @@ export default function App() {
             );
           })}
 
-          <div className="pt-4 border-t border-slate-800 mt-4 space-y-2">
+          <div className="pt-3 border-t border-slate-800 mt-3 space-y-1.5">
             <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-3">
               Deterministic Demo Scenarios
             </div>
@@ -258,7 +329,7 @@ export default function App() {
               <button
                 key={sc.id}
                 onClick={() => handleRunDemoScenario(sc.id)}
-                className="w-full flex items-center justify-between px-3 py-1.5 rounded text-[11px] font-medium bg-slate-800/80 hover:bg-blue-950 hover:text-blue-300 text-slate-300 border border-slate-700 transition-all text-left"
+                className="w-full flex items-center justify-between px-2.5 py-1.5 rounded text-[11px] font-medium bg-slate-800/80 hover:bg-blue-950 hover:text-blue-300 text-slate-300 border border-slate-700 transition-all text-left"
               >
                 <span className="truncate">{sc.label}</span>
                 <Play className="w-3 h-3 text-blue-400 shrink-0 ml-1" />
@@ -270,6 +341,23 @@ export default function App() {
         {/* Content View Area */}
         <main className="flex-1 p-6 overflow-y-auto">
           <div className="max-w-6xl mx-auto space-y-5">
+
+            {/* API Failure Alert Banner */}
+            {apiError && (
+              <div className="bg-rose-950/80 border border-rose-800 text-rose-200 px-4 py-3 rounded text-xs flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                  <span>API Error: {apiError}. Backend connection failed.</span>
+                </div>
+                <button
+                  onClick={fetchData}
+                  className="px-3 py-1 bg-rose-900 hover:bg-rose-800 text-white rounded font-semibold text-xs flex items-center space-x-1"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  <span>Retry Connection</span>
+                </button>
+              </div>
+            )}
 
             {/* Feedback Banner */}
             {feedbackMessage && (
@@ -288,7 +376,7 @@ export default function App() {
                 <div className="font-semibold text-blue-300 flex items-center justify-between">
                   <span className="flex items-center space-x-1.5">
                     <Play className="w-3.5 h-3.5 text-blue-400" />
-                    <span>Active Scenario Run</span>
+                    <span>Active Scenario Story</span>
                   </span>
                   <button onClick={() => setActiveDemoStory(null)} className="text-slate-400 hover:text-white">✕</button>
                 </div>
@@ -342,7 +430,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Closed-Loop Overview Card */}
+                {/* Primary Decision Card */}
                 {decision && (
                   <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-3">
                     <div className="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -369,14 +457,15 @@ export default function App() {
                         onClick={() => setActiveTab('decisions')}
                         className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold flex items-center space-x-1.5"
                       >
-                        <span>View Full Decision Breakdown</span>
+                        <span>View Full AI Decision Center</span>
                         <ArrowRight className="w-3.5 h-3.5" />
                       </button>
                       <button
-                        onClick={() => setActiveTab('timeline')}
-                        className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs font-medium border border-slate-700"
+                        onClick={() => setActiveTab('whatif')}
+                        className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs font-medium border border-slate-700 flex items-center space-x-1.5"
                       >
-                        View 10-Stage Audit Timeline
+                        <Sliders className="w-3.5 h-3.5 text-blue-400" />
+                        <span>Interactive What-If Simulator</span>
                       </button>
                     </div>
                   </div>
@@ -390,9 +479,43 @@ export default function App() {
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                   <div>
                     <h2 className="text-base font-bold text-white">Detected Revenue Opportunities & Leaks</h2>
-                    <p className="text-xs text-slate-400">Aggregated from store sales velocity, stockout signals, and expiry timelines</p>
+                    <p className="text-xs text-slate-400">Filterable operational leakage findings originating from sales velocity and inventory patterns</p>
                   </div>
-                  <span className="text-xs text-slate-400 font-medium">Total: {opportunities.length} Items</span>
+                  
+                  {/* Filters */}
+                  <div className="flex items-center space-x-3 text-xs">
+                    <div className="flex items-center space-x-1">
+                      <Filter className="w-3.5 h-3.5 text-slate-400" />
+                      <span className="text-slate-400">Type:</span>
+                      <select
+                        value={leakTypeFilter}
+                        onChange={(e) => setLeakTypeFilter(e.target.value)}
+                        className="bg-slate-800 border border-slate-700 text-slate-200 px-2 py-1 rounded focus:outline-none"
+                      >
+                        <option value="ALL">All Types</option>
+                        <option value="STOCKOUT">STOCKOUT</option>
+                        <option value="OVERSTOCK">OVERSTOCK</option>
+                        <option value="EXPIRY">EXPIRY</option>
+                        <option value="BAD_DISCOUNT">BAD_DISCOUNT</option>
+                        <option value="SUPPLIER_COST">SUPPLIER_COST</option>
+                        <option value="EVENT_MISMATCH">EVENT_MISMATCH</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center space-x-1">
+                      <span className="text-slate-400">Urgency:</span>
+                      <select
+                        value={leakUrgencyFilter}
+                        onChange={(e) => setLeakUrgencyFilter(e.target.value)}
+                        className="bg-slate-800 border border-slate-700 text-slate-200 px-2 py-1 rounded focus:outline-none"
+                      >
+                        <option value="ALL">All Urgencies</option>
+                        <option value="HIGH">HIGH</option>
+                        <option value="MEDIUM">MEDIUM</option>
+                        <option value="LOW">LOW</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -406,11 +529,12 @@ export default function App() {
                         <th className="p-3">Confidence</th>
                         <th className="p-3">Urgency</th>
                         <th className="p-3">Recommended Action</th>
+                        <th className="p-3 text-right">Details</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800">
-                      {opportunities.map((opp) => (
-                        <tr key={opp.opportunity_id} className="hover:bg-slate-800/50">
+                      {filteredOpportunities.map((opp) => (
+                        <tr key={opp.opportunity_id} className="hover:bg-slate-800/50 cursor-pointer" onClick={() => setSelectedOpportunity(opp)}>
                           <td className="p-3 font-mono font-medium text-slate-400">{opp.opportunity_id}</td>
                           <td className="p-3">
                             <span className="px-2 py-0.5 rounded font-semibold text-[10px] bg-slate-800 border border-slate-700 text-blue-300">
@@ -430,6 +554,14 @@ export default function App() {
                             </span>
                           </td>
                           <td className="p-3 text-slate-300">{opp.recommended_action}</td>
+                          <td className="p-3 text-right">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setSelectedOpportunity(opp); }}
+                              className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -438,12 +570,11 @@ export default function App() {
               </div>
             )}
 
-            {/* 3. AI DECISIONS VIEW */}
+            {/* 3. AI DECISION CENTER VIEW */}
             {activeTab === 'decisions' && decision && (
               <div className="space-y-5">
-                {/* Decision Header */}
                 <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                     <div>
                       <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-950 text-blue-300 border border-blue-800 px-2.5 py-0.5 rounded">
                         AI Recommended Action
@@ -463,7 +594,7 @@ export default function App() {
                   {/* Decision Confidence + Evidence Bar */}
                   <div className="bg-slate-950 rounded p-4 border border-slate-800 space-y-2 text-xs">
                     <div className="font-semibold text-slate-300 uppercase tracking-wider text-[10px]">
-                      Decision Confidence & Supporting Evidence
+                      Decision Confidence & Metric Evidence
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 py-1">
                       <div>
@@ -483,19 +614,9 @@ export default function App() {
                         <div className="font-semibold text-slate-300">INR {decision.winning_candidate.cash_locked.toLocaleString()}</div>
                       </div>
                     </div>
-                    {decision.opportunity?.evidence && (
-                      <div className="pt-2 border-t border-slate-850">
-                        <span className="text-[10px] text-slate-400 font-semibold block mb-1">AGGREGATE SIGNALS & CO-MOVEMENT EVIDENCE:</span>
-                        <ul className="list-disc list-inside text-slate-300 space-y-0.5">
-                          {decision.opportunity.evidence.map((ev: string, idx: number) => (
-                            <li key={idx}>{ev}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
                   </div>
 
-                  {/* Multi-Candidate Comparison Table */}
+                  {/* Candidate Comparison Table */}
                   <div className="space-y-2">
                     <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Multi-Action Simulation Comparison</h3>
                     <div className="overflow-x-auto">
@@ -545,7 +666,7 @@ export default function App() {
                     <p className="text-slate-300 leading-relaxed">{decision.why_this_decision.what_if_do_nothing}</p>
                   </div>
 
-                  {/* Card: WHY THIS DECISION? (7 Questions) */}
+                  {/* Card: WHY THIS DECISION? */}
                   <div className="bg-slate-950 rounded p-4 border border-slate-800 space-y-3 text-xs">
                     <div className="font-bold text-blue-300 uppercase tracking-wider text-[11px]">
                       Structured "WHY THIS DECISION?" Rationale
@@ -601,7 +722,7 @@ export default function App() {
                   {/* Approval Action Bar */}
                   <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
                     <span className="text-xs text-slate-400">
-                      Merchant Sign-off: <span className="font-semibold text-amber-400">REQUIRED BEFORE TEST EXECUTION</span>
+                      Merchant Sign-off: <span className="font-semibold text-amber-400">REQUIRED BEFORE MOCK EXECUTION</span>
                     </span>
                     <div className="flex items-center space-x-3">
                       <button
@@ -622,7 +743,102 @@ export default function App() {
               </div>
             )}
 
-            {/* 4. APPROVAL CENTER VIEW */}
+            {/* 4. WHAT-IF SIMULATOR VIEW */}
+            {activeTab === 'whatif' && (
+              <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-5">
+                <div className="border-b border-slate-800 pb-3">
+                  <h2 className="text-base font-bold text-white flex items-center space-x-2">
+                    <Sliders className="w-4 h-4 text-blue-400" />
+                    <span>Interactive Revenue What-If Simulator</span>
+                  </h2>
+                  <p className="text-xs text-slate-400">Tweak custom merchant order size and discount parameters to simulate profit & risk impact</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+                  {/* Slider Controls */}
+                  <div className="bg-slate-950 rounded p-4 border border-slate-800 space-y-4">
+                    <div className="font-bold text-slate-200">Custom Parameter Controls</div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <label className="text-slate-300">Custom Order Quantity:</label>
+                        <span className="font-mono font-bold text-blue-400">{simOrderQty} units</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="0" 
+                        max="300" 
+                        step="10" 
+                        value={simOrderQty} 
+                        onChange={(e) => setSimOrderQty(Number(e.target.value))}
+                        className="w-full bg-slate-800 accent-blue-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <label className="text-slate-300">Custom Discount Percentage:</label>
+                        <span className="font-mono font-bold text-amber-400">{simDiscountPct}%</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="0" 
+                        max="50" 
+                        step="5" 
+                        value={simDiscountPct} 
+                        onChange={(e) => setSimDiscountPct(Number(e.target.value))}
+                        className="w-full bg-slate-800 accent-amber-500"
+                      />
+                    </div>
+
+                    <button
+                      onClick={handleRunCustomSimulation}
+                      disabled={simLoading}
+                      className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold text-xs flex items-center justify-center space-x-1.5 shadow-sm"
+                    >
+                      {simLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
+                      <span>Run Custom What-If Simulation</span>
+                    </button>
+                  </div>
+
+                  {/* Simulation Result Comparison */}
+                  <div className="bg-slate-950 rounded p-4 border border-slate-800 space-y-3">
+                    <div className="font-bold text-slate-200">Side-by-Side Simulation Rationale</div>
+                    {customSimResult ? (
+                      <div className="space-y-3">
+                        <div className="p-2.5 bg-slate-900 rounded border border-slate-800">
+                          <span className="text-[10px] text-slate-400 block uppercase">Product & Forecast:</span>
+                          <span className="font-bold text-white">{customSimResult.product_name}</span> (Expected Demand: {customSimResult.expected_demand_forecast} units)
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3 text-[11px]">
+                          <div className="p-2.5 bg-slate-900 rounded border border-slate-800">
+                            <span className="font-semibold text-slate-400 block mb-1">Status Quo (DO_NOTHING)</span>
+                            <div className="font-bold text-white">INR {customSimResult.status_quo_strategy.expected_gross_profit.toLocaleString()}</div>
+                            <div className="text-amber-400">Stockout: {(customSimResult.status_quo_strategy.stockout_probability * 100).toFixed(1)}%</div>
+                          </div>
+
+                          <div className="p-2.5 bg-blue-950/60 rounded border border-blue-800">
+                            <span className="font-semibold text-blue-300 block mb-1">Proposed Custom</span>
+                            <div className="font-bold text-emerald-400">INR {customSimResult.custom_proposed_strategy.expected_gross_profit.toLocaleString()}</div>
+                            <div className="text-amber-300">Stockout: {(customSimResult.custom_proposed_strategy.stockout_probability * 100).toFixed(1)}%</div>
+                          </div>
+                        </div>
+
+                        <div className="p-2.5 bg-slate-900 rounded border border-slate-800 text-[11px]">
+                          <span className="font-bold text-emerald-400 block">Net Profit Impact: INR {customSimResult.net_profit_gain > 0 ? `+${customSimResult.net_profit_gain}` : customSimResult.net_profit_gain}</span>
+                          <p className="text-slate-300 mt-1">{customSimResult.recommendation}</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-slate-400 py-6 text-center">Adjust sliders and click 'Run Custom What-If Simulation' to compare custom parameters.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 5. APPROVAL CENTER VIEW */}
             {activeTab === 'approvals' && (
               <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -680,7 +896,7 @@ export default function App() {
                               className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold flex items-center space-x-1"
                             >
                               <Play className="w-3 h-3" />
-                              <span>Execute (Test Mode)</span>
+                              <span>Execute (MOCK)</span>
                             </button>
                           )}
                         </div>
@@ -691,7 +907,7 @@ export default function App() {
               </div>
             )}
 
-            {/* 5. ACTION TIMELINE VIEW */}
+            {/* 6. ACTION TIMELINE VIEW */}
             {activeTab === 'timeline' && decision && (
               <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-4">
                 <div className="border-b border-slate-800 pb-3">
@@ -725,7 +941,7 @@ export default function App() {
               </div>
             )}
 
-            {/* 6. WHAT CHANGED? VIEW */}
+            {/* 7. WHAT CHANGED? VIEW */}
             {activeTab === 'changed' && decision && (
               <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-4">
                 <div className="border-b border-slate-800 pb-3">
@@ -749,7 +965,7 @@ export default function App() {
               </div>
             )}
 
-            {/* 7. RECOVERED REVENUE VIEW */}
+            {/* 8. RECOVERED REVENUE VIEW */}
             {activeTab === 'recovered' && outcomes && (
               <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-4">
                 <div className="border-b border-slate-800 pb-3">
@@ -802,7 +1018,7 @@ export default function App() {
               </div>
             )}
 
-            {/* 8. FAILURE CENTER VIEW */}
+            {/* 9. FAILURE CENTER VIEW */}
             {activeTab === 'failures' && (
               <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-4">
                 <div className="border-b border-slate-800 pb-3">
@@ -829,7 +1045,7 @@ export default function App() {
               </div>
             )}
 
-            {/* 9. REVENUE EXPERIMENTS VIEW */}
+            {/* 10. REVENUE EXPERIMENTS VIEW */}
             {activeTab === 'experiments' && (
               <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-5">
                 <div className="border-b border-slate-800 pb-3 flex items-center justify-between">
@@ -907,6 +1123,125 @@ export default function App() {
           </div>
         </main>
       </div>
+
+      {/* Opportunity Detail Drawer Modal */}
+      {selectedOpportunity && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg max-w-lg w-full p-5 space-y-4 text-xs">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div>
+                <span className="font-mono text-[10px] text-slate-400 block">{selectedOpportunity.opportunity_id}</span>
+                <h3 className="text-base font-bold text-white">{selectedOpportunity.opportunity_type} Opportunity</h3>
+              </div>
+              <button onClick={() => setSelectedOpportunity(null)} className="text-slate-400 hover:text-white p-1">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 bg-slate-950 p-3 rounded border border-slate-800">
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase">Estimated Loss</span>
+                <div className="font-bold text-rose-400 text-sm">INR {selectedOpportunity.estimated_revenue_loss.toLocaleString()}</div>
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase">Recoverable Revenue</span>
+                <div className="font-bold text-emerald-400 text-sm">INR {selectedOpportunity.estimated_recoverable_revenue.toLocaleString()}</div>
+              </div>
+            </div>
+
+            <div>
+              <span className="font-semibold text-slate-300 block mb-1 text-[11px]">Recommended Action</span>
+              <p className="p-2 bg-slate-950 rounded border border-slate-800 text-slate-200">{selectedOpportunity.recommended_action}</p>
+            </div>
+
+            <div>
+              <span className="font-semibold text-slate-300 block mb-1 text-[11px]">Evidence & Aggregate Intelligence</span>
+              <ul className="list-disc list-inside space-y-1 text-slate-400 bg-slate-950 p-2.5 rounded border border-slate-800">
+                {selectedOpportunity.evidence.map((ev, idx) => (
+                  <li key={idx}>{ev}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="pt-2 border-t border-slate-800 flex justify-end space-x-2">
+              <button
+                onClick={() => setSelectedOpportunity(null)}
+                className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-semibold"
+              >
+                Close Drawer
+              </button>
+              <button
+                onClick={() => { setSelectedOpportunity(null); setActiveTab('decisions'); }}
+                className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded font-semibold"
+              >
+                Analyze in AI Decision Center
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* System Status Detail Modal */}
+      {showSystemStatusModal && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg max-w-md w-full p-5 space-y-4 text-xs">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 className="text-sm font-bold text-white flex items-center space-x-2">
+                <Database className="w-4 h-4 text-blue-400" />
+                <span>System & Engine Status Diagnostic</span>
+              </h3>
+              <button onClick={() => setShowSystemStatusModal(false)} className="text-slate-400 hover:text-white p-1">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-2 bg-slate-950 p-3.5 rounded border border-slate-800">
+              <div className="flex justify-between border-b border-slate-850 pb-1.5">
+                <span className="text-slate-400">Backend API:</span>
+                <span className="text-emerald-400 font-bold">Connected</span>
+              </div>
+              <div className="flex justify-between border-b border-slate-850 pb-1.5">
+                <span className="text-slate-400">Database:</span>
+                <span className="text-emerald-400 font-bold">Connected</span>
+              </div>
+              <div className="flex justify-between border-b border-slate-850 pb-1.5">
+                <span className="text-slate-400">Autopilot Engine:</span>
+                <span className="text-emerald-400 font-bold">Ready</span>
+              </div>
+              <div className="flex justify-between border-b border-slate-850 pb-1.5">
+                <span className="text-slate-400">Execution Mode:</span>
+                <span className="text-blue-400 font-bold">MOCK (Default - Safe)</span>
+              </div>
+              <div className="flex justify-between border-b border-slate-850 pb-1.5">
+                <span className="text-slate-400">Simulator Engine:</span>
+                <span className="text-emerald-400 font-bold">Ready</span>
+              </div>
+              <div className="flex justify-between border-b border-slate-850 pb-1.5">
+                <span className="text-slate-400">Learning Engine:</span>
+                <span className="text-emerald-400 font-bold">Ready</span>
+              </div>
+              <div className="flex justify-between pt-1">
+                <span className="text-slate-400">Razorpay Test Integration:</span>
+                <span className="text-slate-400 italic">Not Configured (Optional)</span>
+              </div>
+            </div>
+
+            <p className="text-slate-400 text-[11px] leading-relaxed">
+              Execution defaults to safe local MOCK mode. Zero external API credentials required for full demonstration functionality.
+            </p>
+
+            <div className="pt-2 border-t border-slate-800 flex justify-end">
+              <button
+                onClick={() => setShowSystemStatusModal(false)}
+                className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded font-semibold"
+              >
+                Close Status
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

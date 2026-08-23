@@ -40,7 +40,7 @@ class ActionExecutor:
     def execute_action(
         self,
         action_id: int,
-        execution_mode: str = "RAZORPAY_TEST_MODE"
+        execution_mode: str = "MOCK"
     ) -> Dict[str, Any]:
         """
         Executes an approved agent action safely in MOCK or RAZORPAY_TEST_MODE.

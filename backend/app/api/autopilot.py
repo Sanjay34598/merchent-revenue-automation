@@ -22,7 +22,94 @@ class DemoRunRequest(BaseModel):
     scenario_id: int = Field(..., description="Scenario ID (1, 2, 3, or 4)")
 
 class ExecuteActionRequest(BaseModel):
-    execution_mode: str = Field(default="RAZORPAY_TEST_MODE", description="Execution mode: MOCK or RAZORPAY_TEST_MODE")
+    execution_mode: str = Field(default="MOCK", description="Execution mode: MOCK or RAZORPAY_TEST_MODE")
+
+class CustomSimulateRequest(BaseModel):
+    store_id: int = Field(default=1, description="Store ID")
+    product_id: int = Field(default=1, description="Product ID")
+    custom_order_quantity: Optional[int] = Field(default=150, description="Custom Order Quantity")
+    custom_discount_percent: Optional[float] = Field(default=0.0, description="Custom Discount Percentage")
+
+@router.post("/autopilot/simulate-custom")
+def simulate_custom(req: CustomSimulateRequest, db: Session = Depends(get_db)):
+    """
+    Simulates custom merchant what-if parameters against current status quo using existing simulation/forecasting engine.
+    """
+    engine = RevenueDecisionEngine(db)
+    # Build candidate comparison between Status Quo (DO_NOTHING) and Custom Proposed Strategy
+    # Fetch forecast
+    fc = engine.forecaster.predict_demand(req.store_id, req.product_id)
+    expected_demand = fc["expected_demand"]
+
+    product = db.query(Product).filter(Product.id == req.product_id).first()
+    price = product.selling_price if product else 35.0
+    cost = product.unit_cost if product else 20.0
+
+    inv = db.query(InventorySnapshot).filter(
+        InventorySnapshot.store_id == req.store_id,
+        InventorySnapshot.product_id == req.product_id
+    ).first()
+    current_stock = inv.closing_inventory if inv else 0
+
+    # Option 1: Status Quo
+    sq_sales = min(current_stock, expected_demand)
+    sq_rev = sq_sales * price
+    sq_profit = sq_rev - (current_stock * cost)
+    sq_stockout = max(0.0, round((expected_demand - current_stock) / expected_demand, 2)) if expected_demand > 0 else 0.0
+
+    status_quo = {
+        "action_name": "STATUS_QUO",
+        "label": "Current Status Quo (DO_NOTHING)",
+        "order_quantity": 0,
+        "discount_percent": 0.0,
+        "expected_sales": round(sq_sales, 1),
+        "expected_revenue": round(sq_rev, 2),
+        "expected_gross_profit": round(sq_profit, 2),
+        "stockout_probability": sq_stockout,
+        "waste_probability": 0.0,
+        "cash_locked": 0.0,
+        "action_risk_level_num": 0.05
+    }
+
+    # Option 2: Custom Proposed
+    c_qty = req.custom_order_quantity or 0
+    c_disc = req.custom_discount_percent or 0.0
+    eff_price = price * (1.0 - c_disc / 100.0)
+    eff_stock = current_stock + c_qty
+    c_sales = min(eff_stock, expected_demand * (1.0 + (c_disc / 100.0) * 1.4))
+    c_rev = c_sales * eff_price
+    c_profit = c_rev - (c_qty * cost)
+    c_stockout = max(0.0, round((expected_demand - eff_stock) / expected_demand, 2)) if expected_demand > 0 else 0.0
+    c_waste = max(0.0, round((eff_stock - expected_demand) / eff_stock, 2)) if eff_stock > 0 else 0.0
+    c_cash = c_qty * cost
+
+    custom = {
+        "action_name": "CUSTOM_PROPOSED",
+        "label": f"Custom Proposed Strategy (Order {c_qty}, Disc {c_disc:.0f}%)",
+        "order_quantity": c_qty,
+        "discount_percent": c_disc,
+        "expected_sales": round(c_sales, 1),
+        "expected_revenue": round(c_rev, 2),
+        "expected_gross_profit": round(c_profit, 2),
+        "stockout_probability": c_stockout,
+        "waste_probability": c_waste,
+        "cash_locked": c_cash,
+        "action_risk_level_num": 0.2 if c_qty <= 150 else 0.4
+    }
+
+    scored = engine.score_candidates([status_quo, custom])
+
+    return {
+        "store_id": req.store_id,
+        "product_id": req.product_id,
+        "product_name": product.name if product else "Product",
+        "expected_demand_forecast": expected_demand,
+        "status_quo_strategy": status_quo,
+        "custom_proposed_strategy": custom,
+        "scored_comparison": scored,
+        "net_profit_gain": round(custom["expected_gross_profit"] - status_quo["expected_gross_profit"], 2),
+        "recommendation": "Custom proposed strategy yields higher expected merchant score." if custom["overall_score"] >= status_quo["overall_score"] else "Status quo is optimal under proposed parameters."
+    }
 
 @router.post("/autopilot/analyze")
 def analyze_decision(req: AnalyzeRequest, db: Session = Depends(get_db)):
