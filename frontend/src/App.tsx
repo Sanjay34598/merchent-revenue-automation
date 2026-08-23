@@ -5,7 +5,7 @@ import {
   Zap, Sliders, Filter, X, ChevronDown, Server, Shield, Beaker,
   Layers, CheckSquare, Bell, MoreHorizontal, Store, ChevronRight,
   Sparkles, Target, Home, DollarSign, Lightbulb, TrendingDown,
-  ArrowUpRight, Compass, Info, Check, Eye, User, Calendar, Moon, Sun, Monitor, Search
+  ArrowUpRight, Compass, Info, Check, Eye, User, Calendar, Moon, Sun, Monitor, Search, ShoppingBag
 } from 'lucide-react';
 import {
   HealthStatus, PageView, AgentActionItem, UnifiedDecision,
