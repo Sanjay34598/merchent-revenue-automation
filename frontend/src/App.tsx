@@ -1,40 +1,61 @@
 import React, { useEffect, useState } from 'react';
 import { 
   Activity, ShieldCheck, Database, Layers, CheckCircle2, AlertCircle, 
-  TrendingUp, AlertTriangle, ArrowRight, ThumbsUp, ThumbsDown, MessageSquare, RefreshCw
+  TrendingUp, AlertTriangle, ArrowRight, ThumbsUp, ThumbsDown, MessageSquare, 
+  RefreshCw, Play, BarChart3, Clock, DollarSign, HelpCircle, FileText, Zap
 } from 'lucide-react';
-import { HealthStatus, PageView, OpportunitySummary, AgentActionItem, SimulationScenario } from './types';
+import { 
+  HealthStatus, PageView, OpportunitySummary, AgentActionItem, 
+  UnifiedDecision, RevenueOpportunity, OutcomeRecord, FailureRecord, Experiment
+} from './types';
 
 export default function App() {
   const [health, setHealth] = useState<HealthStatus | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<PageView>('dashboard');
+  const [activeTab, setActiveTab] = useState<PageView>('overview');
   const [selectedStore, setSelectedStore] = useState<number>(1);
 
-  const [summary, setSummary] = useState<OpportunitySummary | null>(null);
+  // Core Phase 5 State
+  const [decision, setDecision] = useState<UnifiedDecision | null>(null);
+  const [opportunities, setOpportunities] = useState<RevenueOpportunity[]>([]);
   const [actions, setActions] = useState<AgentActionItem[]>([]);
-  const [investigation, setInvestigation] = useState<any | null>(null);
-  const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [outcomes, setOutcomes] = useState<OutcomeRecord | null>(null);
+  const [failures, setFailures] = useState<FailureRecord[]>([]);
+  const [experiments, setExperiments] = useState<Experiment[]>([]);
+  const [activeExperimentResult, setActiveExperimentResult] = useState<any | null>(null);
 
-  // Chat state
-  const [chatMessage, setChatMessage] = useState<string>('');
-  const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'agent'; text: string }>>([
-    { role: 'agent', text: 'Hello! I am your AI Revenue Decision Agent. Ask me "Where am I silently losing money?" or select an option below.' }
-  ]);
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [activeDemoStory, setActiveDemoStory] = useState<string | null>(null);
 
-  // Load initial data
+  // Fetch initial data
   const fetchData = () => {
     setLoading(true);
     fetch('/health')
       .then((res) => res.json())
       .then((data) => setHealth(data))
-      .catch(() => setHealth({ status: 'error' }));
+      .catch(() => setHealth({ status: 'offline' }));
 
-    // Fetch opportunity summary
-    fetch(`/api/opportunities/summary?store_id=${selectedStore}`)
+    // Run unified decision analysis
+    fetch('/api/autopilot/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ store_id: selectedStore })
+    })
       .then((res) => res.json())
-      .then((data) => setSummary(data))
-      .catch((err) => console.error("Summary error", err));
+      .then((data) => {
+        setDecision(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Decision analysis error", err);
+        setLoading(false);
+      });
+
+    // Fetch opportunities
+    fetch(`/api/autopilot/opportunities?store_id=${selectedStore}`)
+      .then((res) => res.json())
+      .then((data) => setOpportunities(data))
+      .catch((err) => console.error("Opportunities error", err));
 
     // Fetch audit trail actions
     fetch(`/api/actions?store_id=${selectedStore}`)
@@ -42,21 +63,23 @@ export default function App() {
       .then((data) => setActions(data))
       .catch((err) => console.error("Actions error", err));
 
-    // Run agent investigation
-    fetch('/api/agent/investigate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ store_id: selectedStore }),
-    })
+    // Fetch outcomes & learning
+    fetch(`/api/autopilot/outcomes?store_id=${selectedStore}`)
       .then((res) => res.json())
-      .then((data) => {
-        setInvestigation(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Investigation error", err);
-        setLoading(false);
-      });
+      .then((data) => setOutcomes(data))
+      .catch((err) => console.error("Outcomes error", err));
+
+    // Fetch failure logs
+    fetch('/api/autopilot/failures')
+      .then((res) => res.json())
+      .then((data) => setFailures(data))
+      .catch((err) => console.error("Failures error", err));
+
+    // List experiments (side-effect free GET)
+    fetch(`/api/autopilot/experiments?store_id=${selectedStore}`)
+      .then((res) => res.json())
+      .then((data) => setExperiments(data))
+      .catch((err) => console.error("Experiments error", err));
   };
 
   useEffect(() => {
@@ -67,7 +90,7 @@ export default function App() {
     fetch(`/api/actions/${actionId}/approve`, { method: 'POST' })
       .then((res) => res.json())
       .then((res) => {
-        setActionMessage(`Action #${actionId} Approved successfully!`);
+        setFeedbackMessage(`Action #${actionId} approved by merchant. Queued for test execution.`);
         fetchData();
       });
   };
@@ -76,51 +99,88 @@ export default function App() {
     fetch(`/api/actions/${actionId}/reject`, { method: 'POST' })
       .then((res) => res.json())
       .then((res) => {
-        setActionMessage(`Action #${actionId} Rejected.`);
+        setFeedbackMessage(`Action #${actionId} rejected by merchant.`);
         fetchData();
       });
   };
 
-  const handleSendChat = (textToSend?: string) => {
-    const msg = textToSend || chatMessage;
-    if (!msg.trim()) return;
-
-    const newHistory = [...chatHistory, { role: 'user' as const, text: msg }];
-    setChatHistory(newHistory);
-    setChatMessage('');
-
-    fetch('/api/agent/chat', {
+  const handleExecute = (actionId: number) => {
+    fetch(`/api/autopilot/execute/${actionId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: msg, store_id: selectedStore })
+      body: JSON.stringify({ execution_mode: 'RAZORPAY_TEST_MODE' })
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          setFeedbackMessage(`Action #${actionId} executed safely in RAZORPAY_TEST_MODE. Outcome recorded.`);
+        } else {
+          setFeedbackMessage(`Execution error: ${res.detail || res.error}`);
+        }
+        fetchData();
+      })
+      .catch((err) => setFeedbackMessage("Execution call failed. Checked policy and duplicate prevention."));
+  };
+
+  const handleRunDemoScenario = (scenarioId: number) => {
+    fetch('/api/autopilot/demo/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scenario_id: scenarioId })
     })
       .then((res) => res.json())
       .then((data) => {
-        setChatHistory([...newHistory, { role: 'agent', text: data.message }]);
+        setActiveDemoStory(`Demo Scenario ${scenarioId}: ${data.scenario_name} — ${data.story}`);
+        if (data.why_this_decision) {
+          setDecision(data);
+          setActiveTab('decisions');
+        } else if (data.strategy_comparison) {
+          setActiveExperimentResult(data);
+          setActiveTab('experiments');
+        } else if (data.fallback_mode) {
+          setActiveTab('failures');
+        }
+        fetchData();
       });
   };
 
+  const handleRunExperiment = (expId: string) => {
+    fetch(`/api/autopilot/experiments/${expId}/run?store_id=${selectedStore}`, { method: 'POST' })
+      .then((res) => res.json())
+      .then((data) => {
+        setActiveExperimentResult(data);
+        setFeedbackMessage(`Experiment '${expId}' executed in test simulation mode.`);
+        setActiveTab('experiments');
+      });
+  };
+
+  const totalLoss = opportunities.reduce((acc, o) => acc + o.estimated_revenue_loss, 0);
+  const totalRecoverable = opportunities.reduce((acc, o) => acc + o.estimated_recoverable_revenue, 0);
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Top Navbar */}
-      <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+      {/* Top Professional Header */}
+      <header className="border-b border-slate-800 bg-slate-900 px-6 py-3.5 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">
-            RA
+          <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center font-bold text-white shadow-sm">
+            RP
           </div>
           <div>
-            <h1 className="font-semibold text-lg tracking-tight text-white">Merchant Revenue Autopilot</h1>
-            <p className="text-xs text-slate-400">Razorpay Buildathon — AI Growth & Agentic Commerce</p>
+            <h1 className="font-semibold text-base tracking-tight text-white flex items-center space-x-2">
+              <span>Razorpay Merchant Revenue Autopilot</span>
+              <span className="text-xs px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800 font-normal">Phase 5 Closed-Loop</span>
+            </h1>
+            <p className="text-xs text-slate-400">Aggregate Growth Intelligence & Policy-Gated Commerce</p>
           </div>
         </div>
 
-        {/* Controls & Badges */}
-        <div className="flex items-center space-x-4 text-xs">
+        {/* Header Controls & Status Badges */}
+        <div className="flex items-center space-x-3 text-xs">
           {/* Store Selector */}
           <select
             value={selectedStore}
             onChange={(e) => setSelectedStore(Number(e.target.value))}
-            className="bg-slate-800 border border-slate-700 text-slate-200 px-3 py-1.5 rounded-lg font-medium focus:outline-none focus:border-blue-500"
+            className="bg-slate-800 border border-slate-700 text-slate-200 px-3 py-1.5 rounded font-medium focus:outline-none focus:border-blue-500"
           >
             <option value={1}>Store 1: TechPark Central (IT Park)</option>
             <option value={2}>Store 2: Green Glen Residency (Residential)</option>
@@ -128,41 +188,44 @@ export default function App() {
           </select>
 
           {/* Backend Status */}
-          <div className="flex items-center space-x-2 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
+          <div className="flex items-center space-x-1.5 bg-slate-800/80 px-2.5 py-1 rounded border border-slate-700">
             <Database className="w-3.5 h-3.5 text-blue-400" />
-            <span className="text-slate-300">Backend API:</span>
+            <span className="text-slate-300">API:</span>
             {health?.status === 'ok' ? (
-              <span className="flex items-center text-emerald-400 font-medium">
-                <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> OK
+              <span className="text-emerald-400 font-medium flex items-center">
+                <CheckCircle2 className="w-3 h-3 mr-1" /> OK
               </span>
             ) : (
-              <span className="flex items-center text-rose-400 font-medium">
-                <AlertCircle className="w-3.5 h-3.5 mr-1" /> Offline
+              <span className="text-rose-400 font-medium flex items-center">
+                <AlertCircle className="w-3 h-3 mr-1" /> Offline
               </span>
             )}
           </div>
 
-          <div className="flex items-center space-x-1.5 bg-blue-950/50 text-blue-400 border border-blue-800/60 px-3 py-1.5 rounded-full font-medium">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Policy Guardrails Active</span>
+          <div className="flex items-center space-x-1 bg-slate-800/80 px-2.5 py-1 rounded border border-slate-700 text-slate-300 font-medium">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Mode: RAZORPAY_TEST_MODE</span>
           </div>
         </div>
       </header>
 
-      {/* Main App Container */}
+      {/* Main Container */}
       <div className="flex-1 flex">
         {/* Navigation Sidebar */}
-        <aside className="w-64 border-r border-slate-800 bg-slate-900/50 p-4 flex flex-col space-y-1">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 mb-2">
-            Navigation
+        <aside className="w-64 border-r border-slate-800 bg-slate-900/60 p-4 flex flex-col space-y-1">
+          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-3 mb-2">
+            Merchant Control Center
           </div>
           {[
-            { id: 'dashboard', label: 'Dashboard', icon: Layers },
-            { id: 'opportunities', label: 'Opportunities', icon: Activity },
-            { id: 'simulator', label: 'Decision Simulator', icon: TrendingUp },
-            { id: 'agent', label: 'Agent Assistant', icon: MessageSquare },
-            { id: 'actions', label: 'Audit Trail & Approvals', icon: CheckCircle2 },
-            { id: 'failures', label: 'Failure Recovery', icon: AlertTriangle },
+            { id: 'overview', label: '1. Overview', icon: Layers },
+            { id: 'leaks', label: '2. Revenue Leaks', icon: Activity },
+            { id: 'decisions', label: '3. AI Decisions', icon: TrendingUp },
+            { id: 'approvals', label: '4. Approval Center', icon: CheckCircle2 },
+            { id: 'timeline', label: '5. Action Timeline', icon: Clock },
+            { id: 'changed', label: '6. What Changed?', icon: HelpCircle },
+            { id: 'recovered', label: '7. Recovered Revenue', icon: DollarSign },
+            { id: 'failures', label: '8. Failure Center', icon: AlertTriangle },
+            { id: 'experiments', label: '9. Revenue Experiments', icon: Zap },
           ].map((item) => {
             const Icon = item.icon;
             const active = activeTab === item.id;
@@ -170,193 +233,301 @@ export default function App() {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id as PageView)}
-                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded text-xs font-medium transition-all ${
                   active
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
+                    ? 'bg-blue-600 text-white shadow-sm font-semibold'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                 }`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-3.5 h-3.5" />
                 <span>{item.label}</span>
               </button>
             );
           })}
+
+          <div className="pt-4 border-t border-slate-800 mt-4 space-y-2">
+            <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-3">
+              Deterministic Demo Scenarios
+            </div>
+            {[
+              { id: 1, label: '1. IT Park Holiday Milk' },
+              { id: 2, label: '2. Fresh Juice Expiry' },
+              { id: 3, label: '3. Demand Spike Velocity' },
+              { id: 4, label: '4. Forecast Anomaly Fallback' },
+            ].map((sc) => (
+              <button
+                key={sc.id}
+                onClick={() => handleRunDemoScenario(sc.id)}
+                className="w-full flex items-center justify-between px-3 py-1.5 rounded text-[11px] font-medium bg-slate-800/80 hover:bg-blue-950 hover:text-blue-300 text-slate-300 border border-slate-700 transition-all text-left"
+              >
+                <span className="truncate">{sc.label}</span>
+                <Play className="w-3 h-3 text-blue-400 shrink-0 ml-1" />
+              </button>
+            ))}
+          </div>
         </aside>
 
         {/* Content View Area */}
-        <main className="flex-1 p-8 overflow-y-auto">
-          <div className="max-w-6xl mx-auto space-y-6">
-            
-            {/* Action Feedback Message */}
-            {actionMessage && (
-              <div className="bg-emerald-950/60 border border-emerald-700/60 text-emerald-300 px-4 py-3 rounded-xl flex items-center justify-between text-sm animate-fade-in">
+        <main className="flex-1 p-6 overflow-y-auto">
+          <div className="max-w-6xl mx-auto space-y-5">
+
+            {/* Feedback Banner */}
+            {feedbackMessage && (
+              <div className="bg-slate-900 border border-emerald-700/80 text-emerald-300 px-4 py-2.5 rounded text-xs flex items-center justify-between shadow-sm">
                 <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>{actionMessage}</span>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>{feedbackMessage}</span>
                 </div>
-                <button onClick={() => setActionMessage(null)} className="text-emerald-400 hover:text-white">✕</button>
+                <button onClick={() => setFeedbackMessage(null)} className="text-slate-400 hover:text-white">✕</button>
               </div>
             )}
 
-            {/* PAGE 1: DASHBOARD VIEW */}
-            {activeTab === 'dashboard' && (
-              <div className="space-y-6">
-                {/* Metric Summary Cards */}
+            {/* Demo Story Banner */}
+            {activeDemoStory && (
+              <div className="bg-blue-950/60 border border-blue-800 text-blue-200 px-4 py-3 rounded text-xs space-y-1">
+                <div className="font-semibold text-blue-300 flex items-center justify-between">
+                  <span className="flex items-center space-x-1.5">
+                    <Play className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Active Scenario Run</span>
+                  </span>
+                  <button onClick={() => setActiveDemoStory(null)} className="text-slate-400 hover:text-white">✕</button>
+                </div>
+                <p className="text-slate-300 leading-relaxed">{activeDemoStory}</p>
+              </div>
+            )}
+
+            {/* 1. OVERVIEW VIEW */}
+            {activeTab === 'overview' && (
+              <div className="space-y-5">
+                {/* Metric Summary Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
-                    <div className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">
-                      Total Opportunity
+                  <div className="bg-slate-900 border border-slate-800 rounded p-4">
+                    <div className="text-slate-400 text-[11px] font-medium uppercase tracking-wider mb-1">
+                      Identified Revenue Loss
                     </div>
                     <div className="text-2xl font-bold text-white">
-                      INR {summary?.total_estimated_opportunity ? summary.total_estimated_opportunity.toLocaleString() : '0'}
+                      INR {totalLoss.toLocaleString()}
                     </div>
-                    <div className="text-xs text-emerald-400 mt-1 font-medium flex items-center">
-                      <TrendingUp className="w-3.5 h-3.5 mr-1" /> Avoidable Annual Leakage
-                    </div>
+                    <div className="text-[11px] text-amber-400 mt-1">Across {opportunities.length} leakage areas</div>
                   </div>
 
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
-                    <div className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">
-                      Confidence Adjusted
+                  <div className="bg-slate-900 border border-slate-800 rounded p-4">
+                    <div className="text-slate-400 text-[11px] font-medium uppercase tracking-wider mb-1">
+                      Estimated Recoverable
                     </div>
                     <div className="text-2xl font-bold text-emerald-400">
-                      INR {summary?.confidence_adjusted_opportunity ? summary.confidence_adjusted_opportunity.toLocaleString() : '0'}
+                      INR {totalRecoverable.toLocaleString()}
                     </div>
-                    <div className="text-xs text-slate-400 mt-1">Weighted by probability</div>
+                    <div className="text-[11px] text-slate-400 mt-1">Weighted by model confidence</div>
                   </div>
 
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
-                    <div className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">
-                      Detected Leaks
-                    </div>
-                    <div className="text-2xl font-bold text-white">
-                      {summary?.total_opportunities_count || 0} Issues
-                    </div>
-                    <div className="text-xs text-amber-400 mt-1 font-medium">Across 5 Categories</div>
-                  </div>
-
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
-                    <div className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-1">
-                      Pending Approval
+                  <div className="bg-slate-900 border border-slate-800 rounded p-4">
+                    <div className="text-slate-400 text-[11px] font-medium uppercase tracking-wider mb-1">
+                      Actual Profit Recovered
                     </div>
                     <div className="text-2xl font-bold text-blue-400">
+                      INR {outcomes?.total_profit_recovered ? outcomes.total_profit_recovered.toLocaleString() : '0'}
+                    </div>
+                    <div className="text-[11px] text-slate-400 mt-1">Measured from executed actions</div>
+                  </div>
+
+                  <div className="bg-slate-900 border border-slate-800 rounded p-4">
+                    <div className="text-slate-400 text-[11px] font-medium uppercase tracking-wider mb-1">
+                      Pending Approvals
+                    </div>
+                    <div className="text-2xl font-bold text-white">
                       {actions.filter(a => a.status === 'PENDING').length} Actions
                     </div>
-                    <div className="text-xs text-slate-400 mt-1">Awaiting Merchant Consent</div>
+                    <div className="text-[11px] text-slate-400 mt-1">Awaiting merchant sign-off</div>
                   </div>
                 </div>
 
-                {/* AI Agent Recommendation Card */}
-                {investigation && investigation.recommendation && (
-                  <div className="bg-slate-900 border border-blue-900/60 rounded-xl p-6 shadow-xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 rounded-full blur-2xl pointer-events-none" />
-                    <div className="flex items-start justify-between mb-4">
+                {/* Closed-Loop Overview Card */}
+                {decision && (
+                  <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                       <div>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-950 text-blue-300 border border-blue-800 mb-2">
-                          AI Agent Recommendation (Requires Merchant Approval)
+                        <span className="text-[10px] uppercase font-bold text-blue-400 bg-blue-950 border border-blue-800 px-2 py-0.5 rounded">
+                          Primary AI Decision Proposal
                         </span>
-                        <h3 className="text-xl font-bold text-white flex items-center space-x-2">
-                          <span>{investigation.recommendation}</span>
-                        </h3>
+                        <h2 className="text-lg font-bold text-white mt-1">{decision.recommended_action}</h2>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800">
-                          Confidence: {(investigation.confidence * 100).toFixed(0)}%
+                        <span className="px-2 py-1 bg-slate-800 text-slate-300 text-xs rounded font-medium border border-slate-700">
+                          Confidence: {(decision.confidence * 100).toFixed(0)}%
                         </span>
-                        <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
-                          Risk: {investigation.risk_level}
+                        <span className="px-2 py-1 bg-blue-950 text-blue-300 text-xs rounded font-medium border border-blue-800">
+                          Risk: {decision.risk_level}
                         </span>
                       </div>
                     </div>
 
-                    {/* Reasoning & Evidence */}
-                    <div className="bg-slate-950/60 rounded-lg p-4 border border-slate-800 space-y-3 mb-5">
-                      <div>
-                        <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">WHY THIS RECOMMENDATION</div>
-                        <p className="text-sm text-slate-200 leading-relaxed">{investigation.why_selected}</p>
-                      </div>
-                      {investigation.evidence && investigation.evidence.length > 0 && (
-                        <div>
-                          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">EVIDENCE & SIGNALS</div>
-                          <ul className="list-disc list-inside text-xs text-slate-300 space-y-1">
-                            {investigation.evidence.map((ev: string, idx: number) => (
-                              <li key={idx}>{ev}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed">{decision.why_this_decision.why_selected}</p>
 
-                    {/* Action Approval Bar */}
-                    <div className="flex items-center justify-between pt-2 border-t border-slate-800">
-                      <div className="text-xs text-slate-400">
-                        Status: <span className="font-semibold text-amber-400">{investigation.status}</span>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <button
-                          onClick={() => handleReject(investigation.action_id)}
-                          className="flex items-center space-x-1.5 px-4 py-2 rounded-lg text-sm font-medium text-slate-300 bg-slate-800 hover:bg-rose-950 hover:text-rose-300 hover:border-rose-800 border border-slate-700 transition-all"
-                        >
-                          <ThumbsDown className="w-4 h-4" />
-                          <span>Reject</span>
-                        </button>
-                        <button
-                          onClick={() => handleApprove(investigation.action_id)}
-                          className="flex items-center space-x-1.5 px-5 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/20 transition-all"
-                        >
-                          <ThumbsUp className="w-4 h-4" />
-                          <span>Approve Action</span>
-                        </button>
-                      </div>
+                    <div className="flex items-center space-x-3 pt-2">
+                      <button
+                        onClick={() => setActiveTab('decisions')}
+                        className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold flex items-center space-x-1.5"
+                      >
+                        <span>View Full Decision Breakdown</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('timeline')}
+                        className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs font-medium border border-slate-700"
+                      >
+                        View 10-Stage Audit Timeline
+                      </button>
                     </div>
                   </div>
                 )}
+              </div>
+            )}
 
-                {/* Simulation Comparison Table */}
-                {investigation?.simulation_comparison && (
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-md">
-                    <div className="flex items-center justify-between mb-4">
+            {/* 2. REVENUE LEAKS VIEW */}
+            {activeTab === 'leaks' && (
+              <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div>
+                    <h2 className="text-base font-bold text-white">Detected Revenue Opportunities & Leaks</h2>
+                    <p className="text-xs text-slate-400">Aggregated from store sales velocity, stockout signals, and expiry timelines</p>
+                  </div>
+                  <span className="text-xs text-slate-400 font-medium">Total: {opportunities.length} Items</span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs text-slate-300">
+                    <thead className="bg-slate-950 text-slate-400 font-semibold border-b border-slate-800 uppercase">
+                      <tr>
+                        <th className="p-3">ID</th>
+                        <th className="p-3">Type</th>
+                        <th className="p-3">Est. Revenue Loss</th>
+                        <th className="p-3">Recoverable</th>
+                        <th className="p-3">Confidence</th>
+                        <th className="p-3">Urgency</th>
+                        <th className="p-3">Recommended Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800">
+                      {opportunities.map((opp) => (
+                        <tr key={opp.opportunity_id} className="hover:bg-slate-800/50">
+                          <td className="p-3 font-mono font-medium text-slate-400">{opp.opportunity_id}</td>
+                          <td className="p-3">
+                            <span className="px-2 py-0.5 rounded font-semibold text-[10px] bg-slate-800 border border-slate-700 text-blue-300">
+                              {opp.opportunity_type}
+                            </span>
+                          </td>
+                          <td className="p-3 font-bold text-white">INR {opp.estimated_revenue_loss.toLocaleString()}</td>
+                          <td className="p-3 font-semibold text-emerald-400">INR {opp.estimated_recoverable_revenue.toLocaleString()}</td>
+                          <td className="p-3">{(opp.confidence * 100).toFixed(0)}%</td>
+                          <td className="p-3">
+                            <span className={`px-2 py-0.5 rounded font-bold text-[10px] ${
+                              opp.urgency === 'HIGH' ? 'bg-rose-950 text-rose-300 border border-rose-800' :
+                              opp.urgency === 'MEDIUM' ? 'bg-amber-950 text-amber-300 border border-amber-800' :
+                              'bg-slate-800 text-slate-300'
+                            }`}>
+                              {opp.urgency}
+                            </span>
+                          </td>
+                          <td className="p-3 text-slate-300">{opp.recommended_action}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* 3. AI DECISIONS VIEW */}
+            {activeTab === 'decisions' && decision && (
+              <div className="space-y-5">
+                {/* Decision Header */}
+                <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-950 text-blue-300 border border-blue-800 px-2.5 py-0.5 rounded">
+                        AI Recommended Action
+                      </span>
+                      <h2 className="text-xl font-bold text-white mt-1">{decision.recommended_action}</h2>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="px-3 py-1 bg-emerald-950 text-emerald-300 text-xs font-bold rounded border border-emerald-800">
+                        Score: {decision.winning_candidate.overall_score.toFixed(3)}
+                      </span>
+                      <span className="px-3 py-1 bg-slate-800 text-slate-300 text-xs font-semibold rounded border border-slate-700">
+                        Risk: {decision.risk_level}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Decision Confidence + Evidence Bar */}
+                  <div className="bg-slate-950 rounded p-4 border border-slate-800 space-y-2 text-xs">
+                    <div className="font-semibold text-slate-300 uppercase tracking-wider text-[10px]">
+                      Decision Confidence & Supporting Evidence
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 py-1">
                       <div>
-                        <h3 className="text-lg font-bold text-white">Monte Carlo Decision Simulation Comparison</h3>
-                        <p className="text-xs text-slate-400">Simulating candidate actions against probabilistic demand distributions</p>
+                        <div className="text-slate-400 text-[10px]">Expected Gross Profit</div>
+                        <div className="font-bold text-emerald-400">INR {decision.winning_candidate.expected_gross_profit.toLocaleString()}</div>
+                      </div>
+                      <div>
+                        <div className="text-slate-400 text-[10px]">Stockout Risk</div>
+                        <div className="font-semibold text-amber-400">{(decision.winning_candidate.stockout_probability * 100).toFixed(1)}%</div>
+                      </div>
+                      <div>
+                        <div className="text-slate-400 text-[10px]">Waste Risk</div>
+                        <div className="font-semibold text-slate-300">{(decision.winning_candidate.waste_probability * 100).toFixed(1)}%</div>
+                      </div>
+                      <div>
+                        <div className="text-slate-400 text-[10px]">Cash Locked</div>
+                        <div className="font-semibold text-slate-300">INR {decision.winning_candidate.cash_locked.toLocaleString()}</div>
                       </div>
                     </div>
+                    {decision.opportunity?.evidence && (
+                      <div className="pt-2 border-t border-slate-850">
+                        <span className="text-[10px] text-slate-400 font-semibold block mb-1">AGGREGATE SIGNALS & CO-MOVEMENT EVIDENCE:</span>
+                        <ul className="list-disc list-inside text-slate-300 space-y-0.5">
+                          {decision.opportunity.evidence.map((ev: string, idx: number) => (
+                            <li key={idx}>{ev}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Multi-Candidate Comparison Table */}
+                  <div className="space-y-2">
+                    <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Multi-Action Simulation Comparison</h3>
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs text-slate-300">
-                        <thead className="bg-slate-950 text-slate-400 uppercase font-semibold border-b border-slate-800">
+                        <thead className="bg-slate-950 text-slate-400 font-semibold border-b border-slate-800 uppercase">
                           <tr>
-                            <th className="px-4 py-3">Decision Option</th>
-                            <th className="px-4 py-3">Expected Sales</th>
-                            <th className="px-4 py-3">Stockout Risk %</th>
-                            <th className="px-4 py-3">Expected Gross Profit</th>
-                            <th className="px-4 py-3">Cash Exposure</th>
-                            <th className="px-4 py-3">Guardrail Status</th>
+                            <th className="p-2.5">Candidate Action</th>
+                            <th className="p-2.5">Expected Sales</th>
+                            <th className="p-2.5">Gross Profit</th>
+                            <th className="p-2.5">Stockout Risk</th>
+                            <th className="p-2.5">Waste Risk</th>
+                            <th className="p-2.5">Cash Locked</th>
+                            <th className="p-2.5">Norm. Score</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-800/60">
-                          {investigation.simulation_comparison.map((sc: SimulationScenario, idx: number) => {
-                            const isRecommended = sc.order_quantity === investigation.simulation_comparison.find((s: any) => s.expected_contribution === Math.max(...investigation.simulation_comparison.map((m: any) => m.expected_contribution)))?.order_quantity;
+                        <tbody className="divide-y divide-slate-800">
+                          {decision.scored_candidates.map((c, idx) => {
+                            const isWin = c.action_name === decision.winning_candidate.action_name;
+                            const isDoNothing = c.action_name in { DO_NOTHING: 1, NO_DISCOUNT: 1 };
                             return (
-                              <tr key={idx} className={isRecommended ? 'bg-blue-950/40 font-medium text-white' : 'hover:bg-slate-800/40'}>
-                                <td className="px-4 py-3 flex items-center space-x-2">
-                                  <span>{sc.order_quantity ? `Order ${sc.order_quantity} units` : `${sc.discount_percent}% Discount`}</span>
-                                  {isRecommended && (
-                                    <span className="px-2 py-0.5 rounded text-[10px] bg-blue-600 text-white font-semibold">Recommended</span>
-                                  )}
+                              <tr key={idx} className={isWin ? 'bg-blue-950/40 font-semibold text-white' : 'hover:bg-slate-800/40'}>
+                                <td className="p-2.5 flex items-center space-x-2">
+                                  <span>{c.label}</span>
+                                  {isWin && <span className="px-1.5 py-0.5 rounded text-[9px] bg-blue-600 text-white font-bold">SELECTED</span>}
+                                  {isDoNothing && <span className="px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-400 border border-slate-700">STATUS QUO</span>}
                                 </td>
-                                <td className="px-4 py-3">{sc.expected_sales} units</td>
-                                <td className="px-4 py-3 font-semibold text-amber-400">
-                                  {sc.stockout_probability ? `${(sc.stockout_probability * 100).toFixed(1)}%` : '0%'}
-                                </td>
-                                <td className="px-4 py-3 font-semibold text-emerald-400">INR {sc.expected_gross_profit?.toLocaleString()}</td>
-                                <td className="px-4 py-3">INR {sc.cash_locked?.toLocaleString() || 0}</td>
-                                <td className="px-4 py-3">
-                                  {sc.policy_validation?.allowed ? (
-                                    <span className="text-emerald-400 font-medium">✓ Passed</span>
-                                  ) : (
-                                    <span className="text-rose-400 font-medium">✕ Rejected</span>
-                                  )}
-                                </td>
+                                <td className="p-2.5">{c.expected_sales} units</td>
+                                <td className="p-2.5 font-bold text-emerald-400">INR {c.expected_gross_profit.toLocaleString()}</td>
+                                <td className="p-2.5 text-amber-400">{(c.stockout_probability * 100).toFixed(1)}%</td>
+                                <td className="p-2.5 font-mono text-slate-400">{(c.waste_probability * 100).toFixed(1)}%</td>
+                                <td className="p-2.5">INR {c.cash_locked.toLocaleString()}</td>
+                                <td className="p-2.5 font-bold text-blue-300">{c.overall_score.toFixed(3)}</td>
                               </tr>
                             );
                           })}
@@ -364,149 +535,372 @@ export default function App() {
                       </table>
                     </div>
                   </div>
-                )}
 
-              </div>
-            )}
-
-            {/* PAGE 2: OPPORTUNITIES VIEW */}
-            {activeTab === 'opportunities' && (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xl font-bold text-white">Profit Leakage Opportunities</h2>
-                    <p className="text-xs text-slate-400">Identified avoidable financial losses derived from aggregate merchant data</p>
+                  {/* Card: WHAT WOULD HAPPEN IF WE DID NOTHING? */}
+                  <div className="bg-slate-950 rounded p-4 border border-slate-800 space-y-2 text-xs">
+                    <div className="font-bold text-amber-400 uppercase tracking-wider text-[11px] flex items-center space-x-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                      <span>What would happen if we did nothing? (Status Quo Analysis)</span>
+                    </div>
+                    <p className="text-slate-300 leading-relaxed">{decision.why_this_decision.what_if_do_nothing}</p>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {summary?.opportunities.map((op, idx) => (
-                    <div key={idx} className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-950 text-amber-400 border border-amber-800">
-                          {op.category}
-                        </span>
-                        <span className="text-xs font-semibold text-slate-400">Priority: <span className="text-rose-400">{op.priority}</span></span>
+                  {/* Card: WHY THIS DECISION? (7 Questions) */}
+                  <div className="bg-slate-950 rounded p-4 border border-slate-800 space-y-3 text-xs">
+                    <div className="font-bold text-blue-300 uppercase tracking-wider text-[11px]">
+                      Structured "WHY THIS DECISION?" Rationale
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-300">
+                      <div>
+                        <span className="font-semibold text-slate-400 block text-[10px] uppercase">1. What happened?</span>
+                        <p>{decision.why_this_decision.what_happened}</p>
                       </div>
                       <div>
-                        <h4 className="text-base font-bold text-white">{op.product}</h4>
-                        <p className="text-xs text-slate-400">{op.store}</p>
+                        <span className="font-semibold text-slate-400 block text-[10px] uppercase">2. Why is this an opportunity?</span>
+                        <p>{decision.why_this_decision.why_opportunity}</p>
                       </div>
-                      <div className="text-xl font-bold text-emerald-400">
-                        INR {op.estimated_opportunity.toLocaleString()}
-                        <span className="text-xs font-normal text-slate-400 ml-2">(Confidence: {(op.confidence * 100).toFixed(0)}%)</span>
+                      <div>
+                        <span className="font-semibold text-slate-400 block text-[10px] uppercase">3. What does system expect?</span>
+                        <p>{decision.why_this_decision.what_expected}</p>
                       </div>
-                      {op.evidence && (
-                        <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1">
-                          <div className="font-semibold text-slate-400 uppercase text-[10px]">Evidence</div>
-                          {op.evidence.map((ev, eIdx) => (
-                            <p key={eIdx}>• {ev}</p>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* PAGE 3: SIMULATOR VIEW */}
-            {activeTab === 'simulator' && (
-              <div className="space-y-6">
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-                  <h2 className="text-xl font-bold text-white mb-2">Interactive Decision Simulator</h2>
-                  <p className="text-xs text-slate-400">Simulate order quantities and discount percentages before committing capital.</p>
-                </div>
-              </div>
-            )}
-
-            {/* PAGE 4: AGENT ASSISTANT VIEW */}
-            {activeTab === 'agent' && (
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col h-[600px]">
-                <h2 className="text-lg font-bold text-white mb-4 flex items-center space-x-2">
-                  <MessageSquare className="w-5 h-5 text-blue-400" />
-                  <span>AI Revenue Decision Assistant</span>
-                </h2>
-                
-                <div className="flex-1 overflow-y-auto space-y-4 pr-2 mb-4">
-                  {chatHistory.map((msg, idx) => (
-                    <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-xl p-4 rounded-xl text-sm whitespace-pre-line ${
-                        msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-200 border border-slate-700'
-                      }`}>
-                        {msg.text}
+                      <div>
+                        <span className="font-semibold text-slate-400 block text-[10px] uppercase">4. Alternatives simulated?</span>
+                        <p>{decision.why_this_decision.alternatives_simulated.join(', ')}</p>
+                      </div>
+                      <div>
+                        <span className="font-semibold text-slate-400 block text-[10px] uppercase">5. Why this action selected?</span>
+                        <p>{decision.why_this_decision.why_selected}</p>
+                      </div>
+                      <div>
+                        <span className="font-semibold text-slate-400 block text-[10px] uppercase">6. Risk / Policy constraint?</span>
+                        <p>{decision.why_this_decision.policy_applied}</p>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
 
-                <div className="pt-3 border-t border-slate-800 flex items-center space-x-3">
-                  <input
-                    type="text"
-                    value={chatMessage}
-                    onChange={(e) => setChatMessage(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSendChat()}
-                    placeholder="Ask 'Where am I silently losing money?'..."
-                    className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"
-                  />
-                  <button
-                    onClick={() => handleSendChat()}
-                    className="px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm transition-all"
-                  >
-                    Send
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* PAGE 5: AUDIT TRAIL VIEW */}
-            {activeTab === 'actions' && (
-              <div className="space-y-6">
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-                  <h2 className="text-xl font-bold text-white mb-1">Agent Action Audit Trail & Approvals</h2>
-                  <p className="text-xs text-slate-400">Complete record: Signal → Reasoning → Simulation → Recommendation → Approval → Execution</p>
-                </div>
-
-                <div className="space-y-4">
-                  {actions.map((act) => (
-                    <div key={act.id} className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <span className="font-bold text-white">Action #{act.id}</span>
-                          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-950 text-blue-400 border border-blue-800">
-                            {act.action_type}
+                  {/* Card: WHY NOT THE OTHER OPTIONS? */}
+                  <div className="bg-slate-950 rounded p-4 border border-slate-800 space-y-2 text-xs">
+                    <div className="font-bold text-slate-300 uppercase tracking-wider text-[11px]">
+                      WHY NOT THE OTHER OPTIONS? (Rejection Analysis)
+                    </div>
+                    <div className="space-y-2">
+                      {decision.why_not_the_other_options.map((rej, idx) => (
+                        <div key={idx} className="flex items-start space-x-2 border-b border-slate-850 pb-1.5">
+                          <span className="px-1.5 py-0.5 rounded text-[9px] bg-rose-950 text-rose-300 border border-rose-900 font-bold shrink-0 mt-0.5">
+                            REJECTED
                           </span>
+                          <div>
+                            <span className="font-semibold text-white">{rej.option}</span>
+                            <span className="text-slate-400 ml-1 text-[11px]">— {rej.reason}</span>
+                          </div>
                         </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                          act.status === 'APPROVED' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' :
-                          act.status === 'REJECTED' ? 'bg-rose-950 text-rose-400 border border-rose-800' :
-                          'bg-amber-950 text-amber-400 border border-amber-800'
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Approval Action Bar */}
+                  <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+                    <span className="text-xs text-slate-400">
+                      Merchant Sign-off: <span className="font-semibold text-amber-400">REQUIRED BEFORE TEST EXECUTION</span>
+                    </span>
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={() => handleReject(decision.action_id)}
+                        className="px-4 py-1.5 bg-slate-800 hover:bg-rose-950 hover:text-rose-300 text-slate-300 border border-slate-700 rounded text-xs font-semibold"
+                      >
+                        Reject Action
+                      </button>
+                      <button
+                        onClick={() => handleApprove(decision.action_id)}
+                        className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold shadow-sm"
+                      >
+                        Approve Action
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 4. APPROVAL CENTER VIEW */}
+            {activeTab === 'approvals' && (
+              <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div>
+                    <h2 className="text-base font-bold text-white">Merchant Action Approval Center</h2>
+                    <p className="text-xs text-slate-400">Policy-gated actions requiring explicit merchant authorization before test execution</p>
+                  </div>
+                  <span className="text-xs text-slate-400">Pending: {actions.filter(a => a.status === 'PENDING').length}</span>
+                </div>
+
+                <div className="space-y-3">
+                  {actions.map((act) => (
+                    <div key={act.id} className="bg-slate-950 border border-slate-800 rounded p-4 space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <span className="font-mono text-slate-400">Action #{act.id}</span>
+                          <span className="font-bold text-white">{act.recommendation}</span>
+                        </div>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          act.status === 'APPROVED' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' :
+                          act.status === 'EXECUTED' ? 'bg-blue-950 text-blue-300 border border-blue-800' :
+                          act.status === 'REJECTED' ? 'bg-rose-950 text-rose-300 border border-rose-800' :
+                          'bg-amber-950 text-amber-300 border border-amber-800'
                         }`}>
                           {act.status}
                         </span>
                       </div>
-                      <p className="text-sm font-semibold text-white">{act.recommendation}</p>
-                      <p className="text-xs text-slate-400">{act.agent_reasoning}</p>
 
-                      {act.status === 'PENDING' && (
-                        <div className="flex items-center space-x-3 pt-2">
-                          <button
-                            onClick={() => handleApprove(act.id)}
-                            className="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs"
-                          >
-                            Approve Action
-                          </button>
-                          <button
-                            onClick={() => handleReject(act.id)}
-                            className="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-950 text-slate-300 text-xs border border-slate-700"
-                          >
-                            Reject
-                          </button>
+                      <p className="text-slate-300">{act.agent_reasoning}</p>
+
+                      <div className="flex items-center justify-between pt-2 border-t border-slate-850">
+                        <span className="text-slate-400 text-[11px]">
+                          Risk: <strong className="text-slate-200">{act.risk_level}</strong> | Confidence: {(act.confidence * 100).toFixed(0)}%
+                        </span>
+                        <div className="flex items-center space-x-2">
+                          {act.status === 'PENDING' && (
+                            <>
+                              <button
+                                onClick={() => handleReject(act.id)}
+                                className="px-3 py-1 bg-slate-800 hover:bg-rose-950 text-slate-300 rounded text-xs"
+                              >
+                                Reject
+                              </button>
+                              <button
+                                onClick={() => handleApprove(act.id)}
+                                className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold"
+                              >
+                                Approve
+                              </button>
+                            </>
+                          )}
+                          {act.status === 'APPROVED' && (
+                            <button
+                              onClick={() => handleExecute(act.id)}
+                              className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold flex items-center space-x-1"
+                            >
+                              <Play className="w-3 h-3" />
+                              <span>Execute (Test Mode)</span>
+                            </button>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* 5. ACTION TIMELINE VIEW */}
+            {activeTab === 'timeline' && decision && (
+              <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-4">
+                <div className="border-b border-slate-800 pb-3">
+                  <h2 className="text-base font-bold text-white">Human-Readable 10-Stage Audit Trail Timeline</h2>
+                  <p className="text-xs text-slate-400">Complete closed-loop decision lifecycle representation</p>
+                </div>
+
+                <div className="space-y-3">
+                  {decision.audit_timeline.map((step, idx) => (
+                    <div key={idx} className="flex items-start space-x-3 bg-slate-950 p-3.5 rounded border border-slate-800 text-xs">
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0 ${
+                        step.status === 'COMPLETED' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' :
+                        step.status === 'REJECTED' ? 'bg-rose-950 text-rose-400 border border-rose-800' :
+                        'bg-slate-800 text-slate-400'
+                      }`}>
+                        {idx + 1}
+                      </div>
+                      <div className="flex-1 space-y-0.5">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-white tracking-wider">{step.stage}</span>
+                          <span className={`text-[10px] font-semibold ${
+                            step.status === 'COMPLETED' ? 'text-emerald-400' : 'text-slate-400'
+                          }`}>{step.status}</span>
+                        </div>
+                        <p className="text-slate-300">{step.details}</p>
+                        {step.timestamp && <span className="text-[10px] text-slate-500 font-mono block">{step.timestamp}</span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 6. WHAT CHANGED? VIEW */}
+            {activeTab === 'changed' && decision && (
+              <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-4">
+                <div className="border-b border-slate-800 pb-3">
+                  <h2 className="text-base font-bold text-white">What Changed? — Natural Language Business Explanation</h2>
+                  <p className="text-xs text-slate-400">Explaining underlying demand shifts from aggregate store features</p>
+                </div>
+
+                <div className="bg-slate-950 rounded p-4 border border-slate-800 space-y-3 text-xs">
+                  <div className="font-bold text-blue-300 text-sm">
+                    Store Location & Event Pattern Discovery
+                  </div>
+                  <p className="text-slate-200 leading-relaxed">
+                    {decision.why_this_decision.what_happened}
+                  </p>
+                  <p className="text-slate-300 leading-relaxed">
+                    "Historical aggregate store sales show that IT-park stores experience a 45-55% drop in demand on Sundays and public holidays. 
+                    Rather than placing the standard weekday order of 200 units, the system dynamically forecasted demand at ~110 units and selected 
+                    the optimal order quantity to eliminate waste while protecting gross profit."
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* 7. RECOVERED REVENUE VIEW */}
+            {activeTab === 'recovered' && outcomes && (
+              <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-4">
+                <div className="border-b border-slate-800 pb-3">
+                  <h2 className="text-base font-bold text-white">Empirical Outcome Measurement & Learning</h2>
+                  <p className="text-xs text-slate-400">Measuring actual recovered revenue and calibrating future decision confidence</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                  <div className="bg-slate-950 p-4 rounded border border-slate-800">
+                    <div className="text-slate-400">Total Profit Recovered</div>
+                    <div className="text-xl font-bold text-emerald-400">INR {outcomes.total_profit_recovered.toLocaleString()}</div>
+                  </div>
+                  <div className="bg-slate-950 p-4 rounded border border-slate-800">
+                    <div className="text-slate-400">Mean Prediction Error</div>
+                    <div className="text-xl font-bold text-blue-400">{outcomes.mean_prediction_error_pct.toFixed(1)}%</div>
+                  </div>
+                  <div className="bg-slate-950 p-4 rounded border border-slate-800">
+                    <div className="text-slate-400">Calibrated Base Confidence</div>
+                    <div className="text-xl font-bold text-white">{(outcomes.calibrated_base_confidence * 100).toFixed(0)}%</div>
+                  </div>
+                </div>
+
+                <div className="space-y-2 text-xs">
+                  <h3 className="font-bold text-slate-300 uppercase tracking-wider">Executed Action Outcome History</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs text-slate-300">
+                      <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase font-semibold">
+                        <tr>
+                          <th className="p-2.5">Action ID</th>
+                          <th className="p-2.5">Predicted Impact</th>
+                          <th className="p-2.5">Actual Impact</th>
+                          <th className="p-2.5">Variance</th>
+                          <th className="p-2.5">Prediction Error</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800">
+                        {outcomes.history.map((h, idx) => (
+                          <tr key={idx}>
+                            <td className="p-2.5 font-mono text-slate-400">#{h.action_id}</td>
+                            <td className="p-2.5">INR {h.predicted_impact.toLocaleString()}</td>
+                            <td className="p-2.5 font-bold text-emerald-400">INR {h.actual_impact.toLocaleString()}</td>
+                            <td className="p-2.5 text-slate-300">INR {h.variance.toLocaleString()}</td>
+                            <td className="p-2.5 text-blue-400">{h.prediction_error_pct}%</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 8. FAILURE CENTER VIEW */}
+            {activeTab === 'failures' && (
+              <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-4">
+                <div className="border-b border-slate-800 pb-3">
+                  <h2 className="text-base font-bold text-white">Failure Recovery & Safety Center</h2>
+                  <p className="text-xs text-slate-400">Controlled failure scenarios, duplicate action prevention, and fallback logs</p>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  {failures.length === 0 ? (
+                    <p className="text-slate-400 py-4">No unhandled failure events recorded. System operating safely.</p>
+                  ) : (
+                    failures.map((f) => (
+                      <div key={f.id} className="bg-slate-950 border border-slate-800 rounded p-4 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-rose-400">{f.failure_type}</span>
+                          <span className="text-[10px] text-slate-500 font-mono">{f.created_at}</span>
+                        </div>
+                        <p className="text-slate-300"><strong>Cause:</strong> {f.possible_cause}</p>
+                        <p className="text-emerald-400"><strong>Recovery Action:</strong> {f.recovery_action}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* 9. REVENUE EXPERIMENTS VIEW */}
+            {activeTab === 'experiments' && (
+              <div className="bg-slate-900 border border-slate-800 rounded p-5 space-y-5">
+                <div className="border-b border-slate-800 pb-3 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-base font-bold text-white">Controlled Revenue Strategy Experiments</h2>
+                    <p className="text-xs text-slate-400">Multi-arm strategy comparison in simulation test mode (Side-effect free list)</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  {experiments.map((exp) => (
+                    <div key={exp.experiment_id} className="bg-slate-950 border border-slate-800 rounded p-4 space-y-3">
+                      <div>
+                        <span className="text-[10px] font-mono text-slate-400">{exp.experiment_id}</span>
+                        <h3 className="font-bold text-white text-sm mt-0.5">{exp.name}</h3>
+                        <p className="text-slate-400 text-[11px] mt-1">{exp.description}</p>
+                      </div>
+
+                      <button
+                        onClick={() => handleRunExperiment(exp.experiment_id)}
+                        className="w-full py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded font-semibold text-xs flex items-center justify-center space-x-1.5 shadow-sm"
+                      >
+                        <Play className="w-3.5 h-3.5" />
+                        <span>Run Strategy Comparison Experiment</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Active Experiment Results */}
+                {activeExperimentResult && (
+                  <div className="bg-slate-950 border border-slate-800 rounded p-4 space-y-3 text-xs">
+                    <div className="flex items-center justify-between border-b border-slate-850 pb-2">
+                      <span className="font-bold text-white">{activeExperimentResult.name} — Result</span>
+                      <span className="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 rounded font-bold">
+                        Winner: {activeExperimentResult.winning_strategy}
+                      </span>
+                    </div>
+
+                    <p className="text-slate-300 leading-relaxed">{activeExperimentResult.selection_rationale}</p>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs text-slate-300">
+                        <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 uppercase font-semibold">
+                          <tr>
+                            <th className="p-2">Arm</th>
+                            <th className="p-2">Strategy</th>
+                            <th className="p-2">Predicted Sales</th>
+                            <th className="p-2">Expected Revenue</th>
+                            <th className="p-2">Gross Profit</th>
+                            <th className="p-2">Waste Cost</th>
+                            <th className="p-2">Score</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-800">
+                          {activeExperimentResult.strategy_comparison?.map((sc: any, idx: number) => (
+                            <tr key={idx} className={sc.arm === activeExperimentResult.winning_strategy ? 'bg-blue-950/40 font-semibold text-white' : ''}>
+                              <td className="p-2">{sc.arm}</td>
+                              <td className="p-2">{sc.strategy_name || sc.label}</td>
+                              <td className="p-2">{sc.predicted_sales || sc.expected_sales} units</td>
+                              <td className="p-2">INR {(sc.predicted_revenue || sc.expected_revenue).toLocaleString()}</td>
+                              <td className="p-2 font-bold text-emerald-400">INR {sc.expected_gross_profit.toLocaleString()}</td>
+                              <td className="p-2 text-rose-400">INR {(sc.expected_waste_cost || 0).toLocaleString()}</td>
+                              <td className="p-2 font-bold text-blue-300">{(sc.overall_score || 0).toFixed(3)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
