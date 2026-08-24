@@ -74,7 +74,7 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
         </button>
       </div>
 
-      {/* REVENUE AT RISK SUMMARY PANEL */}
+      {/* REVENUE AT RISK SUMMARY PANEL (Owner of Category Breakdown & Revenue Link) */}
       <div style={{
         background: '#101522', color: '#F8FAFC', borderRadius: 18, padding: 20,
         border: '1px solid #20283A', boxShadow: 'var(--shadow-md)'
@@ -83,15 +83,12 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
           REVENUE AT RISK
         </div>
 
-        <div style={{ fontSize: 32, fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.5px' }}>
-          ₹2,138
-        </div>
-        <div style={{ fontSize: 12, color: '#98A2B3', marginTop: 2, marginBottom: 16 }}>
-          36 opportunities across store catalog
+        <div style={{ fontSize: 14, fontWeight: 600, color: '#E2E8F0', lineHeight: 1.4, marginBottom: 14 }}>
+          36 active risk opportunities identified across store catalog.
         </div>
 
         <div style={{ borderTop: '1px solid #20283A', paddingTop: 12, fontSize: 12 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#E2E8F0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#98A2B3' }}>
             <span>Most exposed category</span>
             <strong style={{ color: '#FFFFFF' }}>Dairy · ₹1,402</strong>
           </div>
