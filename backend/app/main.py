@@ -17,6 +17,7 @@ from app.api.agent import router as agent_router
 from app.api.actions import router as actions_router
 from app.api.autopilot import router as autopilot_router
 from app.api.transactions import router as transactions_router
+from app.api.analytics import router as analytics_router
 from app.schemas.health import HealthResponse
 
 # Create database tables automatically
@@ -50,6 +51,7 @@ app.include_router(agent_router, prefix="/api", tags=["Agent"])
 app.include_router(actions_router, prefix="/api", tags=["Actions"])
 app.include_router(autopilot_router, prefix="/api", tags=["Autopilot"])
 app.include_router(transactions_router, prefix="/api", tags=["Transactions"])
+app.include_router(analytics_router, prefix="/api", tags=["Analytics"])
 
 if __name__ == "__main__":
     import uvicorn
