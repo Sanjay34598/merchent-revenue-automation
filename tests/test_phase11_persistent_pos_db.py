@@ -1,9 +1,9 @@
 import os
 import pytest
 from fastapi.testclient import TestClient
-from backend.app.main import app
-from backend.app.services.pos_dataset import pos_engine
-from backend.app.core.pos_repository import pos_db, DB_FILE_PATH
+from app.main import app
+from app.services.pos_dataset import pos_engine
+from app.core.pos_repository import pos_db, DB_FILE_PATH
 
 client = TestClient(app)
 
