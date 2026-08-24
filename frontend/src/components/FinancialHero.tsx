@@ -18,46 +18,46 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
   const fmt = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 
   return (
-    <div style={{ padding: '8px 0 12px' }}>
+    <div style={{ padding: '12px 0 16px' }}>
       <div className="statement-greeting">Good afternoon, {merchantName}</div>
       <h1 className="statement-main">
         RevenuePilot protected <span style={{ color: 'var(--emerald-green)' }}>{fmt(protectedRevenue)}</span> in revenue this month.
       </h1>
-      <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-sub)', marginTop: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span>{fmt(exposedRevenue)} is currently exposed across {activeOpportunitiesCount} opportunities.</span>
+      <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-sub)', marginTop: 8, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
         <span className="badge-pill" style={{ background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: '1px solid var(--emerald-green-border)' }}>
           ↑ 14.2% vs previous period
         </span>
+        <span>{fmt(exposedRevenue)} exposed · {activeOpportunitiesCount} active opportunities · {inventoryHealthPct}% inventory health</span>
       </div>
 
-      {/* 3 Compact Typography-Driven Metrics (NOT giant cards) */}
+      {/* 3 Compact Typography-Driven Summary Metrics (NOT giant cards) */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 40, marginTop: 24, padding: '16px 0 8px',
+        display: 'flex', alignItems: 'center', gap: 48, marginTop: 28, padding: '20px 0 12px',
         borderTop: '1px solid var(--border-color)', flexWrap: 'wrap'
       }}>
         <div>
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             REVENUE PROTECTED
           </div>
-          <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--emerald-green)', marginTop: 2 }}>
+          <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--emerald-green)', marginTop: 4, letterSpacing: '-0.5px' }}>
             {fmt(protectedRevenue)}
           </div>
         </div>
 
-        <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: 40 }}>
+        <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: 48 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             REVENUE EXPOSED
           </div>
-          <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--risk-red)', marginTop: 2 }}>
+          <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--risk-red)', marginTop: 4, letterSpacing: '-0.5px' }}>
             {fmt(exposedRevenue)}
           </div>
         </div>
 
-        <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: 40 }}>
+        <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: 48 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             INVENTORY HEALTH
           </div>
-          <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-main)', marginTop: 2 }}>
+          <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-main)', marginTop: 4, letterSpacing: '-0.5px' }}>
             {inventoryHealthPct}%
           </div>
         </div>

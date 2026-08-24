@@ -15,7 +15,7 @@ export const Simulator: React.FC<SimulatorProps> = ({
 
   const fmt = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 
-  // Deterministic financial elasticity simulation calculation
+  // Deterministic elasticity model calculations
   const baseRevenue = 2840;
   const proposedRevenue = Math.round(2840 + 354 * (discount / 15) + (orderQty - 150) * 1.8);
   const revenueDelta = proposedRevenue - baseRevenue;
@@ -35,12 +35,12 @@ export const Simulator: React.FC<SimulatorProps> = ({
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 28 }}>
         
         {/* Left: Input Sliders */}
         <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12, padding: 20 }}>
           <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 16px', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Sliders size={16} color="var(--primary-blue)" /> Adjust Parameters
+            <Sliders size={16} color="var(--primary-blue)" /> Parameters
           </h3>
 
           <div style={{ marginBottom: 24 }}>
@@ -84,18 +84,18 @@ export const Simulator: React.FC<SimulatorProps> = ({
           </button>
         </div>
 
-        {/* Right: Simulation Matrix */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {/* Right: Typography-Driven Outcome View */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           
-          {/* Prominent Expected Impact Highlight Banner */}
+          {/* Prominent Expected Impact Highlight */}
           <div style={{ background: 'var(--emerald-green-bg)', border: '1px solid var(--emerald-green-border)', borderRadius: 12, padding: 24 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--emerald-green)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              EXPECTED REVENUE IMPACT
+              EXPECTED RECOVERY GAIN
             </div>
-            <div style={{ fontSize: 36, fontWeight: 900, color: 'var(--emerald-green)', marginTop: 4 }}>
-              +{fmt(revenueDelta)} expected recovery
+            <div style={{ fontSize: 38, fontWeight: 900, color: 'var(--emerald-green)', marginTop: 4, letterSpacing: '-0.5px' }}>
+              +{fmt(revenueDelta)}
             </div>
-            <div style={{ display: 'flex', gap: 24, fontSize: 13, color: 'var(--emerald-green)', marginTop: 8, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 24, fontSize: 13, color: 'var(--emerald-green)', marginTop: 10, flexWrap: 'wrap' }}>
               <span>Sell-through: <strong>+{sellThroughDelta}%</strong></span>
               <span>Waste risk: <strong>-{wasteRiskDelta}%</strong></span>
               <span>Gross Margin: <strong>{marginPct}%</strong></span>
@@ -103,7 +103,7 @@ export const Simulator: React.FC<SimulatorProps> = ({
             </div>
           </div>
 
-          {/* Current Strategy vs Proposed Strategy Table */}
+          {/* Strategy Comparison Table */}
           <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12, padding: 20 }}>
             <h4 style={{ fontSize: 14, fontWeight: 700, margin: '0 0 14px', color: 'var(--text-main)' }}>
               CURRENT VS PROPOSED STRATEGY COMPARISON

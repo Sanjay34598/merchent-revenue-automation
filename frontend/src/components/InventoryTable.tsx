@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, ArrowUpDown } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import { ProductItem } from '../data/merchantInventory';
 import { Sparkline } from './Sparkline';
 
@@ -22,7 +22,11 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
   const [selectedSupplier, setSelectedSupplier] = useState<string>('ALL');
   const [sortBy, setSortBy] = useState<'risk' | 'stock' | 'velocity' | 'value'>('risk');
 
-  const fmt = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
+  const fmt = (n: number) => {
+    if (n >= 100000) return `₹${(n / 100000).toFixed(1)}L`;
+    if (n >= 1000) return `₹${(n / 1000).toFixed(1)}K`;
+    return `₹${Math.round(n).toLocaleString('en-IN')}`;
+  };
 
   const suppliers = useMemo(() => {
     const set = new Set<string>();
@@ -44,7 +48,6 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
       return matchesSearch && matchesCategory && matchesRisk && matchesSupplier;
     });
 
-    // Sorting
     result.sort((a, b) => {
       if (sortBy === 'risk') return b.revenueAtRisk - a.revenueAtRisk;
       if (sortBy === 'stock') return b.currentStock - a.currentStock;
@@ -58,9 +61,9 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
 
   const riskBadgeStyle = (status: ProductItem['riskStatus']) => {
     switch (status) {
-      case 'EXPIRY':     return { label: 'Expiry Risk',   bg: 'var(--risk-red-bg)', color: 'var(--risk-red)', border: 'var(--risk-red-border)' };
-      case 'STOCKOUT':   return { label: 'Stockout Risk', bg: '#fff7ed', color: '#c2410c', border: '#fed7aa' };
-      case 'MARGIN_LEAK':return { label: 'Margin Leak',   bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' };
+      case 'EXPIRY':     return { label: 'Expiry risk',   bg: 'var(--risk-red-bg)', color: 'var(--risk-red)', border: 'var(--risk-red-border)' };
+      case 'STOCKOUT':   return { label: 'Stockout risk', bg: '#fff7ed', color: '#c2410c', border: '#fed7aa' };
+      case 'MARGIN_LEAK':return { label: 'Margin leak',   bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' };
       case 'OVERSTOCK':  return { label: 'Overstock',     bg: '#f5f3ff', color: '#6d28d9', border: '#ddd6fe' };
       default:           return { label: 'Healthy',       bg: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: 'var(--emerald-green-border)' };
     }
@@ -69,12 +72,12 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       
-      {/* Header Bar */}
+      {/* Operating System Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <h1 className="section-head" style={{ fontSize: 26 }}>Merchant Inventory Operating System</h1>
+          <h1 className="section-head" style={{ fontSize: 26 }}>Inventory</h1>
           <div className="section-sub">
-            {catalog.length} items catalog · {fmt(totalValue)} total stock value · {itemsAtRiskCount} risks active
+            {catalog.length} products · {fmt(totalValue)} catalog value · {itemsAtRiskCount} risks · 94% inventory health
           </div>
         </div>
         <div style={{ display: 'flex', gap: 12, fontSize: 13 }}>
@@ -89,7 +92,7 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
         </div>
       </div>
 
-      {/* Filter & Controls Toolbar */}
+      {/* Search & Filter Toolbar */}
       <div style={{
         display: 'flex', gap: 10, alignItems: 'center', background: 'var(--bg-surface)',
         padding: 12, borderRadius: 10, border: '1px solid var(--border-color)', flexWrap: 'wrap'
@@ -99,7 +102,7 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
           <Search size={15} color="var(--text-muted)" style={{ position: 'absolute', left: 12, top: 10 }} />
           <input
             type="text"
-            placeholder="Search products, SKU or brand..."
+            placeholder="Search product, SKU or brand..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
@@ -119,7 +122,7 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
             background: 'var(--bg-page)', color: 'var(--text-main)', fontSize: 13, outline: 'none',
           }}
         >
-          <option value="ALL">All Categories (10)</option>
+          <option value="ALL">All Categories</option>
           {['Dairy', 'Beverages', 'Bakery', 'Staples', 'Snacks', 'Personal Care', 'Household', 'Frozen Foods', 'Fruits & Vegetables', 'Packaged Foods'].map(c => (
             <option key={c} value={c}>{c}</option>
           ))}
@@ -134,7 +137,7 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
             background: 'var(--bg-page)', color: 'var(--text-main)', fontSize: 13, outline: 'none',
           }}
         >
-          <option value="ALL">All Risk Filter</option>
+          <option value="ALL">All Risks</option>
           <option value="EXPIRY">Expiry Risk</option>
           <option value="STOCKOUT">Stockout Risk</option>
           <option value="MARGIN_LEAK">Margin Leak</option>
@@ -167,14 +170,14 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
             background: 'var(--bg-page)', color: 'var(--text-main)', fontSize: 13, outline: 'none',
           }}
         >
-          <option value="risk">Sort: Revenue at Risk</option>
+          <option value="risk">Sort: Risk Priority</option>
           <option value="stock">Sort: Stock Level</option>
-          <option value="velocity">Sort: Daily Velocity</option>
+          <option value="velocity">Sort: Velocity</option>
           <option value="value">Sort: Stock Value</option>
         </select>
       </div>
 
-      {/* Catalog Table */}
+      {/* Catalog Operating System Table */}
       <div style={{ overflowX: 'auto' }}>
         <table className="inventory-table">
           <thead>
@@ -185,7 +188,6 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
               <th>PRICE</th>
               <th>STOCK</th>
               <th>VELOCITY</th>
-              <th>7-DAY TREND</th>
               <th>MARGIN</th>
               <th>EXPIRY</th>
               <th>RISK</th>
@@ -195,7 +197,7 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
           <tbody>
             {filteredCatalog.length === 0 ? (
               <tr>
-                <td colSpan={11} style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>
+                <td colSpan={10} style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>
                   No products matched your search or filters.
                 </td>
               </tr>
@@ -221,17 +223,14 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
                     <td>
                       <strong>{item.currentStock}</strong> units
                     </td>
-                    <td>{item.dailyVelocity}/day</td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span>{item.dailyVelocity}/day</span>
                         <Sparkline data={item.demandSparkline} isNegative={item.trend3d < 0} />
-                        <span style={{ fontSize: 11, color: item.trend3d < 0 ? 'var(--risk-red)' : 'var(--emerald-green)', fontWeight: 600 }}>
-                          {item.trend3d > 0 ? `+${item.trend3d}%` : `${item.trend3d}%`}
-                        </span>
                       </div>
                     </td>
                     <td style={{ color: 'var(--emerald-green)', fontWeight: 600 }}>
-                      {Math.round(item.marginPct * 100)}%
+                      {(item.marginPct * 100).toFixed(1)}%
                     </td>
                     <td>
                       {item.expiryDays !== null ? (
@@ -249,7 +248,7 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
                     </td>
                     <td>
                       <button className="btn-copilot btn-copilot-ghost" style={{ padding: '4px 8px', fontSize: 12 }}>
-                        Inspect →
+                        View intelligence →
                       </button>
                     </td>
                   </tr>

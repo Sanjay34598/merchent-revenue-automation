@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Zap, Home, DollarSign, ShoppingBag, Layers, Sliders,
-  ChevronDown, Store, Sun, Moon, Monitor, Bell, User
+  ChevronDown, Store, Sun, Moon, Monitor, Bell
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -47,37 +46,28 @@ export const Header: React.FC<HeaderProps> = ({
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
-        {/* Left: Brand Identity */}
+        {/* Left: Text-First Brand Identity (Zero Icons) */}
         <div
-          style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
+          style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', userSelect: 'none' }}
           onClick={() => setActiveTab('home')}
         >
-          <div style={{
-            width: 34, height: 34, borderRadius: 8,
-            background: 'var(--primary-blue)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Zap size={18} color="#ffffff" />
+          <div style={{ fontWeight: 800, fontSize: 17, color: 'var(--text-main)', letterSpacing: '-0.4px', lineHeight: 1.1 }}>
+            RevenuePilot
           </div>
-          <div>
-            <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--text-main)', letterSpacing: '-0.3px', lineHeight: 1.1 }}>
-              RevenuePilot
-            </div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 1 }}>
-              AI revenue copilot
-            </div>
+          <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', letterSpacing: '0.01em', marginTop: 1 }}>
+            AI revenue copilot
           </div>
         </div>
 
-        {/* Center: Main Text Navigation with Subtle Active Indicators */}
+        {/* Center: Text Navigation with Subtle Active Indicators */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           {[
-            { id: 'home' as const, label: 'Overview', icon: Home },
-            { id: 'leaks' as const, label: 'Revenue', icon: DollarSign, badge: itemsAtRiskCount },
-            { id: 'inventory' as const, label: 'Inventory', icon: ShoppingBag, badge: totalProductsCount },
-            { id: 'decisions' as const, label: 'Decisions', icon: Layers },
-            { id: 'whatif' as const, label: 'Simulator', icon: Sliders },
-          ].map(({ id, label, icon: Icon, badge }) => {
+            { id: 'home' as const, label: 'Overview' },
+            { id: 'leaks' as const, label: 'Revenue', badge: itemsAtRiskCount },
+            { id: 'inventory' as const, label: 'Inventory', badge: totalProductsCount },
+            { id: 'decisions' as const, label: 'Decisions' },
+            { id: 'whatif' as const, label: 'Simulator' },
+          ].map(({ id, label, badge }) => {
             const active = activeTab === id;
             return (
               <button
@@ -85,7 +75,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => setActiveTab(id)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '7px 13px', borderRadius: 8, border: 'none',
+                  padding: '6px 14px', borderRadius: 8, border: 'none',
                   fontSize: 13, fontWeight: active ? 700 : 500,
                   background: active ? 'var(--primary-blue-bg)' : 'transparent',
                   color: active ? 'var(--primary-blue)' : 'var(--text-sub)',
@@ -93,13 +83,13 @@ export const Header: React.FC<HeaderProps> = ({
                   cursor: 'pointer',
                 }}
               >
-                <Icon size={14} color={active ? 'var(--primary-blue)' : 'var(--text-muted)'} />
                 <span>{label}</span>
                 {badge !== undefined && (
                   <span className="badge-pill" style={{
                     background: id === 'inventory' ? 'var(--bg-subtle)' : '#fef3c7',
                     color: id === 'inventory' ? 'var(--text-main)' : '#92400e',
                     fontSize: 10,
+                    padding: '1px 6px'
                   }}>
                     {badge}
                   </span>
@@ -113,7 +103,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => setShowMoreMenu(!showMoreMenu)}
               style={{
-                display: 'flex', alignItems: 'center', gap: 4, padding: '7px 12px',
+                display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px',
                 borderRadius: 8, border: 'none', fontSize: 13, fontWeight: activeTab === 'more' ? 700 : 500,
                 background: activeTab === 'more' ? 'var(--primary-blue-bg)' : 'transparent',
                 color: activeTab === 'more' ? 'var(--primary-blue)' : 'var(--text-sub)',
@@ -212,7 +202,7 @@ export const Header: React.FC<HeaderProps> = ({
               }}>
                 <div style={{ fontWeight: 700, marginBottom: 8, color: 'var(--text-main)' }}>Recent Signals</div>
                 <div style={{ color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                  • Fresh Orange Juice 500ml flagged for expiry risk (2 days left).<br />
+                  • Fresh Juice 500ml flagged for expiry risk (2 days left).<br />
                   • Amul Taaza Milk stockout prevented automatically.<br />
                   • Weekly recovery report generated.
                 </div>

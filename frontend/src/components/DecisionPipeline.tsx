@@ -1,5 +1,5 @@
-import React from 'react';
-import { ChevronRight, CheckCircle2, Sliders, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { ChevronRight, CheckCircle2, Sliders } from 'lucide-react';
 
 interface DecisionPipelineProps {
   onOpenSimulator: () => void;
@@ -10,15 +10,17 @@ export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({
   onOpenSimulator,
   onApproveAction,
 }) => {
+  const [selectedStageIdx, setSelectedStageIdx] = useState<number>(5); // Default to RECOMMEND stage
+
   const pipelineSteps = [
-    { label: 'OBSERVE', sub: 'Catalog Stream' },
-    { label: 'DETECT', sub: 'Anomaly Risk' },
-    { label: 'FORECAST', sub: 'Elasticity Model' },
-    { label: 'SIMULATE', sub: 'Monte Carlo' },
-    { label: 'POLICY CHECK', sub: 'Guardrails' },
-    { label: 'RECOMMEND', sub: 'Rank Impact' },
-    { label: 'EXECUTE', sub: 'Scheduled' },
-    { label: 'LEARN', sub: 'Feedback Loop' },
+    { label: 'OBSERVE', sub: 'Catalog Stream', info: 'Real-time monitoring of POS transactions, inventory velocity, and day-of-week demand patterns.' },
+    { label: 'DETECT', sub: 'Anomaly Risk', info: 'Identified 21% demand fall and 2-day expiry risk on 18 units of Fresh Juice 500ml (GB-FRV-042).' },
+    { label: 'FORECAST', sub: 'Elasticity Model', info: 'Price elasticity model estimates volume response to 5%, 10%, 15%, and 20% discount tiers.' },
+    { label: 'SIMULATE', sub: 'Monte Carlo', info: 'Ran 1,000 scenario simulations comparing sell-through, gross margin, and waste probability.' },
+    { label: 'POLICY', sub: 'Guardrails Check', info: 'Validated candidate strategies against merchant policies: max 25% discount, min 18% margin.' },
+    { label: 'RECOMMEND', sub: 'Rank Impact', info: 'Selected 15% clearance discount as optimal strategy, maximizing net recovery at ₹354.' },
+    { label: 'EXECUTE', sub: 'POS Integration', info: 'Scheduled approved price update to merchant POS catalog for immediate activation.' },
+    { label: 'LEARN', sub: 'Feedback Loop', info: 'Measures post-execution sales variance to calibrate elasticity coefficients for future predictions.' },
   ];
 
   return (
@@ -37,27 +39,30 @@ export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({
         </div>
       </div>
 
-      {/* 8-Stage Interactive Decision Pipeline Visualizer */}
+      {/* Interactive 8-Stage Decision Pipeline Visualizer */}
       <div style={{
         background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
         borderRadius: 12, padding: 20, overflowX: 'auto'
       }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 14, letterSpacing: '0.05em' }}>
-          DECISION PIPELINE EXECUTION PIPELINE
+          DECISION PIPELINE EXECUTION (CLICK ANY STAGE TO INSPECT)
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 780, justifyContent: 'space-between' }}>
           {pipelineSteps.map((step, idx, arr) => {
-            const isCurrentActive = idx === 5; // RECOMMEND stage
+            const isSelected = selectedStageIdx === idx;
             return (
               <React.Fragment key={step.label}>
-                <div style={{
-                  background: isCurrentActive ? 'var(--primary-blue-bg)' : 'var(--bg-subtle)',
-                  border: `1px solid ${isCurrentActive ? 'var(--primary-blue-border)' : 'var(--border-color)'}`,
-                  borderRadius: 8, padding: '10px 12px', textAlign: 'center', flex: 1,
-                  transition: 'transform 0.18s ease',
-                  boxShadow: isCurrentActive ? 'var(--shadow-sm)' : 'none'
-                }}>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: isCurrentActive ? 'var(--primary-blue)' : 'var(--text-main)' }}>
+                <div
+                  onClick={() => setSelectedStageIdx(idx)}
+                  style={{
+                    background: isSelected ? 'var(--primary-blue-bg)' : 'var(--bg-subtle)',
+                    border: `1.5px solid ${isSelected ? 'var(--primary-blue)' : 'var(--border-color)'}`,
+                    borderRadius: 8, padding: '10px 12px', textAlign: 'center', flex: 1,
+                    cursor: 'pointer', transition: 'all 0.18s ease',
+                    boxShadow: isSelected ? 'var(--shadow-sm)' : 'none'
+                  }}
+                >
+                  <div style={{ fontSize: 11, fontWeight: 800, color: isSelected ? 'var(--primary-blue)' : 'var(--text-main)' }}>
                     {step.label}
                   </div>
                   <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>{step.sub}</div>
@@ -66,6 +71,11 @@ export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({
               </React.Fragment>
             );
           })}
+        </div>
+
+        {/* Selected Stage Detail Panel */}
+        <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border-color)', fontSize: 13, color: 'var(--text-sub)' }}>
+          <strong style={{ color: 'var(--primary-blue)' }}>STAGE {selectedStageIdx + 1}: {pipelineSteps[selectedStageIdx].label}</strong> — {pipelineSteps[selectedStageIdx].info}
         </div>
       </div>
 
@@ -81,11 +91,14 @@ export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({
             </h2>
           </div>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <span className="badge-pill" style={{ background: 'var(--risk-red-bg)', color: 'var(--risk-red)', border: '1px solid var(--risk-red-border)', fontSize: 12, padding: '4px 10px' }}>
+              Revenue exposed: ₹490
+            </span>
             <span className="badge-pill" style={{ background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: '1px solid var(--emerald-green-border)', fontSize: 12, padding: '4px 10px' }}>
-              Decision confidence: 88%
+              Expected recovery: ₹354
             </span>
             <span className="badge-pill" style={{ background: 'var(--primary-blue-bg)', color: 'var(--primary-blue)', border: '1px solid var(--primary-blue-border)', fontSize: 12, padding: '4px 10px' }}>
-              Expected recovery: ₹354
+              Confidence: 88%
             </span>
           </div>
         </div>
@@ -106,7 +119,7 @@ export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({
             </thead>
             <tbody>
               <tr>
-                <td>Status Quo (DO NOTHING)</td>
+                <td>DO NOTHING (Status Quo)</td>
                 <td>0%</td>
                 <td>₹0</td>
                 <td>+0%</td>
@@ -115,7 +128,7 @@ export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({
                 <td>Baseline</td>
               </tr>
               <tr>
-                <td>Alternative A</td>
+                <td>10% DISCOUNT</td>
                 <td>10%</td>
                 <td>₹271</td>
                 <td>+18%</td>
@@ -124,7 +137,7 @@ export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({
                 <td>Sub-optimal</td>
               </tr>
               <tr style={{ background: 'var(--primary-blue-bg)' }}>
-                <td><strong>Recommended Interventon</strong></td>
+                <td><strong>15% DISCOUNT (Recommended)</strong></td>
                 <td><strong>15%</strong></td>
                 <td><strong style={{ color: 'var(--emerald-green)' }}>₹354</strong></td>
                 <td><strong>+31%</strong></td>
@@ -133,7 +146,7 @@ export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({
                 <td><strong style={{ color: 'var(--primary-blue)' }}>Selected Winner ★</strong></td>
               </tr>
               <tr>
-                <td>Alternative B</td>
+                <td>20% DISCOUNT</td>
                 <td>20%</td>
                 <td>₹321</td>
                 <td>+36%</td>
@@ -150,11 +163,9 @@ export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({
           <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 8px', color: 'var(--text-main)' }}>
             WHY THIS DECISION?
           </h4>
-          <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>
-            <li>Demand declined 21% over 3 days while stock sits at 18 units with 2 days to expiry.</li>
-            <li>15% discount maximizes expected net recovery (₹354) while protecting brand price positioning.</li>
-            <li>20% discount gives lower margin efficiency (₹321 recovery) due to unnecessary margin sacrifice.</li>
-          </ul>
+          <p style={{ margin: 0, fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>
+            Demand has fallen 21% over the last 3 days while 18 units remain and the product expires in 2 days. The model compared historical demand patterns and simulated alternative discount strategies. A 15% discount maximizes net recovery (₹354) while preserving more margin than a 20% clearance (₹321 recovery).
+          </p>
         </div>
 
         {/* Action Controls */}
