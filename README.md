@@ -1,145 +1,138 @@
-# Merchant Revenue Autopilot
+# RevenuePilot — AI Revenue Copilot for Merchants
 
-> **Track:** Razorpay Buildathon — AI Growth & Agentic Commerce
-
-A production-quality AI-powered revenue autopilot system that understands aggregate business patterns, forecasts stockout-censored demand, simulates multi-action business decisions against status-quo (`DO_NOTHING`), enforces policy-gated autonomy, executes merchant-approved test-mode actions, measures actual outcomes, and continuously learns from prediction errors.
-
----
-
-## 🎯 Core Problem Statement & Mission
-
-> **"Merchants don't need another dashboard telling them what happened. They need a system that understands what is likely to happen next, evaluates what they could do about it, and determines which action creates the best expected business outcome."**
-
-Retail merchants silently lose 5–15% of annual gross margin to avoidable operational inefficiencies:
-- **Context-Blind Demand Drops:** Reacting to normal weekday order sizes when upcoming holidays or weekend patterns at IT-park stores drop footfall by 50%+.
-- **Uncaptured Stockouts:** Demand exists, but sales drop to zero when stock hits zero. Standard models wrongly infer zero demand.
-- **Overstock & Locked Cash:** Capital tied up in excess slow-moving inventory.
-- **Perishable Expiry Waste:** Perishable items expiring before sale due to poor discount timing or excess order sizes.
+> **AI Revenue Copilot for Retail & Grocery Merchants**
+> A portfolio project demonstrating full-stack AI engineering, decision modeling, demand forecasting, financial scenario simulation, and policy-gated automation.
 
 ---
 
-## 🔄 Phase 5 Closed-Loop Autopilot Architecture
+## 🎯 Core Problem Statement
+
+> *"Merchants don't need another static dashboard telling them what happened yesterday. They need an intelligent copilot that forecasts stockout-censored demand, simulates intervention scenarios against doing nothing, and quantifies recoverable revenue."*
+
+Retail merchants silently lose 5–15% of annual gross margin to avoidable operational leakage:
+- **Context-Blind Demand Drops:** Over-ordering stock during normal weekday pattern shifts or holiday office closures.
+- **Uncaptured Stockout Censorship:** Sales drop to zero when stock reaches zero. Naïve forecasting models mistake zero sales for zero demand.
+- **Perishable Expiry Waste:** Perishable items expiring before sale due to delayed clearance discounting.
+- **Margin Leakage:** Unoptimized retail pricing failing to cover supplier cost inflation.
+
+---
+
+## 🧠 Closed-Loop Decision Engine Architecture
 
 ```
-OBSERVE
-  ↓
-DETECT REVENUE LEAK
-  ↓
-FORECAST DEMAND
-  ↓
-SIMULATE POSSIBLE ACTIONS
-  ↓
-COMPARE AGAINST DO_NOTHING
-  ↓
-CHOOSE BEST ACTION
-  ↓
-CHECK POLICY / RISK
-  ↓
-REQUEST APPROVAL IF REQUIRED
-  ↓
-EXECUTE SAFE TEST-MODE ACTION
-  ↓
-MEASURE ACTUAL OUTCOME
-  ↓
-COMPARE PREDICTED VS ACTUAL
-  ↓
-LEARN FROM RESULT
+OBSERVE CATALOG STREAM
+          ↓
+DETECT REVENUE LEAK (Expiry, Stockout, Margin Leak, Overstock)
+          ↓
+FORECAST ELASTICITY & DEMAND
+          ↓
+SIMULATE CANDIDATE INTERVENTIONS vs STATUS QUO (DO NOTHING)
+          ↓
+POLICY CHECK & GUARDRAIL VALIDATION
+          ↓
+RECOMMEND OPTIMAL INTERVENTION (Max Net Recovery)
+          ↓
+EXECUTE / SCHEDULE ACTION
+          ↓
+LEARN & CALIBRATE FROM OUTCOMES
 ```
 
-### Key Product Principles:
-1. **No Individual Customer Tracking**: Reasons strictly from aggregate store patterns (sales velocity, store context, day of week, public holidays, inventory velocity, supplier lead time, cross-product demand correlation). Zero customer tracking or PII profiling.
-2. **Mandatory DO_NOTHING Candidate**: Every decision candidate generation includes `DO_NOTHING`. `DO_NOTHING` is scored identically to intervention candidates and can win whenever intervention costs exceed expected value.
-3. **Normalized Multi-Objective Scoring**: Normalizes expected profit, stockout risk, waste risk, cash locked, and action risk to $[0, 1]$ before weighted combination.
-4. **Structured "WHY THIS DECISION?" Breakdown**: Every decision provides 7 structured answers (What happened?, Why opportunity?, Expected outcome?, What if DO NOTHING?, Alternatives simulated?, Why selected?, Policy/risk applied?) plus explicit "WHY NOT THE OTHER OPTIONS?" rejection explanations.
-5. **Strict MOCK / RAZORPAY_TEST_MODE Execution**: All financial action execution runs strictly in mock or Razorpay test mode. No real money or live payment API calls.
-6. **Failure Recovery & Safe Fallback**: Detects 7 controlled failure modes (`API_TIMEOUT`, `RAZORPAY_API_FAILURE`, `DUPLICATE_ACTION`, `POLICY_REJECTION`, `INSUFFICIENT_INVENTORY`, `STALE_FORECAST`, `INVALID_ACTION`), blocks duplicate retries, and safely falls back to recommendation-only mode.
+### Key Technical Highlights:
+1. **Zero Customer PII Tracking**: Reasons strictly from aggregate inventory metrics (velocity, lead times, expiry windows, margin percentages, price elasticity).
+2. **Mandatory Baseline (`DO_NOTHING`) Evaluation**: Evaluates status quo alongside candidates. If intervention costs exceed expected gain, status quo wins.
+3. **Multi-Objective Normalized Scoring**: Combines expected revenue recovery, gross profit impact, waste reduction, and risk mitigation.
+4. **Structured Decision Rationales**: Provides step-by-step reasoning ("WHY THIS DECISION?") and explicit rejection rationale for losing alternatives.
+5. **Safe Local / MOCK Execution**: All simulation and action scheduling runs deterministically with zero external API key requirements.
 
 ---
 
 ## 🏛️ System Architecture
 
 ```
-                               ┌───────────────────────────┐
-                               │ Razorpay Merchant Control │
-                               │ Center UI (React + Vite)  │
-                               └─────────────┬─────────────┘
-                                             │ REST API
-                               ┌─────────────▼─────────────┐
-                               │     FastAPI Backend       │
-                               └──────┬─────────────┬──────┘
-                                      │             │
-                    ┌─────────────────▼──┐       ┌──▼───────────────────┐
-                    │ AI Decision Engine │       │ Deterministic Engine │
-                    │ (Opportunity,      │       │ • Stockout Forecast  │
-                    │  Unified Engine,   │       │ • Multi-Objective    │
-                    │  Experiments)      │       │   Simulator          │
-                    └────────────────────┘       │ • Policy Guardrails  │
-                                                 └──────────┬───────────┘
-                                                            │
-                                                 ┌──────────▼───────────┐
-                                                 │ PostgreSQL / SQLite  │
-                                                 │ (15 ORM Entities)    │
-                                                 └──────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│              RevenuePilot Modern Frontend               │
+│          (React + TypeScript + Vite + Vanilla CSS)      │
+└────────────────────────────┬────────────────────────────┘
+                             │ REST API
+┌────────────────────────────▼────────────────────────────┐
+│                  FastAPI Backend Server                 │
+└──────────────┬───────────────────────────┬──────────────┘
+               │                           │
+┌──────────────▼─────────────┐ ┌───────────▼──────────────┐
+│   AI Autonomous Engine     │ │   Deterministic Engine   │
+│  • Leak Detection          │ │  • Stockout Demand Model │
+│  • Action Strategy Scoring │ │  • Elasticity Simulator  │
+│  • Decision Audit Pipeline │ │  • Policy Guardrails     │
+└────────────────────────────┘ └───────────┬──────────────┘
+                                           │
+                               ┌───────────▼──────────────┐
+                               │ SQLite / PostgreSQL DB   │
+                               │ (15 Relational Entities) │
+                               └──────────────────────────┘
 ```
 
 ---
 
-## 📊 Database Schema (15 Core Entities)
+## 🛍️ Synthetic Catalog Dataset
 
-1. `Merchant` — Top-level merchant account
-2. `Store` — Retail location context (e.g. IT_PARK, RESIDENTIAL, COMMERCIAL)
-3. `Supplier` — Vendor details and lead time tracking
-4. `Product` — Catalog item with unit cost, selling price, and shelf life
-5. `DailySales` — Historical sales transactions, pricing, and gross margin
-6. `InventorySnapshot` — Daily opening/closing stock levels & stockout flags
-7. `Discount` — Active and historical promotional campaigns
-8. `BusinessEvent` — Contextual events (holidays, weather, festivals, office closures)
-9. `Forecast` — Stockout-adjusted baseline demand predictions
-10. `ProfitLeak` — Categorized monetary leakage findings with evidence
-11. `Simulation` — Pre-execution scenario simulation results
-12. `AgentAction` — Proposed automated or semi-automated actions
-13. `ActionApproval` — Merchant approval/rejection audit record
-14. `ActionOutcome` — Post-execution variance analysis (Predicted vs Actual)
-15. `FailureEvent` — System and model failure tracking for self-correction
+RevenuePilot incorporates a seeded 150-item synthetic inventory dataset representing realistic Indian grocery retail stock:
+- **Brands**: Amul, Britannia, Tata, Fortune, Aashirvaad, Parle, Coca-Cola, Paper Boat, Nescafé, Maggi, Surf Excel, McCain, etc.
+- **Categories**: Dairy, Beverages, Bakery, Staples, Snacks, Personal Care, Household, Frozen Foods, Fruits & Vegetables, Packaged Foods.
+- **Realistic Metrics**: Unrounded selling prices, cost prices, stock counts, daily sales velocities, 7-day sparklines, expiry windows, and supplier lead times.
+- **Disclaimer**: *This project uses synthetic merchant data for demonstration and does not track individual customers or real merchant PII.*
 
 ---
 
-## 🚀 Quick Start
+## ⚡ 90-Second Recruiter Demo Walkthrough
 
-### 1. Environment Setup
-```bash
-cp .env.example .env
-```
+1. **Home Overview**: View weekly recovered revenue (₹1,340) and high-priority action cards.
+2. **Product Workspace Drawer**: Click any product (e.g. *Fresh Orange Juice*) to open the 250ms slide-over detail drawer showing stock, velocity, 3-day trend %, expiry days, and revenue at risk.
+3. **Autonomous Decision Center**: View the visual 8-stage decision pipeline (`OBSERVE` → `DETECT` → `FORECAST` → `SIMULATE` → `POLICY CHECK` → `RECOMMEND` → `EXECUTE` → `LEARN`) and compare candidate discount strategies.
+4. **What-If Simulator**: Adjust clearance discount (%) and reorder quantity sliders to calculate real-time elasticity and financial impact (+₹354 expected recovery).
+5. **Inventory Catalog**: Search and filter the 150-product catalog by category or risk status (`EXPIRY`, `STOCKOUT`, `MARGIN_LEAK`, `OVERSTOCK`, `HEALTHY`).
+6. **Theme Engine**: Toggle seamlessly between Light Mode, Dark Mode, and System Mode preferences.
 
-### 2. Backend Setup & Run
+---
+
+## 💻 Local Setup & Installation
+
+### Prerequisites
+- Python 3.10+
+- Node.js 18+
+
+### 1. Backend Setup
 ```bash
 cd backend
 python -m venv venv
+
 # Windows:
 venv\Scripts\activate
 # Linux/macOS:
-# source venv/bin/activate
+source venv/bin/activate
+
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
+Backend running at: `http://localhost:8000` (Swagger docs at `http://localhost:8000/docs`)
 
-### 3. Frontend Setup & Run
+### 2. Frontend Setup
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+Frontend running at: `http://localhost:5173`
 
 ---
 
-## 🧪 Testing & Verification
+## 🧪 Verification & Engineering Tests
 
-Run full backend test suite:
+### Backend Tests
 ```bash
 python -m pytest tests/ -v
 ```
 
-Build frontend production bundle:
+### Frontend Build
 ```bash
 cd frontend
 npm run build
@@ -147,10 +140,14 @@ npm run build
 
 ---
 
-## 📅 Completed Phases
+## 📡 API Endpoint Reference
 
-- [x] **Phase 1: Foundation** — DB entities, FastAPI backend, React UI, health endpoints.
-- [x] **Phase 2: Realistic Merchant Data Intelligence** — 12-month aggregate dataset (21,900 sales records across 3 store locations & 20 products), stockout-censored demand estimation, baseline forecaster.
-- [x] **Phase 3: Profit Leakage Engine & Decision Simulator** — 5-category leakage detector, Monte Carlo decision simulator (order & discount), policy guardrails.
-- [x] **Phase 4: AI Revenue Decision Agent & Policy Approvals** — Tool-calling agent, provider abstraction, policy approval workflow, audit trail, conversational interface.
-- [x] **Phase 5: Closed-Loop Merchant Growth Autopilot** — Unified Revenue Opportunity Engine, Multi-Objective Normalized Scoring, Mandatory `DO_NOTHING` candidate, 10-stage audit timeline UI, Revenue Experiments framework, Action Executor (MOCK & RAZORPAY_TEST_MODE), Evidence-Based Learning loop, Failure Recovery system, 4 Deterministic Demo Scenarios, 9-view Razorpay Merchant Control Center UI.
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/health` | Server health check |
+| `POST` | `/api/autopilot/analyze` | Run full catalog audit & generate decision strategy |
+| `GET` | `/api/autopilot/opportunities` | List active revenue risk opportunities |
+| `POST` | `/api/autopilot/simulate-custom` | Run custom what-if elasticity simulation |
+| `GET` | `/api/actions` | Fetch pending and executed merchant actions |
+| `POST` | `/api/actions/{id}/approve` | Approve a recommended decision action |
+| `GET` | `/api/autopilot/outcomes` | Fetch post-execution outcome statistics |

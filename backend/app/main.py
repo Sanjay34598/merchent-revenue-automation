@@ -23,7 +23,7 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    description="Merchant Revenue Autopilot Backend API - Razorpay Buildathon",
+    description="RevenuePilot Backend API - AI Revenue Copilot for Merchants",
     version="1.0.0"
 )
 
