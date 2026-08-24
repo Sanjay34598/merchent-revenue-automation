@@ -167,8 +167,6 @@ class PosDataSetGenerator:
                 selected_products = rng.sample(self.catalog[:30], min(basket_size, len(self.catalog[:30])))
 
                 line_items = []
-                subtotal = 0.0
-                total_discount = 0.0
 
                 for prod in selected_products:
                     if prod.unit in ["kg", "L"]:
@@ -183,8 +181,6 @@ class PosDataSetGenerator:
                         disc = round(prod.selling_price * qty * 0.15, 1)
                     
                     line_tot = round((prod.selling_price * qty) - disc, 1)
-                    subtotal += prod.selling_price * qty
-                    total_discount += disc
 
                     line_items.append({
                         "product_id": prod.product_id,
@@ -199,6 +195,8 @@ class PosDataSetGenerator:
                     prod.sold_stock = round(prod.sold_stock + qty, 1)
                     prod.current_stock = max(0.0, round(prod.opening_stock - prod.sold_stock, 1))
 
+                subtotal = round(sum(item["unit_price"] * item["quantity"] for item in line_items), 1)
+                total_discount = round(sum(item["discount"] for item in line_items), 1)
                 grand_tot = round(subtotal - total_discount, 1)
                 pmethod = rng.choices(["UPI", "Cash", "Card"], weights=[60, 25, 15])[0]
 
@@ -210,8 +208,8 @@ class PosDataSetGenerator:
                     "cashier_id": f"Cashier-{rng.randint(101, 105)}",
                     "payment_method": pmethod,
                     "items": line_items,
-                    "subtotal": round(subtotal, 1),
-                    "discount": round(total_discount, 1),
+                    "subtotal": subtotal,
+                    "discount": total_discount,
                     "grand_total": grand_tot,
                     "status": "Processed"
                 })
