@@ -4,10 +4,10 @@ import {
 } from 'lucide-react';
 
 interface HeaderProps {
-  activeTab: 'home' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more';
-  setActiveTab: (tab: 'home' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more') => void;
-  secondaryTab: 'insights' | 'recovery' | 'experiments' | 'timeline' | 'status';
-  setSecondaryTab: (tab: 'insights' | 'recovery' | 'experiments' | 'timeline' | 'status') => void;
+  activeTab: 'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more';
+  setActiveTab: (tab: 'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more') => void;
+  secondaryTab: 'insights' | 'recovery' | 'experiments' | 'timeline' | 'status' | 'quality';
+  setSecondaryTab: (tab: 'insights' | 'recovery' | 'experiments' | 'timeline' | 'status' | 'quality') => void;
   theme: 'light' | 'dark' | 'system';
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
   setShowStoreProfile: (show: boolean) => void;
@@ -44,10 +44,11 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Center: Navigation Pill Bar (Matching Reference) */}
+      {/* Center: Navigation Pill Bar */}
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         {[
           { id: 'home' as const, label: 'Overview' },
+          { id: 'sales' as const, label: 'Sales Input' },
           { id: 'leaks' as const, label: 'Revenue' },
           { id: 'inventory' as const, label: 'Inventory' },
           { id: 'decisions' as const, label: 'Decisions' },
@@ -112,6 +113,7 @@ export const Header: React.FC<HeaderProps> = ({
                 ['experiments', 'Experiments'],
                 ['recovery', 'Recovery Log'],
                 ['timeline', 'Audit Timeline'],
+                ['quality', 'Data Quality'],
                 ['status', 'System Diagnostics'],
               ].map(([key, label]) => (
                 <button
@@ -139,8 +141,6 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right Controls: Store Selector, Status Pill, Notifications, Theme, Profile Avatar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        
-        {/* Store Profile Selector Pill */}
         <button
           onClick={() => setShowStoreProfile(true)}
           style={{
@@ -154,7 +154,6 @@ export const Header: React.FC<HeaderProps> = ({
           <ChevronDown size={11} color="var(--text-sub)" />
         </button>
 
-        {/* Autopilot Status Pill */}
         <button
           onClick={() => setShowStatusModal(true)}
           style={{
@@ -167,7 +166,6 @@ export const Header: React.FC<HeaderProps> = ({
           <span>Autopilot Active</span>
         </button>
 
-        {/* Notifications Icon Button with Badge */}
         <div style={{ position: 'relative' }}>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
@@ -199,13 +197,12 @@ export const Header: React.FC<HeaderProps> = ({
               <div style={{ color: 'var(--text-sub)', lineHeight: 1.5 }}>
                 • Fresh Orange Juice 500ml flagged for expiry risk (2 days left).<br />
                 • Amul Taaza Milk stockout prevented automatically.<br />
-                • Weekly recovery report generated.
+                • POS sale processed (TXN-00128). Inventory synced.
               </div>
             </div>
           )}
         </div>
 
-        {/* Theme Selector Button */}
         <div style={{ position: 'relative' }}>
           <button
             onClick={() => setShowThemeMenu(!showThemeMenu)}
@@ -247,14 +244,12 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        {/* User Profile Avatar */}
         <div style={{
           width: 36, height: 36, borderRadius: '50%', background: 'var(--text-main)', color: 'var(--bg-page)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700,
         }}>
           PK
         </div>
-
       </div>
     </header>
   );

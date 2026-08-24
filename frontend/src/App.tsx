@@ -17,6 +17,7 @@ import { Simulator } from './components/Simulator';
 import { InsightFeed } from './components/InsightFeed';
 import { RecoveryView } from './components/RecoveryView';
 import { RightIntelligencePanel } from './components/RightIntelligencePanel';
+import { SalesInputWorkspace } from './components/SalesInputWorkspace';
 
 /** Safe API fetcher helper */
 async function safeApi<T>(fetcher: () => Promise<T>, fallback: T): Promise<{ data: T; ok: boolean }> {
@@ -31,8 +32,8 @@ async function safeApi<T>(fetcher: () => Promise<T>, fallback: T): Promise<{ dat
 
 export default function App() {
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'home' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more'>('home');
-  const [secondaryTab, setSecondaryTab] = useState<'insights' | 'recovery' | 'experiments' | 'timeline' | 'status'>('insights');
+  const [activeTab, setActiveTab] = useState<'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more'>('home');
+  const [secondaryTab, setSecondaryTab] = useState<'insights' | 'recovery' | 'experiments' | 'timeline' | 'status' | 'quality'>('insights');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Theme state with localStorage initialization & system fallback
@@ -49,8 +50,8 @@ export default function App() {
   const [selectedStore, setSelectedStore] = useState(1);
   const [backendAvailable, setBackendAvailable] = useState(true);
 
-  // Synthetic 150 Merchant Catalog Seed Layer
-  const merchantCatalog = useMemo(() => generateMerchantInventory(), []);
+  // Synthetic 150 Merchant Catalog Seed & Live State Layer
+  const [merchantCatalog, setMerchantCatalog] = useState<ProductItem[]>(() => generateMerchantInventory());
   const inventoryStats = useMemo(() => getInventoryStats(merchantCatalog), [merchantCatalog]);
 
   // Backend Data States
@@ -148,6 +149,71 @@ export default function App() {
       .catch(() => triggerToast('Action approved and scheduled.'));
   };
 
+  // Real Data Ingestion Pipeline: Process POS Sale
+  const handleRecordSale = (saleData: {
+    items: Array<{
+      product: ProductItem;
+      quantity: number;
+      unit: string;
+      unitPrice: number;
+      discount: number;
+      lineTotal: number;
+    }>;
+    paymentMethod: string;
+    subtotal: number;
+    discount: number;
+    grandTotal: number;
+  }) => {
+    // 1. Update live catalog state: deduct currentStock, recalculate velocity & stock value
+    setMerchantCatalog(prevCatalog => {
+      return prevCatalog.map(item => {
+        const soldMatch = saleData.items.find(i => i.product.id === item.id);
+        if (soldMatch) {
+          const newStock = Math.max(0, Math.round((item.currentStock - soldMatch.quantity) * 10) / 10);
+          const newVelocity = Math.round((item.dailyVelocity + (soldMatch.quantity * 0.1)) * 10) / 10;
+          return {
+            ...item,
+            currentStock: newStock,
+            stockValue: Math.round(newStock * item.sellingPrice),
+            dailyVelocity: newVelocity,
+          };
+        }
+        return item;
+      });
+    });
+
+    // 2. Post to backend API endpoint
+    fetch('/api/transactions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        store_id: selectedStore,
+        payment_method: saleData.paymentMethod,
+        items: saleData.items.map(i => ({
+          product_name: i.product.name,
+          quantity: i.quantity,
+          unit: i.unit,
+          unit_price: i.unitPrice,
+          discount: i.discount,
+          line_total: i.lineTotal,
+        })),
+        subtotal: saleData.subtotal,
+        discount: saleData.discount,
+        grand_total: saleData.grandTotal,
+      }),
+    }).catch(err => console.warn('Transaction API sync notice:', err));
+
+    triggerToast(`POS Sale ₹${Math.round(saleData.grandTotal)} recorded. Catalog stock & velocity updated.`);
+  };
+
+  // CSV Import Sales Handler
+  const handleImportCsv = (count: number) => {
+    fetch(`/api/transactions/import?count=${count}`, { method: 'POST' })
+      .catch(err => console.warn('CSV Import sync notice:', err));
+
+    triggerToast(`Imported ${count} POS sales records. Product intelligence updated.`);
+  };
+
   // Opportunities for Home Screen (Top 7 Priority Risks)
   const homeOpportunities = useMemo(() => {
     return inventoryStats.itemsAtRisk.slice(0, 7);
@@ -168,7 +234,7 @@ export default function App() {
           </div>
         )}
 
-        {/* Top Header Bar Across Entire Viewport (Matching Reference Image) */}
+        {/* Top Header Bar Across Entire Viewport */}
         <Header
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -183,7 +249,7 @@ export default function App() {
         {/* App Shell Body (Permanent Left Sidebar + Main Content Grid) */}
         <div className="shell-body">
 
-          {/* Left Sidebar (~220px Permanent Sidebar) */}
+          {/* Left Sidebar (~184px Permanent Sidebar) */}
           <Sidebar
             activeTab={activeTab}
             setActiveTab={setActiveTab}
@@ -221,7 +287,7 @@ export default function App() {
               </div>
             ) : (
               <>
-                {/* OVERVIEW / HOME FINANCIAL COMMAND CENTER (Matching Reference Image Layout) */}
+                {/* OVERVIEW / HOME FINANCIAL COMMAND CENTER */}
                 {activeTab === 'home' && (
                   <ErrorBoundary fallbackTitle="Overview Home View Error">
                     <div className="content-grid-3col">
@@ -246,6 +312,19 @@ export default function App() {
 
                       {/* Right Column: Today's Signals, Revenue at Risk, Autopilot Performance */}
                       <RightIntelligencePanel />
+                    </div>
+                  </ErrorBoundary>
+                )}
+
+                {/* SALES INPUT / DATA INGESTION WORKSPACE */}
+                {activeTab === 'sales' && (
+                  <ErrorBoundary fallbackTitle="Sales Ingestion Error">
+                    <div className="content-grid-full">
+                      <SalesInputWorkspace
+                        catalog={merchantCatalog}
+                        onRecordSale={handleRecordSale}
+                        onImportCsv={handleImportCsv}
+                      />
                     </div>
                   </ErrorBoundary>
                 )}
@@ -306,6 +385,13 @@ export default function App() {
                       {secondaryTab === 'recovery' && <RecoveryView />}
                       {secondaryTab === 'experiments' && <InsightFeed />}
                       {secondaryTab === 'timeline' && <RecoveryView />}
+                      {secondaryTab === 'quality' && (
+                        <SalesInputWorkspace
+                          catalog={merchantCatalog}
+                          onRecordSale={handleRecordSale}
+                          onImportCsv={handleImportCsv}
+                        />
+                      )}
                       {secondaryTab === 'status' && (
                         <div style={{ background: 'var(--bg-surface)', padding: 24, borderRadius: 12, border: '1px solid var(--border-color)' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
@@ -314,7 +400,8 @@ export default function App() {
                           </div>
                           <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.7 }}>
                             <div>• Product Identity: <strong>MerchIntell (AI Revenue Copilot)</strong></div>
-                            <div>• Execution Mode: <strong>MOCK Deterministic Execution</strong></div>
+                            <div>• Data Pipeline: <strong>Active POS Real-time Ingestion</strong></div>
+                            <div>• Execution Mode: <strong>Local Deterministic MOCK</strong></div>
                             <div>• Catalog Count: <strong>{inventoryStats.totalProducts} items</strong></div>
                             <div>• Store Context: <strong>GreenBasket Market (Store #1)</strong></div>
                             <div>• Active Risks: <strong>{inventoryStats.itemsAtRiskCount} items</strong></div>
