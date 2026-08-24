@@ -13,19 +13,23 @@
   --text-main: #0f172a;
   --text-muted: #64748b;
   --text-sub: #475569;
-  
+
   --primary-blue: #2563eb;
   --primary-blue-bg: #eff6ff;
   --primary-blue-border: #bfdbfe;
-  
+
   --emerald-green: #059669;
   --emerald-green-bg: #ecfdf5;
   --emerald-green-border: #a7f3d0;
-  
+
   --risk-red: #dc2626;
   --risk-red-bg: #fef2f2;
   --risk-red-border: #fecaca;
-  
+
+  --amber-gold: #d97706;
+  --amber-gold-bg: #fffbeb;
+  --amber-gold-border: #fde68a;
+
   --shadow-sm: 0 1px 3px rgba(15,23,42,0.06);
   --shadow-md: 0 6px 20px rgba(15,23,42,0.08);
   --shadow-drawer: -12px 0 60px rgba(15,23,42,0.15);
@@ -41,19 +45,23 @@
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --text-sub: #cbd5e1;
-  
+
   --primary-blue: #3b82f6;
   --primary-blue-bg: #1e3a8a;
   --primary-blue-border: #1d4ed8;
-  
+
   --emerald-green: #10b981;
   --emerald-green-bg: #064e3b;
   --emerald-green-border: #047857;
-  
+
   --risk-red: #ef4444;
   --risk-red-bg: #7f1d1d;
   --risk-red-border: #991b1b;
-  
+
+  --amber-gold: #f59e0b;
+  --amber-gold-bg: #451a03;
+  --amber-gold-border: #78350f;
+
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
   --shadow-md: 0 6px 20px rgba(0,0,0,0.4);
   --shadow-drawer: -12px 0 60px rgba(0,0,0,0.6);
@@ -84,9 +92,13 @@ body {
 button {
   font-family: inherit;
   cursor: pointer;
+  user-select: none;
+}
+button:active {
+  transform: scale(0.98);
 }
 
-input, select {
+input, select, textarea {
   font-family: inherit;
 }
 
@@ -107,12 +119,12 @@ input, select {
 }
 
 .statement-main {
-  font-size: 38px;
+  font-size: 36px;
   font-weight: 800;
   color: var(--text-main);
   letter-spacing: -0.9px;
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .statement-sub {
@@ -137,10 +149,10 @@ input, select {
 }
 
 /* ═══════════════════════════════════════════
-   LAYOUT CONTAINERS (1400px Viewport)
+   LAYOUT CONTAINERS (1440px Viewport)
    ═══════════════════════════════════════════ */
 .copilot-viewport {
-  max-width: 1400px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 0 40px;
 }
@@ -158,18 +170,27 @@ input, select {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 18px 24px;
+  padding: 16px 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
   cursor: pointer;
 }
 .copilot-row:hover {
   transform: translateY(-2px);
   border-color: var(--border-subtle);
   box-shadow: var(--shadow-md);
+}
+
+/* Arrow Slide Effect on Row Hover */
+.copilot-row:hover .row-arrow-icon {
+  transform: translateX(4px);
+  color: var(--primary-blue);
+}
+.row-arrow-icon {
+  transition: transform 0.18s ease, color 0.18s ease;
 }
 
 .inventory-table {
@@ -209,6 +230,14 @@ input, select {
 .inventory-table tr:hover td {
   background: var(--bg-hover);
   cursor: pointer;
+}
+
+/* Subdue Healthy Rows */
+.row-healthy td {
+  opacity: 0.85;
+}
+.row-healthy:hover td {
+  opacity: 1;
 }
 
 /* ═══════════════════════════════════════════
@@ -292,7 +321,7 @@ input, select {
 }
 
 /* ═══════════════════════════════════════════
-   WORKSPACE DRAWER OVERLAY
+   WORKSPACE DRAWER OVERLAY (200-300ms)
    ═══════════════════════════════════════════ */
 .workspace-overlay {
   position: fixed;
@@ -351,6 +380,9 @@ input[type="range"]::-webkit-slider-thumb {
   margin-top: -7px;
   transition: transform 0.15s ease;
 }
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
 
 /* Toast */
 .toast-banner {
@@ -379,4 +411,15 @@ input[type="range"]::-webkit-slider-thumb {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Skeleton Loading Shimmer */
+.skeleton-box {
+  background: var(--bg-subtle);
+  border-radius: 6px;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
