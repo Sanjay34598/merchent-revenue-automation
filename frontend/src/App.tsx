@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { CheckCircle2, X, RefreshCw, Terminal, Shield } from 'lucide-react';
+import { CheckCircle2, X, RefreshCw, Terminal, Shield, ArrowLeft } from 'lucide-react';
 import { UnifiedDecision, RevenueOpportunity, AgentActionItem, OutcomeRecord, FailureRecord, Experiment } from './types';
 import { generateMerchantInventory, getInventoryStats, ProductItem } from './data/merchantInventory';
 
@@ -7,8 +7,10 @@ import { generateMerchantInventory, getInventoryStats, ProductItem } from './dat
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Header } from './components/Header';
 import { FinancialHero } from './components/FinancialHero';
+import { MerchantActionStrip } from './components/MerchantActionStrip';
 import { BusinessPulse } from './components/BusinessPulse';
 import { OpportunityList } from './components/OpportunityList';
+import { RecentSales } from './components/RecentSales';
 import { ProductWorkspace } from './components/ProductWorkspace';
 import { InventoryTable } from './components/InventoryTable';
 import { DecisionPipeline } from './components/DecisionPipeline';
@@ -31,8 +33,7 @@ async function safeApi<T>(fetcher: () => Promise<T>, fallback: T): Promise<{ dat
 
 export default function App() {
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more'>('home');
-  const [secondaryTab, setSecondaryTab] = useState<'recovery' | 'experiments' | 'quality' | 'status'>('recovery');
+  const [activeTab, setActiveTab] = useState<'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'recovery' | 'quality'>('home');
 
   // Theme state with localStorage initialization & system fallback
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(() => {
@@ -56,9 +57,6 @@ export default function App() {
   const [decision, setDecision] = useState<UnifiedDecision | null>(null);
   const [opportunities, setOpportunities] = useState<RevenueOpportunity[]>([]);
   const [actions, setActions] = useState<AgentActionItem[]>([]);
-  const [outcomes, setOutcomes] = useState<OutcomeRecord | null>(null);
-  const [failures, setFailures] = useState<FailureRecord[]>([]);
-  const [experiments, setExperiments] = useState<Experiment[]>([]);
 
   // Workspace Detail Drawer
   const [selectedProductWorkspace, setSelectedProductWorkspace] = useState<ProductItem | null>(null);
@@ -116,19 +114,13 @@ export default function App() {
       anyOk = true;
     }
 
-    const [resOpps, resActs, resOuts, resFails, resExps] = await Promise.all([
+    const [resOpps, resActs] = await Promise.all([
       safeApi(() => fetch(`/api/autopilot/opportunities?store_id=${selectedStore}`).then(r => r.json()), []),
       safeApi(() => fetch(`/api/actions?store_id=${selectedStore}`).then(r => r.json()), []),
-      safeApi(() => fetch(`/api/autopilot/outcomes?store_id=${selectedStore}`).then(r => r.json()), null),
-      safeApi(() => fetch('/api/autopilot/failures').then(r => r.json()), []),
-      safeApi(() => fetch(`/api/autopilot/experiments?store_id=${selectedStore}`).then(r => r.json()), []),
     ]);
 
     setOpportunities(Array.isArray(resOpps.data) ? resOpps.data : []);
     setActions(Array.isArray(resActs.data) ? resActs.data : []);
-    setOutcomes(resOuts.data);
-    setFailures(Array.isArray(resFails.data) ? resFails.data : []);
-    setExperiments(Array.isArray(resExps.data) ? resExps.data : []);
 
     setBackendAvailable(anyOk || resOpps.ok || resActs.ok);
     setLoading(false);
@@ -226,7 +218,7 @@ export default function App() {
   };
 
   return (
-    <ErrorBoundary fallbackTitle="MerchIntell Shell Encountered an Error">
+    <ErrorBoundary fallbackTitle="MerchIntell Command Center Encountered an Error">
       <div className="app-layout">
 
         {/* Toast Alert Notification Banner */}
@@ -240,19 +232,16 @@ export default function App() {
           </div>
         )}
 
-        {/* Top Header Bar Across Entire Viewport (Sidebar Completely Removed) */}
+        {/* Minimal Utility Header Bar (No Large Nav Bars, Sidebar Completely Removed) */}
         <Header
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          secondaryTab={secondaryTab}
-          setSecondaryTab={setSecondaryTab}
+          onBrandClick={() => setActiveTab('home')}
           theme={theme}
           setTheme={setTheme}
           setShowStoreProfile={setShowStoreProfile}
           setShowStatusModal={setShowStatusModal}
         />
 
-        {/* App Shell Body */}
+        {/* Main Content Area */}
         <div className="shell-body">
           <div className="main-content-wrapper">
 
@@ -273,7 +262,7 @@ export default function App() {
               </div>
             )}
 
-            {/* Dynamic Content Viewport */}
+            {/* Dynamic Viewport Content */}
             {loading ? (
               <div style={{ textAlign: 'center', padding: '80px 0' }}>
                 <RefreshCw size={24} color="var(--accent-purple)" style={{ animation: 'spin 1s linear infinite' }} />
@@ -281,12 +270,28 @@ export default function App() {
               </div>
             ) : (
               <>
-                {/* OVERVIEW / HOME FINANCIAL COMMAND CENTER */}
+                {/* BACK BUTTON NAVIGATION FOR SUB-VIEWS */}
+                {activeTab !== 'home' && (
+                  <div style={{ padding: '24px 40px 0', maxWidth: 1680, margin: '0 auto', width: '100%' }}>
+                    <button
+                      onClick={() => setActiveTab('home')}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px',
+                        borderRadius: 100, border: '1px solid var(--border-color)', background: 'var(--bg-surface)',
+                        color: 'var(--text-sub)', fontSize: 12, fontWeight: 700, cursor: 'pointer'
+                      }}
+                    >
+                      <ArrowLeft size={13} /> Back to Command Center
+                    </button>
+                  </div>
+                )}
+
+                {/* PRIMARY MERCHANT COMMAND CENTER (HOME VIEW) */}
                 {activeTab === 'home' && (
-                  <ErrorBoundary fallbackTitle="Overview Home View Error">
+                  <ErrorBoundary fallbackTitle="Command Center View Error">
                     <div className="content-grid-3col">
-                      {/* Main Column: Financial Hero, Business Pulse, Attention Items */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
+                      {/* Main Column: Financial Hero, Action Strip, Business Pulse, Attention Items, Recent Sales */}
+                      <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                         <FinancialHero
                           merchantName="Sanjay"
                           protectedRevenue={27696}
@@ -295,16 +300,32 @@ export default function App() {
                           activeOpportunitiesCount={36}
                         />
 
-                        <BusinessPulse activeRisksCount={inventoryStats.itemsAtRiskCount} />
+                        {/* MERCHANT ACTION ICON STRIP (Matching Prompt Specification) */}
+                        <MerchantActionStrip
+                          onActionClick={(tabKey) => setActiveTab(tabKey)}
+                          atRiskAmount={inventoryStats.totalRevenueAtRisk || 2138}
+                          itemsAtRiskCount={inventoryStats.itemsAtRiskCount || 7}
+                          totalProductsCount={inventoryStats.totalProducts || 150}
+                        />
+
+                        <BusinessPulse
+                          activeRisksCount={inventoryStats.itemsAtRiskCount}
+                          atRiskAmount={inventoryStats.totalRevenueAtRisk || 2138}
+                        />
 
                         <OpportunityList
                           opportunities={homeOpportunities}
                           onSelectProduct={setSelectedProductWorkspace}
                           onViewAllInventory={() => setActiveTab('inventory')}
                         />
+
+                        <RecentSales
+                          onViewAllTransactions={() => setActiveTab('sales')}
+                          onSimulatePosSale={() => setActiveTab('sales')}
+                        />
                       </div>
 
-                      {/* Right Intelligence Column: Actionable Priorities & Revenue at Risk */}
+                      {/* Right Column: Priorities & Revenue at Risk */}
                       <RightIntelligencePanel
                         onSelectPriority={handleSelectPriorityByName}
                         onViewRevenueRisks={() => setActiveTab('leaks')}
@@ -374,36 +395,11 @@ export default function App() {
                   </ErrorBoundary>
                 )}
 
-                {/* MORE SUB-VIEWS */}
-                {activeTab === 'more' && (
-                  <ErrorBoundary fallbackTitle="Secondary View Error">
+                {/* RECOVERY HISTORY */}
+                {activeTab === 'recovery' && (
+                  <ErrorBoundary fallbackTitle="Recovery View Error">
                     <div className="content-grid-full">
-                      {secondaryTab === 'recovery' && <RecoveryView />}
-                      {secondaryTab === 'experiments' && <InsightFeed />}
-                      {secondaryTab === 'quality' && (
-                        <SalesInputWorkspace
-                          catalog={merchantCatalog}
-                          onRecordSale={handleRecordSale}
-                          onImportCsv={handleImportCsv}
-                        />
-                      )}
-                      {secondaryTab === 'status' && (
-                        <div style={{ background: 'var(--bg-surface)', padding: 24, borderRadius: 12, border: '1px solid var(--border-color)' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                            <Terminal size={18} color="var(--accent-purple)" />
-                            <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>System Telemetry & Audit</h3>
-                          </div>
-                          <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.7 }}>
-                            <div>• Product Identity: <strong>MerchIntell (AI Revenue Copilot)</strong></div>
-                            <div>• Architecture: <strong>Single Top-Header Shell (No Sidebar)</strong></div>
-                            <div>• Execution Mode: <strong>Local Deterministic MOCK</strong></div>
-                            <div>• Catalog Count: <strong>{inventoryStats.totalProducts} items</strong></div>
-                            <div>• Store Context: <strong>GreenBasket Market (Store #1)</strong></div>
-                            <div>• Active Risks: <strong>{inventoryStats.itemsAtRiskCount} items</strong></div>
-                            <div>• System Health: <strong style={{ color: 'var(--emerald-green)' }}>OPERATIONAL</strong></div>
-                          </div>
-                        </div>
-                      )}
+                      <RecoveryView />
                     </div>
                   </ErrorBoundary>
                 )}
