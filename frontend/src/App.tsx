@@ -5,7 +5,6 @@ import { generateMerchantInventory, getInventoryStats, ProductItem } from './dat
 
 // Modular Components
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { FinancialHero } from './components/FinancialHero';
 import { BusinessPulse } from './components/BusinessPulse';
@@ -33,8 +32,7 @@ async function safeApi<T>(fetcher: () => Promise<T>, fallback: T): Promise<{ dat
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more'>('home');
-  const [secondaryTab, setSecondaryTab] = useState<'insights' | 'recovery' | 'experiments' | 'timeline' | 'status' | 'quality'>('insights');
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [secondaryTab, setSecondaryTab] = useState<'recovery' | 'experiments' | 'quality' | 'status'>('recovery');
 
   // Theme state with localStorage initialization & system fallback
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(() => {
@@ -203,7 +201,7 @@ export default function App() {
       }),
     }).catch(err => console.warn('Transaction API sync notice:', err));
 
-    triggerToast(`POS Sale ₹${Math.round(saleData.grandTotal)} recorded. Catalog stock & velocity updated.`);
+    triggerToast(`Sale recorded — ₹${Math.round(saleData.grandTotal)} · ${saleData.paymentMethod} · ${saleData.items.length} items. Inventory updated.`);
   };
 
   // CSV Import Sales Handler
@@ -218,6 +216,14 @@ export default function App() {
   const homeOpportunities = useMemo(() => {
     return inventoryStats.itemsAtRisk.slice(0, 7);
   }, [inventoryStats]);
+
+  // Handler for selecting priority items from Right Intelligence Panel
+  const handleSelectPriorityByName = (productName: string) => {
+    const matched = merchantCatalog.find(p => p.name.toLowerCase().includes(productName.toLowerCase()));
+    if (matched) {
+      setSelectedProductWorkspace(matched);
+    }
+  };
 
   return (
     <ErrorBoundary fallbackTitle="MerchIntell Shell Encountered an Error">
@@ -234,7 +240,7 @@ export default function App() {
           </div>
         )}
 
-        {/* Top Header Bar Across Entire Viewport */}
+        {/* Top Header Bar Across Entire Viewport (Sidebar Completely Removed) */}
         <Header
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -246,20 +252,8 @@ export default function App() {
           setShowStatusModal={setShowStatusModal}
         />
 
-        {/* App Shell Body (Permanent Left Sidebar + Main Content Grid) */}
+        {/* App Shell Body */}
         <div className="shell-body">
-
-          {/* Left Sidebar (~184px Permanent Sidebar) */}
-          <Sidebar
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            secondaryTab={secondaryTab}
-            setSecondaryTab={setSecondaryTab}
-            isCollapsed={isSidebarCollapsed}
-            setIsCollapsed={setIsSidebarCollapsed}
-          />
-
-          {/* Main Content Area */}
           <div className="main-content-wrapper">
 
             {/* Offline / Demo Mode Banner */}
@@ -291,7 +285,7 @@ export default function App() {
                 {activeTab === 'home' && (
                   <ErrorBoundary fallbackTitle="Overview Home View Error">
                     <div className="content-grid-3col">
-                      {/* Center Column: Financial Hero, Business Pulse, Attention Items */}
+                      {/* Main Column: Financial Hero, Business Pulse, Attention Items */}
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
                         <FinancialHero
                           merchantName="Sanjay"
@@ -310,15 +304,18 @@ export default function App() {
                         />
                       </div>
 
-                      {/* Right Column: Today's Signals, Revenue at Risk, Autopilot Performance */}
-                      <RightIntelligencePanel />
+                      {/* Right Intelligence Column: Actionable Priorities & Revenue at Risk */}
+                      <RightIntelligencePanel
+                        onSelectPriority={handleSelectPriorityByName}
+                        onViewRevenueRisks={() => setActiveTab('leaks')}
+                      />
                     </div>
                   </ErrorBoundary>
                 )}
 
-                {/* SALES INPUT / DATA INGESTION WORKSPACE */}
+                {/* TRANSACTIONS WORKSPACE */}
                 {activeTab === 'sales' && (
-                  <ErrorBoundary fallbackTitle="Sales Ingestion Error">
+                  <ErrorBoundary fallbackTitle="Transactions View Error">
                     <div className="content-grid-full">
                       <SalesInputWorkspace
                         catalog={merchantCatalog}
@@ -381,10 +378,8 @@ export default function App() {
                 {activeTab === 'more' && (
                   <ErrorBoundary fallbackTitle="Secondary View Error">
                     <div className="content-grid-full">
-                      {secondaryTab === 'insights' && <InsightFeed />}
                       {secondaryTab === 'recovery' && <RecoveryView />}
                       {secondaryTab === 'experiments' && <InsightFeed />}
-                      {secondaryTab === 'timeline' && <RecoveryView />}
                       {secondaryTab === 'quality' && (
                         <SalesInputWorkspace
                           catalog={merchantCatalog}
@@ -400,7 +395,7 @@ export default function App() {
                           </div>
                           <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.7 }}>
                             <div>• Product Identity: <strong>MerchIntell (AI Revenue Copilot)</strong></div>
-                            <div>• Data Pipeline: <strong>Active POS Real-time Ingestion</strong></div>
+                            <div>• Architecture: <strong>Single Top-Header Shell (No Sidebar)</strong></div>
                             <div>• Execution Mode: <strong>Local Deterministic MOCK</strong></div>
                             <div>• Catalog Count: <strong>{inventoryStats.totalProducts} items</strong></div>
                             <div>• Store Context: <strong>GreenBasket Market (Store #1)</strong></div>
@@ -416,7 +411,6 @@ export default function App() {
             )}
 
           </div>
-
         </div>
 
         {/* Product Workspace Drawer */}

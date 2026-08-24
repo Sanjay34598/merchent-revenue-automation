@@ -2,43 +2,39 @@
 
 /* ═══════════════════════════════════════════
    MERCHINTELL — ENTERPRISE FINTECH DESIGN SYSTEM
-   Exact replica of reference visual design
+   Sidebar-free, Merchant-First Single Shell Architecture
    ═══════════════════════════════════════════ */
 :root {
-  --bg-page: #F7F8FC;
+  --bg-page: #F8FAFC;
   --bg-surface: #FFFFFF;
-  --bg-subtle: #F8F9FC;
-  --bg-hover: #F1F4F9;
-  --border-color: #E7EAF0;
-  --border-subtle: #D0D5DD;
+  --bg-subtle: #F1F5F9;
+  --bg-hover: #F8FAFC;
+  --border-color: #E2E8F0;
+  --border-subtle: #CBD5E1;
   
-  --text-main: #17233C;
-  --text-sub: #667085;
-  --text-muted: #98A2B3;
+  --text-main: #14213D;
+  --text-sub: #64748B;
+  --text-muted: #94A3B8;
 
   --accent-purple: #6C4EFF;
   --accent-purple-bg: #F1EDFF;
   --accent-purple-border: #E2D9FF;
 
-  --primary-blue: #4F7CFF;
-  --primary-blue-bg: #EFF4FF;
-  --primary-blue-border: #C7D7FE;
-
-  --emerald-green: #08A66A;
-  --emerald-green-bg: #E9F9F2;
-  --emerald-green-border: #B2F0D6;
+  --emerald-green: #00A878;
+  --emerald-green-bg: #E6F7F2;
+  --emerald-green-border: #B2EAD9;
 
   --risk-red: #E5484D;
   --risk-red-bg: #FFF0F1;
   --risk-red-border: #FFD2D4;
 
-  --amber-gold: #F2994A;
-  --amber-gold-bg: #FFF6ED;
-  --amber-gold-border: #FFE0C2;
+  --amber-gold: #D97706;
+  --amber-gold-bg: #FFFBEB;
+  --amber-gold-border: #FDE68A;
 
-  --shadow-sm: 0 1px 2px rgba(23,35,60,0.03);
-  --shadow-md: 0 4px 16px rgba(23,35,60,0.05);
-  --shadow-drawer: -12px 0 50px rgba(23,35,60,0.12);
+  --shadow-sm: 0 1px 2px rgba(20,33,61,0.03);
+  --shadow-md: 0 4px 16px rgba(20,33,61,0.06);
+  --shadow-drawer: -12px 0 50px rgba(20,33,61,0.14);
 
   --font-serif: 'Instrument Serif', Georgia, serif;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -59,10 +55,6 @@
   --accent-purple: #8B6CFF;
   --accent-purple-bg: rgba(139, 108, 255, 0.15);
   --accent-purple-border: rgba(139, 108, 255, 0.35);
-
-  --primary-blue: #4F7CFF;
-  --primary-blue-bg: #1E3A8A;
-  --primary-blue-border: #1D4ED8;
 
   --emerald-green: #19C37D;
   --emerald-green-bg: #064E3B;
@@ -153,7 +145,7 @@ input, select, textarea {
 
 .statement-main-serif {
   font-family: var(--font-serif);
-  font-size: 40px;
+  font-size: 42px;
   font-weight: 400;
   color: var(--text-main);
   letter-spacing: -0.5px;
@@ -162,7 +154,7 @@ input, select, textarea {
 }
 
 .section-head {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--text-main);
   letter-spacing: -0.4px;
@@ -176,7 +168,8 @@ input, select, textarea {
 }
 
 /* ═══════════════════════════════════════════
-   ENTERPRISE LAYOUT GRID (Sidebar + Header + Main + Right Panel)
+   SINGLE-SHELL TOP HEADER & 2-COLUMN MAIN CONTENT
+   (Sidebar Completely Removed)
    ═══════════════════════════════════════════ */
 .app-layout {
   display: flex;
@@ -187,38 +180,24 @@ input, select, textarea {
 }
 
 .top-header-full {
-  height: 72px;
+  height: 68px;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border-color);
-  padding: 0 32px;
+  padding: 0 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: sticky;
   top: 0;
   z-index: 80;
+  box-shadow: var(--shadow-sm);
 }
 
 .shell-body {
   display: flex;
+  flex-direction: column;
   flex: 1;
   min-width: 0;
-}
-
-.sidebar-permanent {
-  width: 220px;
-  flex-shrink: 0;
-  background: var(--bg-surface);
-  border-right: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 24px 14px 20px;
-  position: sticky;
-  top: 72px;
-  height: calc(100vh - 72px);
-  z-index: 60;
-  transition: width 0.2s ease;
 }
 
 .main-content-wrapper {
@@ -230,9 +209,9 @@ input, select, textarea {
 
 .content-grid-3col {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 380px;
-  gap: 28px;
-  padding: 28px 32px;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  gap: 32px;
+  padding: 32px 40px;
   max-width: 1680px;
   margin: 0 auto;
   width: 100%;
@@ -242,7 +221,7 @@ input, select, textarea {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding: 28px 32px;
+  padding: 32px 40px;
   max-width: 1680px;
   margin: 0 auto;
   width: 100%;
@@ -255,9 +234,6 @@ input, select, textarea {
 }
 
 @media (max-width: 768px) {
-  .sidebar-permanent {
-    display: none;
-  }
   .top-header-full {
     padding: 0 16px;
   }
@@ -273,7 +249,7 @@ input, select, textarea {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 18px 24px;
+  padding: 16px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -378,15 +354,6 @@ input, select, textarea {
   color: var(--text-main);
 }
 
-.btn-copilot-success {
-  background: var(--emerald-green);
-  color: #ffffff;
-}
-.btn-copilot-success:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 4px 14px rgba(8,166,106,0.25);
-}
-
 .btn-copilot-ghost {
   background: transparent;
   color: var(--accent-purple);
@@ -427,7 +394,7 @@ input, select, textarea {
 .workspace-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(23,35,60,0.4);
+  background: rgba(20,33,61,0.4);
   backdrop-filter: blur(4px);
   z-index: 200;
   display: flex;
@@ -439,7 +406,7 @@ input, select, textarea {
   background: var(--bg-surface);
   color: var(--text-main);
   width: 100%;
-  max-width: 680px;
+  max-width: 640px;
   height: 100%;
   overflow-y: auto;
   padding: 36px 40px;
@@ -455,34 +422,6 @@ input, select, textarea {
 @keyframes slideLeft {
   from { transform: translateX(100%); }
   to   { transform: translateX(0); }
-}
-
-/* Range Input Sliders */
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  width: 100%;
-  cursor: pointer;
-}
-input[type="range"]::-webkit-slider-runnable-track {
-  height: 6px;
-  border-radius: 100px;
-  background: var(--border-color);
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--bg-surface);
-  border: 3px solid var(--accent-purple);
-  box-shadow: 0 2px 6px rgba(108,78,255,0.25);
-  margin-top: -6px;
-  transition: transform 0.15s ease;
-}
-input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
 }
 
 /* Toast */

@@ -6,8 +6,8 @@ import {
 interface HeaderProps {
   activeTab: 'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more';
   setActiveTab: (tab: 'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more') => void;
-  secondaryTab: 'insights' | 'recovery' | 'experiments' | 'timeline' | 'status' | 'quality';
-  setSecondaryTab: (tab: 'insights' | 'recovery' | 'experiments' | 'timeline' | 'status' | 'quality') => void;
+  secondaryTab: 'recovery' | 'experiments' | 'quality' | 'status';
+  setSecondaryTab: (tab: 'recovery' | 'experiments' | 'quality' | 'status') => void;
   theme: 'light' | 'dark' | 'system';
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
   setShowStoreProfile: (show: boolean) => void;
@@ -28,10 +28,19 @@ export const Header: React.FC<HeaderProps> = ({
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
+  const mainNav = [
+    { id: 'home' as const, label: 'Overview' },
+    { id: 'sales' as const, label: 'Transactions' },
+    { id: 'leaks' as const, label: 'Revenue' },
+    { id: 'inventory' as const, label: 'Inventory' },
+    { id: 'decisions' as const, label: 'Decisions' },
+    { id: 'whatif' as const, label: 'Simulator' },
+  ];
+
   return (
     <header className="top-header-full">
       
-      {/* Left: Brand Identity (Serif Display Wordmark, Zero Flash Icon) */}
+      {/* Left: Brand Wordmark (Refined Serif, Zero Flash Icon) */}
       <div
         style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', userSelect: 'none' }}
         onClick={() => setActiveTab('home')}
@@ -44,29 +53,14 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Center: Navigation Pill Bar */}
-      <nav style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        {[
-          { id: 'home' as const, label: 'Overview' },
-          { id: 'sales' as const, label: 'Transactions' },
-          { id: 'leaks' as const, label: 'Revenue' },
-          { id: 'inventory' as const, label: 'Inventory' },
-          { id: 'decisions' as const, label: 'Decisions' },
-          { id: 'whatif' as const, label: 'Simulator' },
-          { id: 'more' as const, label: 'Insights', isInsight: true },
-        ].map(({ id, label, isInsight }) => {
-          const active = isInsight ? (activeTab === 'more' && secondaryTab === 'insights') : activeTab === id;
+      {/* Center: Primary Merchant Workflows Navigation */}
+      <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        {mainNav.map(({ id, label }) => {
+          const active = activeTab === id;
           return (
             <button
               key={id}
-              onClick={() => {
-                if (isInsight) {
-                  setActiveTab('more');
-                  setSecondaryTab('insights');
-                } else {
-                  setActiveTab(id);
-                }
-              }}
+              onClick={() => setActiveTab(id)}
               style={{
                 display: 'flex', alignItems: 'center', gap: 6,
                 padding: '7px 16px', borderRadius: 100, border: 'none',
@@ -87,15 +81,15 @@ export const Header: React.FC<HeaderProps> = ({
           );
         })}
 
-        {/* More Dropdown Menu */}
+        {/* Unified "More" Dropdown Menu */}
         <div style={{ position: 'relative' }}>
           <button
             onClick={() => setShowMoreMenu(!showMoreMenu)}
             style={{
               display: 'flex', alignItems: 'center', gap: 4, padding: '7px 14px',
-              borderRadius: 100, border: 'none', fontSize: 13, fontWeight: (activeTab === 'more' && secondaryTab !== 'insights') ? 700 : 500,
-              background: (activeTab === 'more' && secondaryTab !== 'insights') ? 'var(--accent-purple-bg)' : 'transparent',
-              color: (activeTab === 'more' && secondaryTab !== 'insights') ? 'var(--accent-purple)' : 'var(--text-sub)',
+              borderRadius: 100, border: 'none', fontSize: 13, fontWeight: activeTab === 'more' ? 700 : 500,
+              background: activeTab === 'more' ? 'var(--accent-purple-bg)' : 'transparent',
+              color: activeTab === 'more' ? 'var(--accent-purple)' : 'var(--text-sub)',
               cursor: 'pointer',
             }}
           >
@@ -110,9 +104,8 @@ export const Header: React.FC<HeaderProps> = ({
               boxShadow: 'var(--shadow-md)', padding: '6px 0', minWidth: 170, zIndex: 100,
             }}>
               {[
+                ['recovery', 'Recovery'],
                 ['experiments', 'Experiments'],
-                ['recovery', 'Recovery Log'],
-                ['timeline', 'Audit Timeline'],
                 ['quality', 'Data Quality'],
                 ['status', 'System Diagnostics'],
               ].map(([key, label]) => (
@@ -139,7 +132,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </nav>
 
-      {/* Right Controls: Store Selector, Status Pill, Notifications, Theme, Profile Avatar */}
+      {/* Right Controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <button
           onClick={() => setShowStoreProfile(true)}
@@ -193,11 +186,11 @@ export const Header: React.FC<HeaderProps> = ({
               background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12,
               boxShadow: 'var(--shadow-md)', padding: 16, width: 280, zIndex: 100, fontSize: 12
             }}>
-              <div style={{ fontWeight: 700, marginBottom: 8, color: 'var(--text-main)' }}>Recent Signals</div>
+              <div style={{ fontWeight: 700, marginBottom: 8, color: 'var(--text-main)' }}>Priorities Alert</div>
               <div style={{ color: 'var(--text-sub)', lineHeight: 1.5 }}>
-                • Fresh Orange Juice 500ml flagged for expiry risk (2 days left).<br />
-                • Amul Taaza Milk stockout prevented automatically.<br />
-                • POS sale processed (TXN-00128). Inventory synced.
+                • Fresh Milk 1L clearance discount ready for review.<br />
+                • POS sale processed (TXN-00129). Inventory updated.<br />
+                • Weekly recovery target 92% achieved.
               </div>
             </div>
           )}
