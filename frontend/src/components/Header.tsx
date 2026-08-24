@@ -4,10 +4,7 @@ import {
 } from 'lucide-react';
 
 interface HeaderProps {
-  activeTab: 'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more';
-  setActiveTab: (tab: 'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more') => void;
-  secondaryTab: 'recovery' | 'experiments' | 'quality' | 'status';
-  setSecondaryTab: (tab: 'recovery' | 'experiments' | 'quality' | 'status') => void;
+  onBrandClick: () => void;
   theme: 'light' | 'dark' | 'system';
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
   setShowStoreProfile: (show: boolean) => void;
@@ -15,35 +12,22 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  activeTab,
-  setActiveTab,
-  secondaryTab,
-  setSecondaryTab,
+  onBrandClick,
   theme,
   setTheme,
   setShowStoreProfile,
   setShowStatusModal,
 }) => {
   const [showThemeMenu, setShowThemeMenu] = useState(false);
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-
-  const mainNav = [
-    { id: 'home' as const, label: 'Overview' },
-    { id: 'sales' as const, label: 'Transactions' },
-    { id: 'leaks' as const, label: 'Revenue' },
-    { id: 'inventory' as const, label: 'Inventory' },
-    { id: 'decisions' as const, label: 'Decisions' },
-    { id: 'whatif' as const, label: 'Simulator' },
-  ];
 
   return (
     <header className="top-header-full">
       
-      {/* Left: Brand Wordmark (Refined Serif, Zero Flash Icon) */}
+      {/* Left: Minimal Brand Wordmark (Refined Serif Display, Zero Flash Icon) */}
       <div
         style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', userSelect: 'none' }}
-        onClick={() => setActiveTab('home')}
+        onClick={onBrandClick}
       >
         <div className="brand-wordmark">
           MerchIntell
@@ -53,86 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Center: Primary Merchant Workflows Navigation */}
-      <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-        {mainNav.map(({ id, label }) => {
-          const active = activeTab === id;
-          return (
-            <button
-              key={id}
-              onClick={() => setActiveTab(id)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '7px 16px', borderRadius: 100, border: 'none',
-                fontSize: 13, fontWeight: active ? 700 : 500,
-                background: active ? 'var(--accent-purple-bg)' : 'transparent',
-                color: active ? 'var(--accent-purple)' : 'var(--text-sub)',
-                transition: 'all 0.15s ease',
-                cursor: 'pointer',
-              }}
-            >
-              <span>{label}</span>
-              {active && (
-                <span style={{
-                  width: 5, height: 5, borderRadius: '50%', background: 'var(--accent-purple)'
-                }} />
-              )}
-            </button>
-          );
-        })}
-
-        {/* Unified "More" Dropdown Menu */}
-        <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => setShowMoreMenu(!showMoreMenu)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 4, padding: '7px 14px',
-              borderRadius: 100, border: 'none', fontSize: 13, fontWeight: activeTab === 'more' ? 700 : 500,
-              background: activeTab === 'more' ? 'var(--accent-purple-bg)' : 'transparent',
-              color: activeTab === 'more' ? 'var(--accent-purple)' : 'var(--text-sub)',
-              cursor: 'pointer',
-            }}
-          >
-            <span>More</span>
-            <ChevronDown size={12} color="var(--text-sub)" />
-          </button>
-
-          {showMoreMenu && (
-            <div style={{
-              position: 'absolute', left: 0, top: 'calc(100% + 8px)',
-              background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12,
-              boxShadow: 'var(--shadow-md)', padding: '6px 0', minWidth: 170, zIndex: 100,
-            }}>
-              {[
-                ['recovery', 'Recovery'],
-                ['experiments', 'Experiments'],
-                ['quality', 'Data Quality'],
-                ['status', 'System Diagnostics'],
-              ].map(([key, label]) => (
-                <button
-                  key={key}
-                  onClick={() => {
-                    setActiveTab('more');
-                    setSecondaryTab(key as any);
-                    setShowMoreMenu(false);
-                  }}
-                  style={{
-                    display: 'block', width: '100%', padding: '8px 16px',
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    fontSize: 13, color: 'var(--text-main)', textAlign: 'left', fontWeight: 500,
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-subtle)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </nav>
-
-      {/* Right Controls */}
+      {/* Right: Small Utility Controls (Store Selector, Autopilot Pill, Notifications, Theme, Avatar) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <button
           onClick={() => setShowStoreProfile(true)}

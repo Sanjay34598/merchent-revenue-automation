@@ -1,17 +1,20 @@
 import React from 'react';
-import { Sparkline } from './Sparkline';
 
 interface BusinessPulseProps {
   activeRisksCount?: number;
+  atRiskAmount?: number;
 }
 
-export const BusinessPulse: React.FC<BusinessPulseProps> = ({ activeRisksCount = 7 }) => {
+export const BusinessPulse: React.FC<BusinessPulseProps> = ({
+  activeRisksCount = 7,
+  atRiskAmount = 2138
+}) => {
   return (
     <div style={{
-      background: 'var(--bg-surface)',
-      border: '1px solid var(--border-color)',
-      borderRadius: 16,
-      padding: '16px 20px',
+      background: 'transparent',
+      borderTop: '1px solid var(--border-color)',
+      borderBottom: '1px solid var(--border-color)',
+      padding: '12px 4px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -19,27 +22,25 @@ export const BusinessPulse: React.FC<BusinessPulseProps> = ({ activeRisksCount =
       fontWeight: 500,
       color: 'var(--text-sub)',
       flexWrap: 'wrap',
-      gap: 16
+      gap: 16,
+      margin: '8px 0 20px'
     }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
         BUSINESS PULSE
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+        <div>
           <span>Revenue <strong style={{ color: 'var(--emerald-green)' }}>↑ 8.4%</strong></span>
-          <Sparkline data={[8.0, 8.1, 8.2, 8.4]} isNegative={false} width={40} height={14} />
         </div>
         <span style={{ color: 'var(--border-color)' }}>|</span>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div>
           <span>Demand <strong style={{ color: 'var(--emerald-green)' }}>↑ 12.0%</strong></span>
-          <Sparkline data={[11.2, 11.5, 11.8, 12.0]} isNegative={false} width={40} height={14} />
         </div>
         <span style={{ color: 'var(--border-color)' }}>|</span>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div>
           <span>Gross margin <strong style={{ color: 'var(--emerald-green)' }}>↑ 2.1%</strong></span>
-          <Sparkline data={[1.8, 1.9, 2.0, 2.1]} isNegative={false} width={40} height={14} />
         </div>
         <span style={{ color: 'var(--border-color)' }}>|</span>
 
@@ -49,7 +50,7 @@ export const BusinessPulse: React.FC<BusinessPulseProps> = ({ activeRisksCount =
         <span style={{ color: 'var(--border-color)' }}>|</span>
 
         <div>
-          <span>Active risks <strong style={{ color: 'var(--risk-red)' }}>{activeRisksCount}</strong></span>
+          <span>At Risk <strong style={{ color: 'var(--risk-red)' }}>₹{atRiskAmount.toLocaleString('en-IN')}</strong></span>
         </div>
       </div>
     </div>
