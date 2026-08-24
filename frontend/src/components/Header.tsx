@@ -24,7 +24,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="top-floating-header">
       
-      {/* Left: Small, Restrained Wordmark (Zero Flash Icon) */}
+      {/* Left: Understated Serif Brand Wordmark */}
       <div
         style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', userSelect: 'none' }}
         onClick={onBrandClick}
@@ -37,14 +37,15 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Right: Floating Utility Controls (No Header Box Container) */}
+      {/* Right: Floating Utility Controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <button
           onClick={() => setShowStoreProfile(true)}
           style={{
             display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
-            background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 100,
+            background: 'rgba(255,255,255,0.6)', border: '1px solid var(--border-color)', borderRadius: 100,
             fontSize: 12, fontWeight: 600, color: 'var(--text-main)', cursor: 'pointer',
+            backdropFilter: 'blur(8px)',
           }}
         >
           <Store size={13} color="var(--text-sub)" />
@@ -70,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Notifications"
             style={{
               width: 32, height: 32, borderRadius: '50%',
-              background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
+              background: 'rgba(255,255,255,0.6)', border: '1px solid var(--border-color)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
               position: 'relative'
             }}
@@ -88,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({
           {showNotifications && (
             <div style={{
               position: 'absolute', right: 0, top: 'calc(100% + 8px)',
-              background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12,
+              background: 'var(--bg-surface-elevated)', border: '1px solid var(--border-color)', borderRadius: 12,
               boxShadow: 'var(--shadow-md)', padding: 16, width: 280, zIndex: 100, fontSize: 12
             }}>
               <div style={{ fontWeight: 700, marginBottom: 8, color: 'var(--text-main)' }}>Notifications</div>
@@ -107,7 +108,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Toggle Theme Mode"
             style={{
               width: 32, height: 32, borderRadius: '50%',
-              background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
+              background: 'rgba(255,255,255,0.6)', border: '1px solid var(--border-color)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
             }}
           >
@@ -117,7 +118,7 @@ export const Header: React.FC<HeaderProps> = ({
           {showThemeMenu && (
             <div style={{
               position: 'absolute', right: 0, top: 'calc(100% + 8px)',
-              background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12,
+              background: 'var(--bg-surface-elevated)', border: '1px solid var(--border-color)', borderRadius: 12,
               boxShadow: 'var(--shadow-md)', padding: '6px 0', minWidth: 140, zIndex: 100,
             }}>
               {[

@@ -6,7 +6,6 @@ interface BusinessPulseProps {
 }
 
 export const BusinessPulse: React.FC<BusinessPulseProps> = ({
-  activeRisksCount = 7,
   atRiskAmount = 2138
 }) => {
   return (
@@ -28,7 +27,7 @@ export const BusinessPulse: React.FC<BusinessPulseProps> = ({
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
         BUSINESS PULSE
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
         <div>
           <span>Revenue <strong style={{ color: 'var(--emerald-green)' }}>↑ 8.4%</strong></span>
         </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, AlertTriangle, AlertCircle, ShoppingBag } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Sparkline } from './Sparkline';
 
 interface RightIntelligencePanelProps {
@@ -14,29 +14,23 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
   const priorities = [
     {
       name: 'Fresh Milk 1L',
-      detail: '57 units · expires in 3 days',
-      exposed: '₹2,616',
-      rec: '15% clearance',
       badge: 'Expiry Risk',
-      bg: 'var(--risk-red-bg)',
+      detail: '57 units · expires in 3 days · ₹2,616 exposed',
+      rec: '15% clearance',
       color: 'var(--risk-red)',
     },
     {
       name: 'Fortune Sunflower Oil',
-      detail: 'Margin down 3.1pp',
-      exposed: '₹789',
-      rec: 'Adjust price +4%',
       badge: 'Margin Leak',
-      bg: '#FFF6ED',
-      color: '#D97706',
+      detail: 'Margin down 3.1pp · ₹789 exposed',
+      rec: 'Adjust price +4%',
+      color: 'var(--amber-gold)',
     },
     {
       name: 'Mother Dairy Paneer',
-      detail: 'Stock cover 1.4 days',
-      exposed: '₹360',
-      rec: 'Reorder 20 units',
       badge: 'Stockout Risk',
-      bg: '#EFF4FF',
+      detail: '1.4 days stock cover · ₹360 exposed',
+      rec: 'Reorder 20 units',
       color: '#3B82F6',
     },
   ];
@@ -51,10 +45,10 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
   const fmt = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, width: 350, flexShrink: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, width: 340, flexShrink: 0 }}>
 
-      {/* TODAY'S PRIORITIES PANEL (Merchant Action Focused) */}
-      <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 16, padding: 20 }}>
+      {/* TODAY'S PRIORITIES PANEL */}
+      <div className="glass-tile" style={{ padding: 20 }}>
         <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-main)', marginBottom: 16 }}>
           Today's Priorities
         </div>
@@ -64,18 +58,18 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
             <div
               key={idx}
               style={{
-                background: 'var(--bg-subtle)', border: '1px solid var(--border-color)',
-                borderRadius: 12, padding: 14, display: 'flex', flexDirection: 'column', gap: 8
+                background: 'rgba(255, 255, 255, 0.5)', border: '1px solid var(--border-color)',
+                borderRadius: 12, padding: 14, display: 'flex', flexDirection: 'column', gap: 6
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--text-main)' }}>{item.name}</span>
-                <span className="badge-pill" style={{ background: item.bg, color: item.color, fontSize: 10 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: item.color }}>
                   {item.badge}
                 </span>
               </div>
               <div style={{ fontSize: 11, color: 'var(--text-sub)' }}>
-                {item.detail} · <strong style={{ color: 'var(--risk-red)' }}>{item.exposed} exposed</strong>
+                {item.detail}
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
                 <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-main)' }}>
@@ -94,9 +88,9 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
         </div>
       </div>
 
-      {/* REVENUE AT RISK DARK NAVY PANEL */}
+      {/* REVENUE AT RISK DARK PANEL */}
       <div style={{
-        background: '#101522', color: '#F8FAFC', borderRadius: 16, padding: 22,
+        background: '#101522', color: '#F8FAFC', borderRadius: 18, padding: 22,
         border: '1px solid #20283A', boxShadow: 'var(--shadow-md)'
       }}>
         <div style={{ fontSize: 15, fontWeight: 700, color: '#F8FAFC', marginBottom: 12 }}>
@@ -113,11 +107,11 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
             </div>
           </div>
           <div style={{ paddingBottom: 4 }}>
-            <Sparkline data={[420, 380, 490, 510, 480, 520, 490]} isNegative={true} width={100} height={32} />
+            <Sparkline data={[420, 380, 490, 510, 480, 520, 490]} isNegative={true} width={90} height={28} />
           </div>
         </div>
 
-        {/* Top Product Contributors List */}
+        {/* Top Product Contributors */}
         <div style={{ borderTop: '1px solid #20283A', paddingTop: 14 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12 }}>
             {contributors.map((c, idx) => (

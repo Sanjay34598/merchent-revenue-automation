@@ -1,53 +1,54 @@
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 /* ═══════════════════════════════════════════
-   MERCHINTELL — MINIMAL ENTERPRISE FINTECH PALETTE
-   Apple/Linear/Stripe monastic simplicity
+   MERCHINTELL — ENTERPRISE FINTECH DESIGN SYSTEM
+   Linear + Stripe + Ramp + Apple Warm-Neutral Glass Aesthetic
    ═══════════════════════════════════════════ */
 :root {
-  --bg-page: #FAFAF9;
-  --bg-surface: #FFFFFF;
-  --bg-subtle: #F5F5F4;
-  --bg-hover: #F5F5F4;
-  --border-color: #EAEAEA;
-  --border-subtle: #E7E7E7;
+  --bg-page: #F4F5F7;
+  --bg-surface: #FAFAF9;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-subtle: rgba(20, 30, 50, 0.03);
+  --bg-hover: rgba(255, 255, 255, 0.7);
   
-  --text-main: #171717;
-  --text-sub: #737373;
-  --text-muted: #A3A3A3;
+  --text-main: #172033;
+  --text-sub: #667085;
+  --text-muted: #98A2B3;
 
-  --accent-purple: #6D4AFF;
-  --accent-purple-bg: #F1EDFF;
-  --accent-purple-border: #E2D9FF;
+  --accent-purple: #6C4EFF;
+  --accent-purple-bg: rgba(108, 78, 255, 0.08);
+  --accent-purple-border: rgba(108, 78, 255, 0.2);
 
-  --emerald-green: #059669;
-  --emerald-green-bg: #ECFDF5;
-  --emerald-green-border: #A7F3D0;
+  --emerald-green: #00A878;
+  --emerald-green-bg: rgba(0, 168, 120, 0.08);
+  --emerald-green-border: rgba(0, 168, 120, 0.2);
 
-  --risk-red: #DC3E4D;
-  --risk-red-bg: #FFF1F2;
-  --risk-red-border: #FECDD3;
+  --risk-red: #E5484D;
+  --risk-red-bg: rgba(229, 72, 77, 0.08);
+  --risk-red-border: rgba(229, 72, 77, 0.2);
 
-  --amber-gold: #D97706;
-  --amber-gold-bg: #FFFBEB;
-  --amber-gold-border: #FDE68A;
+  --amber-gold: #E88A1A;
+  --amber-gold-bg: rgba(232, 138, 26, 0.08);
+  --amber-gold-border: rgba(232, 138, 26, 0.2);
 
-  --shadow-sm: none;
-  --shadow-md: 0 4px 20px rgba(0,0,0,0.04);
-  --shadow-drawer: -12px 0 50px rgba(0,0,0,0.08);
+  --border-color: rgba(20, 30, 50, 0.08);
+  --border-glass: rgba(255, 255, 255, 0.75);
+
+  --shadow-sm: 0 2px 8px rgba(20,30,50,0.02);
+  --shadow-md: 0 10px 35px rgba(20, 30, 50, 0.045);
+  --shadow-drawer: -12px 0 50px rgba(20,30,50,0.12);
 
   --font-serif: 'Instrument Serif', Georgia, serif;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 [data-theme="dark"] {
-  --bg-page: #080B12;
+  --bg-page: #0B0F19;
   --bg-surface: #101522;
-  --bg-subtle: #151B29;
-  --bg-hover: #1A2336;
-  --border-color: #20283A;
-  --border-subtle: #334155;
-
+  --bg-surface-elevated: #161D2E;
+  --bg-subtle: rgba(255, 255, 255, 0.04);
+  --bg-hover: rgba(255, 255, 255, 0.08);
+  
   --text-main: #F8FAFC;
   --text-sub: #98A2B3;
   --text-muted: #64748B;
@@ -57,19 +58,22 @@
   --accent-purple-border: rgba(139, 108, 255, 0.35);
 
   --emerald-green: #10B981;
-  --emerald-green-bg: #064E3B;
-  --emerald-green-border: #047857;
+  --emerald-green-bg: rgba(16, 185, 129, 0.15);
+  --emerald-green-border: rgba(16, 185, 129, 0.3);
 
   --risk-red: #F43F5E;
-  --risk-red-bg: #881337;
-  --risk-red-border: #9F1239;
+  --risk-red-bg: rgba(244, 63, 94, 0.15);
+  --risk-red-border: rgba(244, 63, 94, 0.3);
 
   --amber-gold: #F59E0B;
-  --amber-gold-bg: #451A03;
-  --amber-gold-border: #78350F;
+  --amber-gold-bg: rgba(245, 158, 11, 0.15);
+  --amber-gold-border: rgba(245, 158, 11, 0.3);
 
-  --shadow-sm: none;
-  --shadow-md: 0 6px 20px rgba(0,0,0,0.5);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-glass: rgba(255, 255, 255, 0.15);
+
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md: 0 10px 35px rgba(0,0,0,0.5);
   --shadow-drawer: -12px 0 60px rgba(0,0,0,0.7);
 }
 
@@ -85,7 +89,13 @@ body {
   margin: 0;
   padding: 0;
   font-family: var(--font-sans);
-  background: var(--bg-page);
+  background:
+    radial-gradient(
+      circle at 70% 0%,
+      rgba(108, 78, 255, 0.035),
+      transparent 38%
+    ),
+    var(--bg-page);
   color: var(--text-main);
   min-height: 100vh;
   transition: background-color 0.2s ease, color 0.2s ease;
@@ -100,25 +110,22 @@ button {
   cursor: pointer;
   user-select: none;
 }
-button:active {
-  transform: scale(0.98);
-}
 
 input, select, textarea {
   font-family: inherit;
 }
 
 /* Custom Scrollbar */
-::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 100px; }
+::-webkit-scrollbar-thumb { background: rgba(20, 30, 50, 0.15); border-radius: 100px; }
 
 /* ═══════════════════════════════════════════
    TYPOGRAPHY HIERARCHY
    ═══════════════════════════════════════════ */
 .brand-wordmark {
   font-family: var(--font-serif);
-  font-size: 24px;
+  font-size: 25px;
   font-weight: 400;
   color: var(--text-main);
   letter-spacing: -0.3px;
@@ -144,7 +151,7 @@ input, select, textarea {
 
 .statement-main-serif {
   font-family: var(--font-serif);
-  font-size: 38px;
+  font-size: 40px;
   font-weight: 400;
   color: var(--text-main);
   letter-spacing: -0.4px;
@@ -167,22 +174,22 @@ input, select, textarea {
 }
 
 /* ═══════════════════════════════════════════
-   SINGLE CANVAS LAYOUT & FLOATING UTILITY CONTROLS
-   (No Header Container, No Sidebar)
+   SINGLE CANVAS & TRANSPARENT HEADER LAYOUT
    ═══════════════════════════════════════════ */
 .app-layout {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: var(--bg-page);
+  background: transparent;
   color: var(--text-main);
 }
 
 .top-floating-header {
-  height: 64px;
+  height: 68px;
   background: transparent;
-  border-bottom: none;
-  padding: 20px 48px 0;
+  border: none;
+  box-shadow: none;
+  padding: 24px 48px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -209,7 +216,7 @@ input, select, textarea {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
   gap: 36px;
-  padding: 40px 48px 60px;
+  padding: 28px 48px 60px;
   max-width: 1500px;
   margin: 0 auto;
   width: 100%;
@@ -219,7 +226,7 @@ input, select, textarea {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding: 32px 48px 60px;
+  padding: 28px 48px 60px;
   max-width: 1500px;
   margin: 0 auto;
   width: 100%;
@@ -241,8 +248,18 @@ input, select, textarea {
 }
 
 /* ═══════════════════════════════════════════
-   CLEAN OPERATIONS LIST & TABLES
+   GLASS CONTAINER & OPERATIONS LIST
    ═══════════════════════════════════════════ */
+.glass-tile {
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-glass);
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
+  transition: all 180ms ease;
+}
+
 .copilot-list-row {
   background: transparent;
   border-bottom: 1px solid var(--border-color);
@@ -251,11 +268,11 @@ input, select, textarea {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  transition: background-color 0.15s ease;
+  transition: background-color 160ms ease, transform 160ms ease;
   cursor: pointer;
 }
 .copilot-list-row:hover {
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.55);
 }
 
 .copilot-list-row:hover .row-arrow-icon {
@@ -270,15 +287,16 @@ input, select, textarea {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  background: var(--bg-surface);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
   font-size: 13px;
 }
 
 .inventory-table th {
-  background: var(--bg-subtle);
+  background: rgba(20, 30, 50, 0.02);
   color: var(--text-muted);
   font-weight: 700;
   text-transform: uppercase;
@@ -301,7 +319,7 @@ input, select, textarea {
 }
 
 .inventory-table tr:hover td {
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.85);
   cursor: pointer;
 }
 
@@ -331,7 +349,7 @@ input, select, textarea {
 }
 
 /* ═══════════════════════════════════════════
-   BUTTONS
+   BUTTONS & CONTROLS
    ═══════════════════════════════════════════ */
 .btn-copilot {
   display: inline-flex;
@@ -344,25 +362,27 @@ input, select, textarea {
   font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 180ms ease;
   white-space: nowrap;
 }
 
 .btn-copilot-primary {
-  background: var(--text-main);
-  color: var(--bg-surface);
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
 }
 .btn-copilot-primary:hover {
-  background: #000000;
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-1px);
 }
 
 .btn-copilot-secondary {
-  background: var(--bg-surface);
+  background: rgba(255, 255, 255, 0.5);
   color: var(--text-sub);
   border: 1px solid var(--border-color);
 }
 .btn-copilot-secondary:hover {
-  background: var(--bg-subtle);
+  background: rgba(255, 255, 255, 0.85);
   color: var(--text-main);
 }
 
@@ -381,8 +401,8 @@ input, select, textarea {
 .workspace-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(23,23,23,0.3);
-  backdrop-filter: blur(2px);
+  background: rgba(20,30,50,0.3);
+  backdrop-filter: blur(4px);
   z-index: 200;
   display: flex;
   justify-content: flex-end;
@@ -390,7 +410,7 @@ input, select, textarea {
 }
 
 .workspace-drawer {
-  background: var(--bg-surface);
+  background: var(--bg-surface-elevated);
   color: var(--text-main);
   width: 100%;
   max-width: 620px;
@@ -417,10 +437,10 @@ input, select, textarea {
   top: 20px;
   right: 20px;
   z-index: 300;
-  background: var(--bg-surface);
+  background: var(--bg-surface-elevated);
   color: var(--text-main);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 12px 18px;
   display: flex;
   align-items: center;
