@@ -4,8 +4,8 @@ interface FinancialHeroProps {
   merchantName?: string;
   protectedRevenue?: number;
   exposedRevenue?: number;
-  inventoryHealthPct?: number;
   activeOpportunitiesCount?: number;
+  onViewRevenue?: () => void;
 }
 
 export const FinancialHero: React.FC<FinancialHeroProps> = ({
@@ -13,6 +13,7 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
   protectedRevenue = 27696,
   exposedRevenue = 2138,
   activeOpportunitiesCount = 36,
+  onViewRevenue,
 }) => {
   const fmt = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 
@@ -24,7 +25,18 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
         in revenue this month.
       </h1>
       <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-sub)', marginTop: 10, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-        <span>{fmt(exposedRevenue)} currently exposed across {activeOpportunitiesCount} opportunities.</span>
+        <span>
+          <button
+            onClick={onViewRevenue}
+            style={{
+              background: 'none', border: 'none', padding: 0, color: 'var(--risk-red)',
+              fontWeight: 700, cursor: 'pointer', textDecoration: 'underline'
+            }}
+          >
+            {fmt(exposedRevenue)}
+          </button>
+          {' '}currently at risk · {activeOpportunitiesCount} opportunities
+        </span>
       </div>
     </div>
   );

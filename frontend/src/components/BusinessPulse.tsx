@@ -1,13 +1,6 @@
 import React from 'react';
 
-interface BusinessPulseProps {
-  activeRisksCount?: number;
-  atRiskAmount?: number;
-}
-
-export const BusinessPulse: React.FC<BusinessPulseProps> = ({
-  atRiskAmount = 2138
-}) => {
+export const BusinessPulse: React.FC = () => {
   return (
     <div style={{
       background: 'transparent',
@@ -24,10 +17,10 @@ export const BusinessPulse: React.FC<BusinessPulseProps> = ({
       gap: 16,
       margin: '8px 0 24px'
     }}>
-      <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
         BUSINESS PULSE
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
         <div>
           <span>Revenue <strong style={{ color: 'var(--emerald-green)' }}>↑ 8.4%</strong></span>
         </div>
@@ -45,11 +38,6 @@ export const BusinessPulse: React.FC<BusinessPulseProps> = ({
 
         <div>
           <span>Inventory <strong style={{ color: 'var(--accent-purple)' }}>Healthy</strong></span>
-        </div>
-        <span style={{ color: 'var(--border-color)' }}>│</span>
-
-        <div>
-          <span>At Risk <strong style={{ color: 'var(--risk-red)' }}>₹{atRiskAmount.toLocaleString('en-IN')}</strong></span>
         </div>
       </div>
     </div>

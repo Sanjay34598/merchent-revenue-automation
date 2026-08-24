@@ -8,26 +8,25 @@ interface OpportunityRowProps {
 }
 
 export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }) => {
-  const fmt = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 
-  const riskLabelStyle = (status: ProductItem['riskStatus']) => {
+  const riskBadge = (status: ProductItem['riskStatus']) => {
     switch (status) {
       case 'EXPIRY':     return { label: 'Expiry risk',   color: 'var(--risk-red)' };
       case 'STOCKOUT':   return { label: 'Stockout risk', color: '#2563EB' };
       case 'MARGIN_LEAK':return { label: 'Margin leak',   color: 'var(--amber-gold)' };
       case 'OVERSTOCK':  return { label: 'Overstock',     color: '#7C3AED' };
-      default:           return { label: 'Healthy',       color: 'var(--emerald-green)' };
+      default:           return { label: 'Attention',     color: 'var(--accent-purple)' };
     }
   };
 
-  const badge = riskLabelStyle(item.riskStatus);
+  const badge = riskBadge(item.riskStatus);
 
-  const getSignalDescription = () => {
+  const getReasonText = () => {
     if (item.riskStatus === 'EXPIRY') {
-      return `${item.currentStock} ${item.sellingUnit}s · expires in ${item.expiryDays ?? 2} days`;
+      return `${item.currentStock} ${item.sellingUnit}s · expires in ${item.expiryDays ?? 3} days`;
     }
     if (item.riskStatus === 'STOCKOUT') {
-      return `${item.currentStock} ${item.sellingUnit}s left · Cover ${(item.currentStock / Math.max(item.dailyVelocity, 0.1)).toFixed(1)} days`;
+      return `1.4 days stock cover · ${item.currentStock} ${item.sellingUnit}s remaining`;
     }
     if (item.riskStatus === 'MARGIN_LEAK') {
       return `Supplier cost ↑ 6.2% · Margin ↓ 3.1pp`;
@@ -39,8 +38,9 @@ export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }
     <div
       className="copilot-list-row"
       onClick={() => onSelect(item)}
+      style={{ padding: '16px 4px' }}
     >
-      {/* Product & Signal Details */}
+      {/* Product Name & Context Reason */}
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontWeight: 800, fontSize: 15, color: 'var(--text-main)' }}>{item.name}</span>
@@ -49,25 +49,19 @@ export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }
           </span>
         </div>
         <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 4 }}>
-          {getSignalDescription()}
+          {getReasonText()}
         </div>
       </div>
 
-      {/* Exposed, Recoverable, Recommendation & Review Button */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+      {/* Recommended Action & Review Link */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: 14, fontWeight: 900, color: 'var(--risk-red)' }}>{fmt(item.revenueAtRisk)}</div>
-          <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>EXPOSED</div>
-        </div>
-
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: 14, fontWeight: 900, color: 'var(--emerald-green)' }}>{fmt(item.recoverableRevenue)}</div>
-          <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>RECOVERABLE</div>
-        </div>
-
-        <div style={{ textAlign: 'right', minWidth: 120 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)' }}>{item.recommendedAction}</div>
-          <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>RECOMMENDED</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)' }}>
+            {item.recommendedAction}
+          </div>
+          <div style={{ fontSize: 10, color: 'var(--text-sub)', marginTop: 2 }}>
+            Recommended action
+          </div>
         </div>
 
         <button

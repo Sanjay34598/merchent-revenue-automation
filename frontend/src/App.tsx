@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { CheckCircle2, X, RefreshCw, Terminal, Shield, ArrowLeft } from 'lucide-react';
-import { UnifiedDecision, RevenueOpportunity, AgentActionItem, OutcomeRecord, FailureRecord, Experiment } from './types';
+import { UnifiedDecision, RevenueOpportunity, AgentActionItem } from './types';
 import { generateMerchantInventory, getInventoryStats, ProductItem } from './data/merchantInventory';
 
 // Modular Components
@@ -15,7 +15,6 @@ import { ProductWorkspace } from './components/ProductWorkspace';
 import { InventoryTable } from './components/InventoryTable';
 import { DecisionPipeline } from './components/DecisionPipeline';
 import { Simulator } from './components/Simulator';
-import { InsightFeed } from './components/InsightFeed';
 import { RecoveryView } from './components/RecoveryView';
 import { RightIntelligencePanel } from './components/RightIntelligencePanel';
 import { SalesInputWorkspace } from './components/SalesInputWorkspace';
@@ -33,7 +32,7 @@ async function safeApi<T>(fetcher: () => Promise<T>, fallback: T): Promise<{ dat
 
 export default function App() {
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'recovery' | 'quality'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'recovery'>('home');
 
   // Theme state with localStorage initialization & system fallback
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(() => {
@@ -209,14 +208,6 @@ export default function App() {
     return inventoryStats.itemsAtRisk.slice(0, 7);
   }, [inventoryStats]);
 
-  // Handler for selecting priority items from Right Intelligence Panel
-  const handleSelectPriorityByName = (productName: string) => {
-    const matched = merchantCatalog.find(p => p.name.toLowerCase().includes(productName.toLowerCase()));
-    if (matched) {
-      setSelectedProductWorkspace(matched);
-    }
-  };
-
   return (
     <ErrorBoundary fallbackTitle="MerchIntell Command Center Encountered an Error">
       <div className="app-layout">
@@ -272,12 +263,12 @@ export default function App() {
               <>
                 {/* BACK BUTTON NAVIGATION FOR SUB-VIEWS */}
                 {activeTab !== 'home' && (
-                  <div style={{ padding: '24px 40px 0', maxWidth: 1680, margin: '0 auto', width: '100%' }}>
+                  <div style={{ padding: '24px 0 0', maxWidth: 1500, margin: '0 auto', width: '100%' }}>
                     <button
                       onClick={() => setActiveTab('home')}
                       style={{
                         display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px',
-                        borderRadius: 100, border: '1px solid var(--border-color)', background: 'var(--bg-surface)',
+                        borderRadius: 100, border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.6)',
                         color: 'var(--text-sub)', fontSize: 12, fontWeight: 700, cursor: 'pointer'
                       }}
                     >
@@ -295,12 +286,12 @@ export default function App() {
                         <FinancialHero
                           merchantName="Sanjay"
                           protectedRevenue={27696}
-                          exposedRevenue={2138}
-                          inventoryHealthPct={94}
-                          activeOpportunitiesCount={36}
+                          exposedRevenue={inventoryStats.totalRevenueAtRisk || 2138}
+                          activeOpportunitiesCount={inventoryStats.itemsAtRiskCount || 36}
+                          onViewRevenue={() => setActiveTab('leaks')}
                         />
 
-                        {/* MERCHANT ACTION ICON STRIP (Matching Prompt Specification) */}
+                        {/* MERCHANT ACTION ICON STRIP */}
                         <MerchantActionStrip
                           onActionClick={(tabKey) => setActiveTab(tabKey)}
                           atRiskAmount={inventoryStats.totalRevenueAtRisk || 2138}
@@ -308,10 +299,7 @@ export default function App() {
                           totalProductsCount={inventoryStats.totalProducts || 150}
                         />
 
-                        <BusinessPulse
-                          activeRisksCount={inventoryStats.itemsAtRiskCount}
-                          atRiskAmount={inventoryStats.totalRevenueAtRisk || 2138}
-                        />
+                        <BusinessPulse />
 
                         <OpportunityList
                           opportunities={homeOpportunities}
@@ -321,13 +309,12 @@ export default function App() {
 
                         <RecentSales
                           onViewAllTransactions={() => setActiveTab('sales')}
-                          onSimulatePosSale={() => setActiveTab('sales')}
                         />
                       </div>
 
-                      {/* Right Column: Priorities & Revenue at Risk */}
+                      {/* Right Column: Next Best Actions Summary & Revenue at Risk */}
                       <RightIntelligencePanel
-                        onSelectPriority={handleSelectPriorityByName}
+                        onViewDecisions={() => setActiveTab('decisions')}
                         onViewRevenueRisks={() => setActiveTab('leaks')}
                       />
                     </div>
@@ -421,7 +408,7 @@ export default function App() {
         {showStoreProfile && (
           <div className="workspace-overlay" onClick={() => setShowStoreProfile(false)}>
             <div style={{
-              background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
+              background: 'var(--bg-surface-elevated)', border: '1px solid var(--border-color)',
               borderRadius: 12, padding: 28, maxWidth: 440, width: '90%', margin: 'auto',
               boxShadow: 'var(--shadow-md)'
             }} onClick={e => e.stopPropagation()}>
@@ -446,7 +433,7 @@ export default function App() {
         {showStatusModal && (
           <div className="workspace-overlay" onClick={() => setShowStatusModal(false)}>
             <div style={{
-              background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
+              background: 'var(--bg-surface-elevated)', border: '1px solid var(--border-color)',
               borderRadius: 12, padding: 28, maxWidth: 440, width: '90%', margin: 'auto',
               boxShadow: 'var(--shadow-md)'
             }} onClick={e => e.stopPropagation()}>
