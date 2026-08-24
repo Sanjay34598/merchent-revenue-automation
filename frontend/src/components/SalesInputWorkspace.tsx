@@ -1,9 +1,36 @@
 import React, { useState } from 'react';
 import {
-  Plus, Trash2, CheckCircle2, ArrowRight, Play, Upload, FileText,
-  RefreshCw, ShieldCheck, Database, Layers, Check
+  Plus, Trash2, CheckCircle2, ArrowRight, Play, Upload,
+  RefreshCw, ShieldCheck, Zap, X, ChevronRight, Check
 } from 'lucide-react';
 import { ProductItem } from '../data/merchantInventory';
+
+export interface TransactionDetail {
+  id: string;
+  timestamp: string;
+  terminal: string;
+  source: string;
+  cashier: string;
+  paymentMethod: string;
+  items: Array<{
+    product: ProductItem;
+    quantity: number;
+    unit: string;
+    unitPrice: number;
+    discount: number;
+    lineTotal: number;
+  }>;
+  subtotal: number;
+  discount: number;
+  grandTotal: number;
+  status: 'Processed' | 'Pending' | 'Flagged';
+  systemImpact?: {
+    inventoryUpdated: number;
+    demandModelsUpdated: number;
+    revenueExposureDelta: string;
+    decisionEngineSignal: string;
+  };
+}
 
 interface SalesInputWorkspaceProps {
   catalog: ProductItem[];
@@ -29,9 +56,10 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
   onRecordSale,
   onImportCsv,
 }) => {
-  const [activeSubTab, setActiveSubTab] = useState<'bill' | 'import' | 'ledger' | 'quality'>('bill');
-  
-  // Billing Form Line Items
+  const [activeSubTab, setActiveSubTab] = useState<'stream' | 'bill' | 'import' | 'ledger' | 'quality'>('stream');
+  const [selectedTransactionDetail, setSelectedTransactionDetail] = useState<TransactionDetail | null>(null);
+
+  // Line items state for Manual Bill Entry
   const [lineItems, setLineItems] = useState<Array<{
     productId: number;
     quantity: number;
@@ -40,22 +68,71 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
     discount: number;
     lineTotal: number;
   }>>([
-    { productId: catalog[0]?.id || 1, quantity: 2.5, unit: 'kg', unitPrice: catalog[0]?.sellingPrice || 110, discount: 0, lineTotal: (2.5 * (catalog[0]?.sellingPrice || 110)) },
-    { productId: catalog[1]?.id || 2, quantity: 2.0, unit: 'pack', unitPrice: catalog[1]?.sellingPrice || 31, discount: 0, lineTotal: (2.0 * (catalog[1]?.sellingPrice || 31)) },
+    { productId: catalog[0]?.id || 1, quantity: 2.5, unit: 'kg', unitPrice: catalog[0]?.sellingPrice || 120, discount: 0, lineTotal: (2.5 * (catalog[0]?.sellingPrice || 120)) },
+    { productId: catalog[1]?.id || 2, quantity: 1.5, unit: 'L', unitPrice: catalog[1]?.sellingPrice || 168, discount: 10, lineTotal: (1.5 * (catalog[1]?.sellingPrice || 168)) - 10 },
   ]);
 
   const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'Cash' | 'Card'>('UPI');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [processingStage, setProcessingStage] = useState('');
-  const [importCount, setImportCount] = useState(25);
-  const [csvProcessedMsg, setCsvProcessedMsg] = useState<string | null>(null);
+  const [activeStageIndex, setActiveStageIndex] = useState(-1);
 
-  // Derive totals
+  // In-Memory Transaction Ledger History State
+  const [transactionsLedger, setTransactionsLedger] = useState<TransactionDetail[]>([
+    {
+      id: 'TXN-20260824-00128',
+      timestamp: '2 mins ago',
+      terminal: 'POS Terminal #01',
+      source: 'GreenBasket POS',
+      cashier: 'Sanjay M.',
+      paymentMethod: 'UPI',
+      items: [
+        { product: catalog.find(p => p.name.includes('Rice')) || catalog[0], quantity: 2.5, unit: 'kg', unitPrice: 120, discount: 0, lineTotal: 300 },
+        { product: catalog.find(p => p.name.includes('Oil')) || catalog[1], quantity: 1.5, unit: 'L', unitPrice: 168, discount: 10, lineTotal: 242 },
+      ],
+      subtotal: 552,
+      discount: 10,
+      grandTotal: 542,
+      status: 'Processed',
+      systemImpact: {
+        inventoryUpdated: 2,
+        demandModelsUpdated: 2,
+        revenueExposureDelta: '₹360 exposed revenue cleared',
+        decisionEngineSignal: 'Basmati Rice stock cover reduced to 4.8 days'
+      }
+    },
+    {
+      id: 'TXN-20260824-00127',
+      timestamp: '14 mins ago',
+      terminal: 'POS Terminal #01',
+      source: 'Pine Labs Terminal',
+      cashier: 'Sanjay M.',
+      paymentMethod: 'Card',
+      items: [
+        { product: catalog.find(p => p.name.includes('Milk')) || catalog[2], quantity: 3.0, unit: 'pack', unitPrice: 68, discount: 0, lineTotal: 204 },
+        { product: catalog.find(p => p.name.includes('Bread')) || catalog[3], quantity: 2.0, unit: 'pack', unitPrice: 45, discount: 5, lineTotal: 85 },
+      ],
+      subtotal: 294,
+      discount: 5,
+      grandTotal: 289,
+      status: 'Processed',
+      systemImpact: {
+        inventoryUpdated: 2,
+        demandModelsUpdated: 2,
+        revenueExposureDelta: '₹0 impact (Healthy stock)',
+        decisionEngineSignal: 'Fresh Milk velocity +12%'
+      }
+    }
+  ]);
+
+  const [importCount, setImportCount] = useState(35);
+  const [csvSuccessMsg, setCsvSuccessMsg] = useState<string | null>(null);
+
+  // Derived totals for manual entry
   const subtotal = lineItems.reduce((sum, item) => sum + item.lineTotal, 0);
   const totalDiscount = lineItems.reduce((sum, item) => sum + item.discount, 0);
   const grandTotal = Math.max(0, subtotal - totalDiscount);
 
-  // Line item change handler
+  // Handlers for manual form
   const handleProductChange = (index: number, prodId: number) => {
     const prod = catalog.find(p => p.id === prodId);
     if (!prod) return;
@@ -94,102 +171,117 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
     setLineItems(lineItems.filter((_, i) => i !== index));
   };
 
-  // Demo Presets Handler
-  const applyPreset = (presetName: string) => {
-    if (presetName === 'rice-oil') {
-      const rice = catalog.find(p => p.name.includes('Rice')) || catalog[0];
-      const oil = catalog.find(p => p.name.includes('Oil')) || catalog[1];
-      setLineItems([
-        { productId: rice.id, quantity: 2.5, unit: 'kg', unitPrice: rice.sellingPrice, discount: 0, lineTotal: 2.5 * rice.sellingPrice },
-        { productId: oil.id, quantity: 1.5, unit: 'L', unitPrice: oil.sellingPrice, discount: 10, lineTotal: (1.5 * oil.sellingPrice) - 10 },
-      ]);
-    } else if (presetName === 'milk-bread') {
-      const milk = catalog.find(p => p.name.includes('Milk')) || catalog[0];
-      const bread = catalog.find(p => p.name.includes('Bread')) || catalog[1];
-      setLineItems([
-        { productId: milk.id, quantity: 2.0, unit: 'pack', unitPrice: milk.sellingPrice, discount: 0, lineTotal: 2 * milk.sellingPrice },
-        { productId: bread.id, quantity: 1.0, unit: 'pack', unitPrice: bread.sellingPrice, discount: 5, lineTotal: bread.sellingPrice - 5 },
-      ]);
-    } else if (presetName === 'family') {
-      const rice = catalog.find(p => p.name.includes('Rice')) || catalog[0];
-      const milk = catalog.find(p => p.name.includes('Milk')) || catalog[1];
-      const bread = catalog.find(p => p.name.includes('Bread')) || catalog[2];
-      const salt = catalog.find(p => p.name.includes('Salt')) || catalog[3];
-      setLineItems([
-        { productId: rice.id, quantity: 5.0, unit: 'kg', unitPrice: rice.sellingPrice, discount: 20, lineTotal: 5 * rice.sellingPrice - 20 },
-        { productId: milk.id, quantity: 3.0, unit: 'pack', unitPrice: milk.sellingPrice, discount: 0, lineTotal: 3 * milk.sellingPrice },
-        { productId: bread.id, quantity: 2.0, unit: 'pack', unitPrice: bread.sellingPrice, discount: 0, lineTotal: 2 * bread.sellingPrice },
-        { productId: salt.id, quantity: 1.0, unit: 'pack', unitPrice: salt.sellingPrice, discount: 0, lineTotal: salt.sellingPrice },
-      ]);
-    }
-  };
+  // Pipeline Stages Definitions with Execution Timings
+  const pipelineStages = [
+    { label: 'RECEIVED', detail: `${lineItems.length} items payload received`, time: '4 ms' },
+    { label: 'VALIDATED', detail: 'Schema & payment total verified', time: '6 ms' },
+    { label: 'PRODUCT MATCHED', detail: `${lineItems.length} / ${lineItems.length} SKUs matched`, time: '18 ms' },
+    { label: 'INVENTORY UPDATED', detail: `${lineItems.length} stock levels deducted`, time: '12 ms' },
+    { label: 'DEMAND UPDATED', detail: `${lineItems.length} velocity models recalculated`, time: '24 ms' },
+    { label: 'RISK ENGINE UPDATED', detail: 'Revenue exposure updated', time: '31 ms' },
+    { label: 'DECISION ENGINE UPDATED', detail: 'Autonomous signal updated', time: '14 ms' }
+  ];
 
-  // Submit Sale Handler with Data Ingestion Pipeline Execution
-  const handleSubmitSale = () => {
+  // Pipeline Execution Routine
+  const runPipelineExecution = (itemsToRecord: typeof lineItems, payMethod: 'UPI' | 'Cash' | 'Card') => {
     setIsProcessing(true);
-    const stages = [
-      'RECEIVING SALE STREAM...',
-      'VALIDATING TRANSACTION SCHEMA...',
-      'UPDATING INVENTORY LEVELS & UNITS...',
-      'RECALCULATING DEMAND VELOCITY...',
-      'UPDATING REVENUE RISK INTELLIGENCE...'
-    ];
+    setActiveStageIndex(0);
 
-    let current = 0;
-    setProcessingStage(stages[0]);
-
+    let stage = 0;
     const interval = setInterval(() => {
-      current++;
-      if (current < stages.length) {
-        setProcessingStage(stages[current]);
+      stage++;
+      if (stage < pipelineStages.length) {
+        setActiveStageIndex(stage);
       } else {
         clearInterval(interval);
         setIsProcessing(false);
 
-        // Map items
-        const processedItems = lineItems.map(item => {
-          const prod = catalog.find(p => p.id === item.productId)!;
+        // Processed Items mapping
+        const processedMapped = itemsToRecord.map(i => {
+          const prod = catalog.find(p => p.id === i.productId) || catalog[0];
           return {
             product: prod,
-            quantity: item.quantity,
-            unit: item.unit,
-            unitPrice: item.unitPrice,
-            discount: item.discount,
-            lineTotal: item.lineTotal,
+            quantity: i.quantity,
+            unit: i.unit,
+            unitPrice: i.unitPrice,
+            discount: i.discount,
+            lineTotal: i.lineTotal
           };
         });
 
+        const calcSubtotal = itemsToRecord.reduce((sum, item) => sum + item.lineTotal, 0);
+        const calcDiscount = itemsToRecord.reduce((sum, item) => sum + item.discount, 0);
+        const calcGrandTotal = Math.max(0, calcSubtotal - calcDiscount);
+
+        const txId = `TXN-20260824-00${129 + transactionsLedger.length}`;
+        const newRecord: TransactionDetail = {
+          id: txId,
+          timestamp: 'Just now',
+          terminal: 'POS Terminal #01',
+          source: 'GreenBasket POS Adapter',
+          cashier: 'Sanjay M.',
+          paymentMethod: payMethod,
+          items: processedMapped,
+          subtotal: calcSubtotal,
+          discount: calcDiscount,
+          grandTotal: calcGrandTotal,
+          status: 'Processed',
+          systemImpact: {
+            inventoryUpdated: processedMapped.length,
+            demandModelsUpdated: processedMapped.length,
+            revenueExposureDelta: '₹300 exposed revenue cleared',
+            decisionEngineSignal: `${processedMapped[0]?.product.name || 'Product'} velocity updated`
+          }
+        };
+
+        setTransactionsLedger(prev => [newRecord, ...prev]);
+
         onRecordSale({
-          items: processedItems,
-          paymentMethod,
-          subtotal,
-          discount: totalDiscount,
-          grandTotal,
+          items: processedMapped,
+          paymentMethod: payMethod,
+          subtotal: calcSubtotal,
+          discount: calcDiscount,
+          grandTotal: calcGrandTotal,
         });
 
         setActiveSubTab('ledger');
       }
-    }, 350);
+    }, 220);
+  };
+
+  // Demo Adapter Action: Simulate POS Sale
+  const handleSimulatePosSale = () => {
+    const rice = catalog.find(p => p.name.includes('Rice')) || catalog[0];
+    const oil = catalog.find(p => p.name.includes('Oil')) || catalog[1];
+
+    const presetItems = [
+      { productId: rice.id, quantity: 2.5, unit: 'kg', unitPrice: 120, discount: 0, lineTotal: 300 },
+      { productId: oil.id, quantity: 1.5, unit: 'L', unitPrice: 168, discount: 10, lineTotal: 242 }
+    ];
+
+    setLineItems(presetItems);
+    runPipelineExecution(presetItems, 'UPI');
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       
-      {/* Workspace Header */}
+      {/* Page Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <h1 className="section-head" style={{ fontSize: 26 }}>Sales Data Ingestion</h1>
+          <h1 className="section-head" style={{ fontSize: 26 }}>Transactions Stream & Ingestion</h1>
           <div className="section-sub">
-            Feed MerchIntell with your store's sales. Every bill becomes a signal for revenue, inventory and demand intelligence.
+            Every completed sale becomes a signal. Real-time POS billing ingestion & closed-loop state processing engine.
           </div>
         </div>
 
-        {/* View Mode Selector */}
+        {/* View Mode Selector Tabs */}
         <div style={{ display: 'flex', gap: 6, background: 'var(--bg-surface)', padding: 4, borderRadius: 100, border: '1px solid var(--border-color)' }}>
           {[
-            { id: 'bill' as const, label: 'Enter POS Bill' },
-            { id: 'import' as const, label: 'Import CSV Sales' },
-            { id: 'ledger' as const, label: 'Sales Ledger' },
+            { id: 'stream' as const, label: 'Live Stream' },
+            { id: 'bill' as const, label: 'POS Terminal' },
+            { id: 'import' as const, label: 'Import CSV' },
+            { id: 'ledger' as const, label: 'Ledger History' },
             { id: 'quality' as const, label: 'Data Quality' },
           ].map(tab => (
             <button
@@ -209,51 +301,161 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
         </div>
       </div>
 
-      {/* Data Ingestion Pipeline Diagram */}
-      <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12, padding: '14px 20px', overflowX: 'auto' }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 10, letterSpacing: '0.05em' }}>
-          REAL-TIME DATA INGESTION PIPELINE
+      {/* TOP STATUS BAR: LIVE TRANSACTION STREAM (Matching Prompt Specification) */}
+      <div style={{
+        background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
+        borderRadius: 12, padding: '16px 20px', display: 'flex', alignItems: 'center',
+        justify: 'space-between', flexWrap: 'wrap', gap: 16
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--emerald-green)', animation: 'pulse-monitoring 2s infinite' }} />
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>LIVE TRANSACTION STREAM</div>
+            <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>
+              Status: <strong style={{ color: 'var(--emerald-green)' }}>● Connected</strong> · Source: GreenBasket Market · POS Terminal #01
+            </div>
+          </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 11, fontWeight: 700, color: 'var(--text-main)', minWidth: 700, justifyContent: 'space-between' }}>
-          <span>POS / BILL</span> <ArrowRight size={12} color="var(--accent-purple)" />
-          <span>INGEST</span> <ArrowRight size={12} color="var(--accent-purple)" />
-          <span>NORMALIZE</span> <ArrowRight size={12} color="var(--accent-purple)" />
-          <span>SKU MATCH</span> <ArrowRight size={12} color="var(--accent-purple)" />
-          <span>INVENTORY UPDATE</span> <ArrowRight size={12} color="var(--accent-purple)" />
-          <span>VELOCITY RECALC</span> <ArrowRight size={12} color="var(--accent-purple)" />
-          <span style={{ color: 'var(--accent-purple)' }}>REVENUE RISK SIGNAL</span>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24, fontSize: 12, color: 'var(--text-sub)' }}>
+          <div>
+            Last Transaction: <strong style={{ color: 'var(--text-main)', fontFamily: 'monospace' }}>TXN-20260824-00128</strong> (2s ago)
+          </div>
+          <div>
+            Processed Today: <strong style={{ color: 'var(--accent-purple)' }}>{12 + transactionsLedger.length} sales</strong>
+          </div>
+
+          {/* SIMULATE POS SALE DEMO ADAPTER BUTTON */}
+          <button
+            className="btn-copilot btn-copilot-primary"
+            onClick={handleSimulatePosSale}
+            disabled={isProcessing}
+            style={{ padding: '8px 16px', fontSize: 12, fontWeight: 700 }}
+          >
+            <Zap size={14} /> Simulate POS Sale
+          </button>
         </div>
       </div>
 
-      {/* TAB A: ENTER POS BILL */}
-      {activeSubTab === 'bill' && (
+      {/* PIPELINE INFRASTRUCTURE STAGE ANIMATOR */}
+      {isProcessing && (
+        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--accent-purple-border)', borderRadius: 12, padding: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-purple)', textTransform: 'uppercase', marginBottom: 14, letterSpacing: '0.05em' }}>
+            EXECUTING DATA INGESTION PIPELINE...
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
+            {pipelineStages.map((stage, idx) => {
+              const isPast = idx < activeStageIndex;
+              const isCurrent = idx === activeStageIndex;
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    background: isCurrent ? 'var(--accent-purple-bg)' : isPast ? 'var(--emerald-green-bg)' : 'var(--bg-subtle)',
+                    border: `1px solid ${isCurrent ? 'var(--accent-purple)' : isPast ? 'var(--emerald-green-border)' : 'var(--border-color)'}`,
+                    borderRadius: 8, padding: 10, textAlign: 'center', transition: 'all 0.2s ease'
+                  }}
+                >
+                  <div style={{ fontSize: 10, fontWeight: 800, color: isCurrent ? 'var(--accent-purple)' : isPast ? 'var(--emerald-green)' : 'var(--text-muted)' }}>
+                    {stage.label}
+                  </div>
+                  <div style={{ fontSize: 9, color: 'var(--text-sub)', marginTop: 4 }}>
+                    {stage.detail}
+                  </div>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)', marginTop: 4 }}>
+                    {stage.time}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 1: LIVE STREAM / DASHBOARD VIEW */}
+      {activeSubTab === 'stream' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24 }}>
           
-          {/* Left: POS Bill Line Item Form */}
+          {/* Recent Processed Transactions Table */}
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12, padding: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 800, margin: 0 }}>Recent Processed Transactions</h3>
+              <button onClick={() => setActiveSubTab('bill')} style={{ background: 'none', border: 'none', color: 'var(--accent-purple)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+                Open Terminal →
+              </button>
+            </div>
+
+            <table className="inventory-table">
+              <thead>
+                <tr>
+                  <th>TRANSACTION ID</th>
+                  <th>TIME</th>
+                  <th>ITEMS</th>
+                  <th>QTY</th>
+                  <th>NET</th>
+                  <th>PAYMENT</th>
+                  <th>STATUS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactionsLedger.map((tx) => (
+                  <tr key={tx.id} onClick={() => setSelectedTransactionDetail(tx)}>
+                    <td style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--accent-purple)' }}>{tx.id}</td>
+                    <td>{tx.timestamp}</td>
+                    <td>{tx.items.map(i => i.product.name).join(', ')}</td>
+                    <td>{tx.items.reduce((sum, i) => sum + i.quantity, 0)} units</td>
+                    <td><strong style={{ color: 'var(--text-main)' }}>₹{Math.round(tx.grandTotal)}</strong></td>
+                    <td>{tx.paymentMethod}</td>
+                    <td>
+                      <span className="badge-pill" style={{ background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: '1px solid var(--emerald-green-border)' }}>
+                        {tx.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Infrastructure Architecture Specs */}
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12, padding: 20 }}>
+            <h4 style={{ fontSize: 14, fontWeight: 800, margin: '0 0 12px' }}>Ingestion Engine Architecture</h4>
+            <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.7 }}>
+              <div>• Protocol: <strong>HTTPS / POS Adapter API</strong></div>
+              <div>• Throughput: <strong>1,200 events/sec</strong></div>
+              <div>• Unit Conversion Engine: <strong>Active (kg, L, pack, piece)</strong></div>
+              <div>• State Consistency: <strong>ACID Atomic Updates</strong></div>
+              <div>• Velocity Model Window: <strong>Exponential Moving Average (7D/30D)</strong></div>
+            </div>
+
+            <div style={{ borderTop: '1px solid var(--border-color)', marginTop: 16, paddingTop: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6 }}>DEMO POS PRESET</div>
+              <button
+                className="btn-copilot btn-copilot-secondary"
+                style={{ width: '100%', justifyContent: 'center' }}
+                onClick={handleSimulatePosSale}
+              >
+                Trigger Sample Rice & Oil Sale
+              </button>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* TAB 2: POS BILLING TERMINAL */}
+      {activeSubTab === 'bill' && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24 }}>
           <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12, padding: 24 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <div>
-                <h3 style={{ fontSize: 16, fontWeight: 800, margin: 0 }}>New Sale (POS Billing)</h3>
+                <h3 style={{ fontSize: 16, fontWeight: 800, margin: 0 }}>POS Sale Billing Form</h3>
                 <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
-                  Store: GreenBasket Market · Terminal #01 · TXN-20260824-00128
+                  Store: GreenBasket Market · Terminal #01
                 </div>
-              </div>
-
-              {/* Demo Preset Buttons */}
-              <div style={{ display: 'flex', gap: 6 }}>
-                <button className="btn-copilot btn-copilot-secondary" style={{ padding: '4px 8px', fontSize: 11 }} onClick={() => applyPreset('rice-oil')}>
-                  Preset: Rice + Oil
-                </button>
-                <button className="btn-copilot btn-copilot-secondary" style={{ padding: '4px 8px', fontSize: 11 }} onClick={() => applyPreset('milk-bread')}>
-                  Preset: Milk + Bread
-                </button>
-                <button className="btn-copilot btn-copilot-secondary" style={{ padding: '4px 8px', fontSize: 11 }} onClick={() => applyPreset('family')}>
-                  Preset: Family Basket
-                </button>
               </div>
             </div>
 
-            {/* Line Items Table */}
             <div style={{ overflowX: 'auto', marginBottom: 20 }}>
               <table className="inventory-table">
                 <thead>
@@ -269,7 +471,6 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
                 </thead>
                 <tbody>
                   {lineItems.map((item, idx) => {
-                    const currentProd = catalog.find(p => p.id === item.productId) || catalog[0];
                     return (
                       <tr key={idx}>
                         <td style={{ minWidth: 200 }}>
@@ -305,20 +506,10 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
                           />
                         </td>
 
-                        <td>
-                          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-sub)' }}>
-                            {item.unit}
-                          </span>
-                        </td>
-
+                        <td><span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-sub)' }}>{item.unit}</span></td>
                         <td>₹{item.unitPrice}</td>
-
                         <td>₹{item.discount}</td>
-
-                        <td>
-                          <strong style={{ color: 'var(--text-main)', fontSize: 14 }}>₹{Math.round(item.lineTotal)}</strong>
-                        </td>
-
+                        <td><strong style={{ color: 'var(--text-main)', fontSize: 14 }}>₹{Math.round(item.lineTotal)}</strong></td>
                         <td>
                           {lineItems.length > 1 && (
                             <button onClick={() => removeLineItem(idx)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--risk-red)', padding: 4 }}>
@@ -338,13 +529,9 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
             </button>
           </div>
 
-          {/* Right: Bill Summary & Record Button */}
           <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12, padding: 20, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
-              <h4 style={{ fontSize: 14, fontWeight: 800, margin: '0 0 16px', color: 'var(--text-main)' }}>
-                Transaction Summary
-              </h4>
-
+              <h4 style={{ fontSize: 14, fontWeight: 800, margin: '0 0 16px', color: 'var(--text-main)' }}>Transaction Summary</h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13, color: 'var(--text-sub)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Line Items:</span>
@@ -358,7 +545,6 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
                   <span>Discount:</span>
                   <strong style={{ color: 'var(--emerald-green)' }}>-₹{totalDiscount}</strong>
                 </div>
-
                 <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: 12, marginTop: 4 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 18, fontWeight: 900, color: 'var(--text-main)' }}>
                     <span>Grand Total:</span>
@@ -366,7 +552,6 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
                   </div>
                 </div>
 
-                {/* Payment Method Selector */}
                 <div style={{ marginTop: 16 }}>
                   <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase' }}>
                     PAYMENT METHOD
@@ -391,156 +576,182 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
               </div>
             </div>
 
-            {/* Record Sale Action */}
             <div style={{ marginTop: 24 }}>
-              {isProcessing ? (
-                <div style={{ background: 'var(--accent-purple-bg)', padding: 14, borderRadius: 8, textAlign: 'center' }}>
-                  <RefreshCw size={18} color="var(--accent-purple)" style={{ animation: 'spin 1s linear infinite' }} />
-                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-purple)', marginTop: 6 }}>
-                    {processingStage}
-                  </div>
-                </div>
-              ) : (
-                <button
-                  className="btn-copilot btn-copilot-primary"
-                  style={{ width: '100%', padding: '12px', fontSize: 14 }}
-                  onClick={handleSubmitSale}
-                >
-                  <CheckCircle2 size={16} /> Record Sale & Process Signal
-                </button>
-              )}
+              <button
+                className="btn-copilot btn-copilot-primary"
+                style={{ width: '100%', padding: '12px', fontSize: 14 }}
+                onClick={() => runPipelineExecution(lineItems, paymentMethod)}
+                disabled={isProcessing}
+              >
+                <CheckCircle2 size={16} /> Process Sale & Pipeline
+              </button>
             </div>
           </div>
-
         </div>
       )}
 
-      {/* TAB B: IMPORT SALES (CSV IMPORT) */}
+      {/* TAB 3: IMPORT CSV */}
       {activeSubTab === 'import' && (
         <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12, padding: 28, maxWidth: 640 }}>
-          <h3 style={{ fontSize: 18, fontWeight: 800, margin: '0 0 4px' }}>Import POS Sales History</h3>
+          <h3 style={{ fontSize: 18, fontWeight: 800, margin: '0 0 4px' }}>Import POS Sales Export CSV</h3>
           <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '0 0 20px' }}>
-            Upload CSV export from your POS system (Pine Labs, Petpooja, Vyapar, BillBook, etc.).
+            Upload CSV export from your billing software (Pine Labs, Petpooja, Vyapar, BillBook).
           </p>
 
-          <div style={{
-            border: '2px dashed var(--border-subtle)', borderRadius: 12, padding: 36,
-            textAlign: 'center', background: 'var(--bg-subtle)', marginBottom: 20
-          }}>
+          <div style={{ border: '2px dashed var(--border-subtle)', borderRadius: 12, padding: 36, textAlign: 'center', background: 'var(--bg-subtle)', marginBottom: 20 }}>
             <Upload size={32} color="var(--accent-purple)" style={{ marginBottom: 10 }} />
-            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>
-              Drag & drop your sales CSV here
-            </div>
-            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
-              Expected columns: timestamp, transaction_id, sku, product, quantity, unit, unit_price, discount
-            </div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>Drag & drop your sales CSV export</div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>Expected columns: transaction_id, timestamp, store_id, terminal_id, product_name, sku, quantity, unit, unit_price, discount, payment_method</div>
           </div>
 
-          {csvProcessedMsg && (
+          {csvSuccessMsg && (
             <div style={{ background: 'var(--emerald-green-bg)', border: '1px solid var(--emerald-green-border)', padding: 14, borderRadius: 8, color: 'var(--emerald-green)', fontSize: 13, fontWeight: 600, marginBottom: 16 }}>
-              ✓ {csvProcessedMsg}
+              ✓ {csvSuccessMsg}
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: 12 }}>
-            <button
-              className="btn-copilot btn-copilot-primary"
-              style={{ flex: 1 }}
-              onClick={() => {
-                onImportCsv(importCount);
-                setCsvProcessedMsg(`Successfully imported ${importCount} POS transactions. Inventory levels & demand signals updated.`);
-              }}
-            >
-              <Play size={14} /> Import {importCount} Demo Transactions
-            </button>
-          </div>
+          <button
+            className="btn-copilot btn-copilot-primary"
+            style={{ width: '100%' }}
+            onClick={() => {
+              onImportCsv(importCount);
+              setCsvSuccessMsg(`Imported ${importCount} transactions. 147 products matched, 12 units normalized, ₹4.82L sales processed.`);
+            }}
+          >
+            <Play size={14} /> Import & Parse {importCount} Sales Records
+          </button>
         </div>
       )}
 
-      {/* TAB C: SALES LEDGER */}
+      {/* TAB 4: LEDGER HISTORY */}
       {activeSubTab === 'ledger' && (
         <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12, padding: 20 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 800, margin: '0 0 14px' }}>Processed Sales Ledger</h3>
+          <h3 style={{ fontSize: 16, fontWeight: 800, margin: '0 0 14px' }}>Full Transaction Ledger History</h3>
           <table className="inventory-table">
             <thead>
               <tr>
                 <th>TRANSACTION ID</th>
                 <th>TIMESTAMP</th>
-                <th>PRODUCTS PURCHASED</th>
-                <th>GRAND TOTAL</th>
+                <th>CASHIER / TERMINAL</th>
+                <th>ITEMS PURCHASED</th>
+                <th>GROSS</th>
+                <th>DISCOUNT</th>
+                <th>NET TOTAL</th>
                 <th>PAYMENT</th>
                 <th>STATUS</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td style={{ fontFamily: 'monospace', fontWeight: 700 }}>TXN-20260824-00128</td>
-                <td>Just now</td>
-                <td>
-                  {lineItems.map(i => {
-                    const p = catalog.find(x => x.id === i.productId);
-                    return `${p?.name || 'Product'} (${i.quantity} ${i.unit})`;
-                  }).join(', ')}
-                </td>
-                <td><strong style={{ color: 'var(--accent-purple)' }}>₹{Math.round(grandTotal)}</strong></td>
-                <td>{paymentMethod}</td>
-                <td>
-                  <span className="badge-pill" style={{ background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: '1px solid var(--emerald-green-border)' }}>
-                    Processed
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td style={{ fontFamily: 'monospace', fontWeight: 700 }}>TXN-20260824-00127</td>
-                <td>21:14 PM</td>
-                <td>India Gate Basmati Rice (2.5 kg), Amul Taaza Milk 1L (2 pack)</td>
-                <td><strong>₹337</strong></td>
-                <td>UPI</td>
-                <td>
-                  <span className="badge-pill" style={{ background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: '1px solid var(--emerald-green-border)' }}>
-                    Processed
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td style={{ fontFamily: 'monospace', fontWeight: 700 }}>TXN-20260824-00126</td>
-                <td>20:58 PM</td>
-                <td>Fortune Sunflower Oil 1L (1.5 L)</td>
-                <td><strong>₹242</strong></td>
-                <td>Cash</td>
-                <td>
-                  <span className="badge-pill" style={{ background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: '1px solid var(--emerald-green-border)' }}>
-                    Processed
-                  </span>
-                </td>
-              </tr>
+              {transactionsLedger.map((tx) => (
+                <tr key={tx.id} onClick={() => setSelectedTransactionDetail(tx)}>
+                  <td style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--accent-purple)' }}>{tx.id}</td>
+                  <td>{tx.timestamp}</td>
+                  <td>{tx.cashier} ({tx.terminal})</td>
+                  <td>{tx.items.map(i => `${i.product.name} (${i.quantity} ${i.unit})`).join(', ')}</td>
+                  <td>₹{tx.subtotal}</td>
+                  <td style={{ color: 'var(--emerald-green)' }}>-₹{tx.discount}</td>
+                  <td><strong style={{ color: 'var(--text-main)', fontSize: 14 }}>₹{Math.round(tx.grandTotal)}</strong></td>
+                  <td>{tx.paymentMethod}</td>
+                  <td>
+                    <span className="badge-pill" style={{ background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: '1px solid var(--emerald-green-border)' }}>
+                      {tx.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       )}
 
-      {/* TAB D: DATA QUALITY */}
+      {/* TAB 5: DATA QUALITY */}
       {activeSubTab === 'quality' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
           <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', padding: 18, borderRadius: 12 }}>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>PROCESSED TRANSACTIONS</div>
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>TRANSACTIONS PROCESSED</div>
             <div style={{ fontSize: 24, fontWeight: 900, marginTop: 4 }}>1,248</div>
-            <div style={{ fontSize: 11, color: 'var(--emerald-green)', marginTop: 2 }}>98.7% auto-matched</div>
+            <div style={{ fontSize: 11, color: 'var(--emerald-green)', marginTop: 2 }}>1,232 products matched</div>
           </div>
           <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', padding: 18, borderRadius: 12 }}>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>NORMALIZED RECORDS</div>
-            <div style={{ fontSize: 24, fontWeight: 900, marginTop: 4 }}>12</div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>Unit conversion applied</div>
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>UNMATCHED PRODUCTS</div>
+            <div style={{ fontSize: 24, fontWeight: 900, marginTop: 4 }}>16</div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>12 records normalized</div>
+          </div>
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', padding: 18, borderRadius: 12 }}>
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>DUPLICATES DETECTED</div>
+            <div style={{ fontSize: 24, fontWeight: 900, color: 'var(--emerald-green)', marginTop: 4 }}>3</div>
+            <div style={{ fontSize: 11, color: 'var(--emerald-green)', marginTop: 2 }}>Auto-deduplicated</div>
           </div>
           <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', padding: 18, borderRadius: 12 }}>
             <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>REQUIRES REVIEW</div>
-            <div style={{ fontSize: 24, fontWeight: 900, color: 'var(--risk-red)', marginTop: 4 }}>3</div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>Unmapped SKU codes</div>
+            <div style={{ fontSize: 24, fontWeight: 900, color: 'var(--risk-red)', marginTop: 4 }}>1</div>
+            <div style={{ fontSize: 11, color: 'var(--risk-red)', marginTop: 2 }}>Unresolved SKU price delta</div>
           </div>
-          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', padding: 18, borderRadius: 12 }}>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>TOTAL SALES INGESTED</div>
-            <div style={{ fontSize: 24, fontWeight: 900, color: 'var(--accent-purple)', marginTop: 4 }}>₹4.82L</div>
-            <div style={{ fontSize: 11, color: 'var(--emerald-green)', marginTop: 2 }}>Synced with POS</div>
+        </div>
+      )}
+
+      {/* TRANSACTION DETAIL DRAWER (Matching Prompt Requirement) */}
+      {selectedTransactionDetail && (
+        <div className="workspace-overlay" onClick={() => setSelectedTransactionDetail(null)}>
+          <div className="workspace-drawer" onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <div>
+                <span className="badge-pill" style={{ background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: '1px solid var(--emerald-green-border)' }}>
+                  Processed POS Event
+                </span>
+                <h2 style={{ fontSize: 22, fontWeight: 900, margin: '6px 0 0', fontFamily: 'monospace' }}>
+                  {selectedTransactionDetail.id}
+                </h2>
+              </div>
+              <button onClick={() => setSelectedTransactionDetail(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                <X size={20} color="var(--text-muted)" />
+              </button>
+            </div>
+
+            <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 24, lineHeight: 1.6 }}>
+              <div>Timestamp: <strong>{selectedTransactionDetail.timestamp}</strong></div>
+              <div>Source: <strong>{selectedTransactionDetail.source}</strong> ({selectedTransactionDetail.terminal})</div>
+              <div>Cashier: <strong>{selectedTransactionDetail.cashier}</strong></div>
+              <div>Payment Method: <strong>{selectedTransactionDetail.paymentMethod}</strong></div>
+            </div>
+
+            {/* Line Items Table */}
+            <h4 style={{ fontSize: 14, fontWeight: 800, marginBottom: 10 }}>Purchased Line Items</h4>
+            <table className="inventory-table" style={{ marginBottom: 24 }}>
+              <thead>
+                <tr>
+                  <th>PRODUCT</th>
+                  <th>QTY</th>
+                  <th>PRICE</th>
+                  <th>DISCOUNT</th>
+                  <th>TOTAL</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedTransactionDetail.items.map((item, i) => (
+                  <tr key={i}>
+                    <td><strong>{item.product.name}</strong></td>
+                    <td>{item.quantity} {item.unit}</td>
+                    <td>₹{item.unitPrice}</td>
+                    <td>-₹{item.discount}</td>
+                    <td><strong>₹{Math.round(item.lineTotal)}</strong></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* SYSTEM IMPACT SECTION (Matching Prompt Specification) */}
+            <div style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-color)', borderRadius: 12, padding: 18 }}>
+              <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--accent-purple)', textTransform: 'uppercase', marginBottom: 10, letterSpacing: '0.05em' }}>
+                SYSTEM IMPACT & REVENUE ENGINE AUDIT
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13 }}>
+                <div>• Inventory: <strong>{selectedTransactionDetail.systemImpact?.inventoryUpdated || selectedTransactionDetail.items.length} product stock levels deducted</strong></div>
+                <div>• Demand: <strong>{selectedTransactionDetail.systemImpact?.demandModelsUpdated || selectedTransactionDetail.items.length} daily velocity models recalculated</strong></div>
+                <div>• Revenue Exposure: <strong>{selectedTransactionDetail.systemImpact?.revenueExposureDelta || '₹0 exposure impact'}</strong></div>
+                <div>• Decision Engine Signal: <strong>{selectedTransactionDetail.systemImpact?.decisionEngineSignal || 'Signal integrated'}</strong></div>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -48,7 +48,7 @@ export const Header: React.FC<HeaderProps> = ({
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         {[
           { id: 'home' as const, label: 'Overview' },
-          { id: 'sales' as const, label: 'Sales Input' },
+          { id: 'sales' as const, label: 'Transactions' },
           { id: 'leaks' as const, label: 'Revenue' },
           { id: 'inventory' as const, label: 'Inventory' },
           { id: 'decisions' as const, label: 'Decisions' },
