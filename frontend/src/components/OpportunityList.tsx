@@ -14,20 +14,23 @@ export const OpportunityList: React.FC<OpportunityListProps> = ({
   onViewAllInventory,
 }) => {
   return (
-    <div style={{ marginTop: 20 }}>
-      <div style={{ marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div style={{ marginTop: 24 }}>
+      <div style={{ marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <h2 className="section-head">What needs your attention</h2>
           <div className="section-sub">
             MerchIntell found {opportunities.length} situations where intervention could improve your outcome.
           </div>
         </div>
-        <button className="btn-copilot btn-copilot-secondary" onClick={onViewAllInventory}>
+        <button
+          style={{ background: 'none', border: 'none', color: 'var(--accent-purple)', fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: 0 }}
+          onClick={onViewAllInventory}
+        >
           View all 150 catalog items →
         </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}>
         {opportunities.map((item) => (
           <OpportunityRow key={item.id} item={item} onSelect={onSelectProduct} />
         ))}
