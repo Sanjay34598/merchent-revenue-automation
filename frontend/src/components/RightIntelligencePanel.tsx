@@ -14,21 +14,21 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
   const priorities = [
     {
       name: 'Fresh Milk 1L',
-      badge: 'Expiry Risk',
-      detail: '57 units · expires in 3 days · ₹2,616 exposed',
+      badge: 'Expiry risk',
+      detail: '3 days · ₹2,616 exposed',
       rec: '15% clearance',
       color: 'var(--risk-red)',
     },
     {
       name: 'Fortune Sunflower Oil',
-      badge: 'Margin Leak',
+      badge: 'Margin leak',
       detail: 'Margin down 3.1pp · ₹789 exposed',
       rec: 'Adjust price +4%',
       color: 'var(--amber-gold)',
     },
     {
       name: 'Mother Dairy Paneer',
-      badge: 'Stockout Risk',
+      badge: 'Stockout risk',
       detail: '1.4 days stock cover · ₹360 exposed',
       rec: 'Reorder 20 units',
       color: '#3B82F6',
@@ -45,25 +45,29 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
   const fmt = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, width: 340, flexShrink: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
 
       {/* TODAY'S PRIORITIES PANEL */}
-      <div className="glass-tile" style={{ padding: 20 }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-main)', marginBottom: 16 }}>
-          Today's Priorities
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.45)', backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(20, 30, 50, 0.06)', borderRadius: 16, padding: 18,
+        boxShadow: '0 4px 16px rgba(20, 30, 50, 0.025)'
+      }}>
+        <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--text-main)', marginBottom: 14 }}>
+          Today's priorities
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {priorities.map((item, idx) => (
             <div
               key={idx}
               style={{
-                background: 'rgba(255, 255, 255, 0.5)', border: '1px solid var(--border-color)',
-                borderRadius: 12, padding: 14, display: 'flex', flexDirection: 'column', gap: 6
+                background: 'rgba(255, 255, 255, 0.55)', border: '1px solid var(--border-color)',
+                borderRadius: 10, padding: 12, display: 'flex', flexDirection: 'column', gap: 4
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--text-main)' }}>{item.name}</span>
+                <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--text-main)' }}>{item.name}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, color: item.color }}>
                   {item.badge}
                 </span>
@@ -71,13 +75,13 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
               <div style={{ fontSize: 11, color: 'var(--text-sub)' }}>
                 {item.detail}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-main)' }}>
-                  Rec: {item.rec}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 2 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-main)' }}>
+                  {item.rec}
                 </span>
                 <button
                   className="btn-copilot btn-copilot-ghost"
-                  style={{ padding: '3px 8px', fontSize: 11, fontWeight: 700 }}
+                  style={{ padding: '2px 6px', fontSize: 11, fontWeight: 700 }}
                   onClick={() => onSelectPriority && onSelectPriority(item.name)}
                 >
                   Review →
@@ -90,29 +94,29 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
 
       {/* REVENUE AT RISK DARK PANEL */}
       <div style={{
-        background: '#101522', color: '#F8FAFC', borderRadius: 18, padding: 22,
+        background: '#101522', color: '#F8FAFC', borderRadius: 18, padding: 20,
         border: '1px solid #20283A', boxShadow: 'var(--shadow-md)'
       }}>
-        <div style={{ fontSize: 15, fontWeight: 700, color: '#F8FAFC', marginBottom: 12 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#F8FAFC', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           Revenue at risk
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 14 }}>
           <div>
-            <div style={{ fontSize: 32, fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.5px' }}>
+            <div style={{ fontSize: 30, fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.5px' }}>
               ₹2,138
             </div>
-            <div style={{ fontSize: 12, color: '#98A2B3', marginTop: 2 }}>
+            <div style={{ fontSize: 11, color: '#98A2B3', marginTop: 2 }}>
               Across 7 products
             </div>
           </div>
           <div style={{ paddingBottom: 4 }}>
-            <Sparkline data={[420, 380, 490, 510, 480, 520, 490]} isNegative={true} width={90} height={28} />
+            <Sparkline data={[420, 380, 490, 510, 480, 520, 490]} isNegative={true} width={85} height={26} />
           </div>
         </div>
 
         {/* Top Product Contributors */}
-        <div style={{ borderTop: '1px solid #20283A', paddingTop: 14 }}>
+        <div style={{ borderTop: '1px solid #20283A', paddingTop: 12 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12 }}>
             {contributors.map((c, idx) => (
               <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -127,7 +131,7 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
           onClick={onViewRevenueRisks}
           style={{
             background: 'none', border: 'none', color: 'var(--accent-purple)',
-            fontSize: 12, fontWeight: 700, cursor: 'pointer', marginTop: 14,
+            fontSize: 12, fontWeight: 700, cursor: 'pointer', marginTop: 12,
             display: 'flex', alignItems: 'center', gap: 4, padding: 0
           }}
         >

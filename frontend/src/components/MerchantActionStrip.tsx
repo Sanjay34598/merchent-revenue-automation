@@ -70,8 +70,8 @@ export const MerchantActionStrip: React.FC<MerchantActionStripProps> = ({
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-      gap: 14,
+      gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+      gap: 12,
       margin: '24px 0 28px'
     }}>
       {actions.map((act) => {
@@ -80,42 +80,34 @@ export const MerchantActionStrip: React.FC<MerchantActionStripProps> = ({
           <button
             key={act.key}
             onClick={() => onActionClick(act.key)}
-            className="glass-tile"
-            style={{
-              padding: '14px 16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 14,
-              textAlign: 'left',
-              cursor: 'pointer',
-            }}
+            className="glass-action-tile"
             onMouseEnter={(e) => {
               e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
               e.currentTarget.style.transform = 'translateY(-1px)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.62)';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.45)';
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
             <div style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
+              width: 32,
+              height: 32,
+              borderRadius: 8,
               background: act.isRecordSale ? 'rgba(108, 78, 255, 0.1)' : 'rgba(20, 30, 50, 0.03)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0
             }}>
-              <Icon size={18} color={act.accent} />
+              <Icon size={16} color={act.accent} />
             </div>
 
             <div>
               <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.2 }}>
                 {act.label}
               </div>
-              <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>
+              <div style={{ fontSize: 10, color: 'var(--text-sub)', marginTop: 2 }}>
                 {act.subtext}
               </div>
             </div>

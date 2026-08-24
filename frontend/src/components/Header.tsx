@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={() => setShowStoreProfile(true)}
           style={{
             display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
-            background: 'rgba(255,255,255,0.6)', border: '1px solid var(--border-color)', borderRadius: 100,
+            background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(20,30,50,0.06)', borderRadius: 100,
             fontSize: 12, fontWeight: 600, color: 'var(--text-main)', cursor: 'pointer',
             backdropFilter: 'blur(8px)',
           }}
@@ -71,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Notifications"
             style={{
               width: 32, height: 32, borderRadius: '50%',
-              background: 'rgba(255,255,255,0.6)', border: '1px solid var(--border-color)',
+              background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(20,30,50,0.06)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
               position: 'relative'
             }}
@@ -108,7 +108,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Toggle Theme Mode"
             style={{
               width: 32, height: 32, borderRadius: '50%',
-              background: 'rgba(255,255,255,0.6)', border: '1px solid var(--border-color)',
+              background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(20,30,50,0.06)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
             }}
           >
