@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 from app.services.pos_dataset import pos_engine
+from app.services.analytics import analytics_service
 
 router = APIRouter()
 
@@ -99,7 +100,7 @@ def get_data_quality():
 
 @router.get("/analytics/summary")
 def get_analytics_summary():
-    return pos_engine.analytics_summary
+    return analytics_service.get_summary()
 
 @router.get("/inventory")
 def get_inventory():
