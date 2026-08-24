@@ -24,7 +24,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const coreNav = [
     { id: 'home' as const, label: 'Overview', icon: Home },
-    { id: 'sales' as const, label: 'Sales Input', icon: FilePlus },
+    { id: 'sales' as const, label: 'Transactions', icon: FilePlus },
     { id: 'leaks' as const, label: 'Revenue', icon: DollarSign },
     { id: 'inventory' as const, label: 'Inventory', icon: ShoppingBag },
     { id: 'decisions' as const, label: 'Decisions', icon: Layers },
