@@ -1,12 +1,23 @@
 import React from 'react';
+import { Sparkline } from './Sparkline';
 
-export const BusinessPulse: React.FC = () => {
+interface BusinessPulseProps {
+  onViewRevenue?: () => void;
+  onViewDemand?: () => void;
+  onViewInventory?: () => void;
+}
+
+export const BusinessPulse: React.FC<BusinessPulseProps> = ({
+  onViewRevenue,
+  onViewDemand,
+  onViewInventory,
+}) => {
   return (
     <div style={{
       background: 'transparent',
       borderTop: '1px solid var(--border-color)',
       borderBottom: '1px solid var(--border-color)',
-      padding: '12px 0',
+      padding: '10px 0',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -21,24 +32,50 @@ export const BusinessPulse: React.FC = () => {
         BUSINESS PULSE
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
-        <div>
+        
+        {/* Revenue Metric with Micro Trend */}
+        <div
+          onClick={onViewRevenue}
+          style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+          title="Click to view Revenue workspace"
+        >
           <span>Revenue <strong style={{ color: 'var(--emerald-green)' }}>↑ 8.4%</strong></span>
+          <Sparkline data={[10, 12, 14, 13, 16, 18, 20]} isNegative={false} width={28} height={14} />
         </div>
         <span style={{ color: 'var(--border-color)' }}>│</span>
         
-        <div>
+        {/* Demand Metric with Micro Trend */}
+        <div
+          onClick={onViewDemand}
+          style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+          title="Click to view Decisions & Demand workspace"
+        >
           <span>Demand <strong style={{ color: 'var(--emerald-green)' }}>↑ 12.0%</strong></span>
+          <Sparkline data={[8, 9, 11, 14, 15, 17, 19]} isNegative={false} width={28} height={14} />
         </div>
         <span style={{ color: 'var(--border-color)' }}>│</span>
 
-        <div>
+        {/* Gross Margin Metric with Micro Trend */}
+        <div
+          onClick={onViewRevenue}
+          style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+          title="Click to view Revenue Margin workspace"
+        >
           <span>Gross margin <strong style={{ color: 'var(--emerald-green)' }}>↑ 2.1%</strong></span>
+          <Sparkline data={[21, 21.2, 21.5, 21.8, 22.0, 22.1, 22.1]} isNegative={false} width={28} height={14} />
         </div>
         <span style={{ color: 'var(--border-color)' }}>│</span>
 
-        <div>
+        {/* Inventory Metric */}
+        <div
+          onClick={onViewInventory}
+          style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+          title="Click to view Inventory workspace"
+        >
           <span>Inventory <strong style={{ color: 'var(--accent-purple)' }}>Healthy</strong></span>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--emerald-green)' }} />
         </div>
+
       </div>
     </div>
   );
