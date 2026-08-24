@@ -16,6 +16,7 @@ from app.api.simulations import router as simulations_router
 from app.api.agent import router as agent_router
 from app.api.actions import router as actions_router
 from app.api.autopilot import router as autopilot_router
+from app.api.transactions import router as transactions_router
 from app.schemas.health import HealthResponse
 
 # Create database tables automatically
@@ -23,7 +24,7 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    description="RevenuePilot Backend API - AI Revenue Copilot for Merchants",
+    description="MerchIntell Backend API - AI Revenue Copilot for Merchants",
     version="1.0.0"
 )
 
@@ -48,8 +49,8 @@ app.include_router(simulations_router, prefix="/api", tags=["Simulations"])
 app.include_router(agent_router, prefix="/api", tags=["Agent"])
 app.include_router(actions_router, prefix="/api", tags=["Actions"])
 app.include_router(autopilot_router, prefix="/api", tags=["Autopilot"])
+app.include_router(transactions_router, prefix="/api", tags=["Transactions"])
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
-

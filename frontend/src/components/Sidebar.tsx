@@ -1,15 +1,15 @@
 import React from 'react';
 import {
   Home, DollarSign, ShoppingBag, Layers, Sliders,
-  Lightbulb, Beaker, RotateCcw, Clock, Activity, ChevronLeft, ChevronRight
+  Lightbulb, Beaker, RotateCcw, Clock, Activity, ChevronLeft, ChevronRight, FilePlus, ShieldCheck
 } from 'lucide-react';
 import { Sparkline } from './Sparkline';
 
 interface SidebarProps {
-  activeTab: 'home' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more';
-  setActiveTab: (tab: 'home' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more') => void;
-  secondaryTab: 'insights' | 'recovery' | 'experiments' | 'timeline' | 'status';
-  setSecondaryTab: (tab: 'insights' | 'recovery' | 'experiments' | 'timeline' | 'status') => void;
+  activeTab: 'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more';
+  setActiveTab: (tab: 'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'more') => void;
+  secondaryTab: 'insights' | 'recovery' | 'experiments' | 'timeline' | 'status' | 'quality';
+  setSecondaryTab: (tab: 'insights' | 'recovery' | 'experiments' | 'timeline' | 'status' | 'quality') => void;
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
 }
@@ -24,26 +24,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const coreNav = [
     { id: 'home' as const, label: 'Overview', icon: Home },
+    { id: 'sales' as const, label: 'Sales Input', icon: FilePlus },
     { id: 'leaks' as const, label: 'Revenue', icon: DollarSign },
     { id: 'inventory' as const, label: 'Inventory', icon: ShoppingBag },
     { id: 'decisions' as const, label: 'Decisions', icon: Layers },
-    { id: 'whatif' as const, label: 'Simulator', icon: Sliders },
   ];
 
   const intelligenceNav = [
     { id: 'insights' as const, label: 'Insights', icon: Lightbulb },
-    { id: 'experiments' as const, label: 'Experiments', icon: Beaker },
+    { id: 'whatif' as const, label: 'Simulator', icon: Sliders, isMainTab: true },
     { id: 'recovery' as const, label: 'Recovery Log', icon: RotateCcw },
     { id: 'timeline' as const, label: 'Audit Timeline', icon: Clock },
-    { id: 'status' as const, label: 'System Diagnostics', icon: Activity },
+  ];
+
+  const systemNav = [
+    { id: 'quality' as const, label: 'Data Quality', icon: ShieldCheck },
+    { id: 'status' as const, label: 'Diagnostics', icon: Activity },
   ];
 
   return (
-    <aside className="sidebar-permanent" style={{ width: isCollapsed ? 68 : 220 }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <aside className="sidebar-permanent" style={{ width: isCollapsed ? 64 : 184 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         
-        {/* Core Operations Section */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        {/* CORE SECTION */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {!isCollapsed && (
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '0 8px 4px' }}>
+              CORE
+            </div>
+          )}
           {coreNav.map(({ id, label, icon: Icon }) => {
             const active = activeTab === id;
             return (
@@ -52,8 +61,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => setActiveTab(id)}
                 title={isCollapsed ? label : undefined}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  padding: isCollapsed ? '10px' : '9px 12px', borderRadius: 8, border: 'none',
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: isCollapsed ? '9px' : '8px 10px', borderRadius: 8, border: 'none',
                   fontSize: 13, fontWeight: active ? 700 : 500,
                   background: active ? 'var(--accent-purple-bg)' : 'transparent',
                   color: active ? 'var(--accent-purple)' : 'var(--text-sub)',
@@ -63,19 +72,61 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   justifyContent: isCollapsed ? 'center' : 'flex-start',
                 }}
               >
-                <Icon size={16} color={active ? 'var(--accent-purple)' : 'var(--text-sub)'} />
+                <Icon size={15} color={active ? 'var(--accent-purple)' : 'var(--text-sub)'} />
                 {!isCollapsed && <span>{label}</span>}
               </button>
             );
           })}
         </div>
 
-        {/* Divider */}
-        <div style={{ height: 1, background: 'var(--border-color)', margin: '4px 0' }} />
+        {/* INTELLIGENCE SECTION */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {!isCollapsed && (
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '0 8px 4px' }}>
+              INTELLIGENCE
+            </div>
+          )}
+          {intelligenceNav.map(({ id, label, icon: Icon, isMainTab }) => {
+            const active = isMainTab ? (activeTab === id) : (activeTab === 'more' && secondaryTab === id);
+            return (
+              <button
+                key={id}
+                onClick={() => {
+                  if (isMainTab) {
+                    setActiveTab(id as any);
+                  } else {
+                    setActiveTab('more');
+                    setSecondaryTab(id as any);
+                  }
+                }}
+                title={isCollapsed ? label : undefined}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: isCollapsed ? '9px' : '8px 10px', borderRadius: 8, border: 'none',
+                  fontSize: 13, fontWeight: active ? 700 : 500,
+                  background: active ? 'var(--accent-purple-bg)' : 'transparent',
+                  color: active ? 'var(--accent-purple)' : 'var(--text-sub)',
+                  transition: 'all 0.15s ease',
+                  cursor: 'pointer',
+                  width: '100%',
+                  justifyContent: isCollapsed ? 'center' : 'flex-start',
+                }}
+              >
+                <Icon size={15} color={active ? 'var(--accent-purple)' : 'var(--text-sub)'} />
+                {!isCollapsed && <span>{label}</span>}
+              </button>
+            );
+          })}
+        </div>
 
-        {/* Intelligence Section */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {intelligenceNav.map(({ id, label, icon: Icon }) => {
+        {/* SYSTEM SECTION */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {!isCollapsed && (
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '0 8px 4px' }}>
+              SYSTEM
+            </div>
+          )}
+          {systemNav.map(({ id, label, icon: Icon }) => {
             const active = activeTab === 'more' && secondaryTab === id;
             return (
               <button
@@ -86,8 +137,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 }}
                 title={isCollapsed ? label : undefined}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  padding: isCollapsed ? '10px' : '9px 12px', borderRadius: 8, border: 'none',
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: isCollapsed ? '9px' : '8px 10px', borderRadius: 8, border: 'none',
                   fontSize: 13, fontWeight: active ? 700 : 500,
                   background: active ? 'var(--accent-purple-bg)' : 'transparent',
                   color: active ? 'var(--accent-purple)' : 'var(--text-sub)',
@@ -97,7 +148,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   justifyContent: isCollapsed ? 'center' : 'flex-start',
                 }}
               >
-                <Icon size={16} color={active ? 'var(--accent-purple)' : 'var(--text-sub)'} />
+                <Icon size={15} color={active ? 'var(--accent-purple)' : 'var(--text-sub)'} />
                 {!isCollapsed && <span>{label}</span>}
               </button>
             );
@@ -106,47 +157,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       </div>
 
-      {/* Bottom Section: Model Accuracy Card & Collapse Button */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        
-        {/* Model Accuracy Card Widget (Matching Reference) */}
+      {/* Bottom Section: Model Accuracy & Collapse Button */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {!isCollapsed && (
           <div style={{
             background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
-            borderRadius: 12, padding: 16, boxShadow: 'var(--shadow-sm)'
+            borderRadius: 10, padding: 12, boxShadow: 'var(--shadow-sm)'
           }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-main)', marginBottom: 8 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-main)', marginBottom: 6 }}>
               Model Accuracy
             </div>
-            
-            <div style={{ height: 36, marginBottom: 8 }}>
-              <Sparkline data={[92.4, 93.1, 92.8, 94.2, 95.0, 95.8]} isNegative={false} width={164} height={36} />
+            <div style={{ height: 28, marginBottom: 6 }}>
+              <Sparkline data={[92.4, 93.1, 92.8, 94.2, 95.0, 95.8]} isNegative={false} width={130} height={28} />
             </div>
-
-            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.3px' }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.3px' }}>
               95.8%
             </div>
-            
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--emerald-green)', marginTop: 2 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--emerald-green)', marginTop: 1 }}>
               ↑ 2.4% vs last month
             </div>
           </div>
         )}
 
-        {/* Collapse Sidebar Button */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           style={{
-            display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-            padding: '8px 4px', background: 'none', border: 'none',
-            color: 'var(--text-sub)', fontSize: 13, fontWeight: 500,
+            display: 'flex', alignItems: 'center', gap: 6, width: '100%',
+            padding: '6px 4px', background: 'none', border: 'none',
+            color: 'var(--text-sub)', fontSize: 12, fontWeight: 500,
             cursor: 'pointer', justifyContent: isCollapsed ? 'center' : 'flex-start'
           }}
         >
-          {isCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
+          {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
           {!isCollapsed && <span>Collapse</span>}
         </button>
-
       </div>
     </aside>
   );
