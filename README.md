@@ -1,4 +1,4 @@
-# RevenuePilot — AI Revenue Copilot for Merchants
+# MerchIntell — AI Revenue Copilot for Merchants
 
 > **AI Revenue Copilot for Retail & Grocery Merchants**
 > A portfolio project demonstrating full-stack AI engineering, decision modeling, demand forecasting, financial scenario simulation, and policy-gated automation.
@@ -50,7 +50,7 @@ LEARN & CALIBRATE FROM OUTCOMES
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│              RevenuePilot Modern Frontend               │
+│              MerchIntell Modern Frontend                │
 │          (React + TypeScript + Vite + Vanilla CSS)      │
 └────────────────────────────┬────────────────────────────┘
                              │ REST API
@@ -75,7 +75,7 @@ LEARN & CALIBRATE FROM OUTCOMES
 
 ## 🛍️ Synthetic Catalog Dataset
 
-RevenuePilot incorporates a seeded 150-item synthetic inventory dataset representing realistic Indian grocery retail stock:
+MerchIntell incorporates a seeded 150-item synthetic inventory dataset representing realistic Indian grocery retail stock:
 - **Brands**: Amul, Britannia, Tata, Fortune, Aashirvaad, Parle, Coca-Cola, Paper Boat, Nescafé, Maggi, Surf Excel, McCain, etc.
 - **Categories**: Dairy, Beverages, Bakery, Staples, Snacks, Personal Care, Household, Frozen Foods, Fruits & Vegetables, Packaged Foods.
 - **Realistic Metrics**: Unrounded selling prices, cost prices, stock counts, daily sales velocities, 7-day sparklines, expiry windows, and supplier lead times.
@@ -85,11 +85,11 @@ RevenuePilot incorporates a seeded 150-item synthetic inventory dataset represen
 
 ## ⚡ 90-Second Recruiter Demo Walkthrough
 
-1. **Home Overview**: View weekly recovered revenue (₹1,340) and high-priority action cards.
-2. **Product Workspace Drawer**: Click any product (e.g. *Fresh Orange Juice*) to open the 250ms slide-over detail drawer showing stock, velocity, 3-day trend %, expiry days, and revenue at risk.
-3. **Autonomous Decision Center**: View the visual 8-stage decision pipeline (`OBSERVE` → `DETECT` → `FORECAST` → `SIMULATE` → `POLICY CHECK` → `RECOMMEND` → `EXECUTE` → `LEARN`) and compare candidate discount strategies.
+1. **Home Overview (Financial Command Center)**: View revenue protected (₹27,696), exposed revenue (₹2,138), inventory health (94%), business pulse, and real-time signals.
+2. **Product Workspace Drawer**: Click any product (e.g. *Fresh Juice 500ml*) to open the slide-over detail drawer showing stock, velocity, 3-day trend %, expiry days, revenue at risk, and AI recommendation (15% clearance discount).
+3. **Autonomous Decision Center**: View the visual 8-stage decision pipeline (`OBSERVE` → `DETECT` → `FORECAST` → `SIMULATE` → `POLICY CHECK` → `RECOMMEND` → `EXECUTE` → `LEARN`) and compare candidate strategies.
 4. **What-If Simulator**: Adjust clearance discount (%) and reorder quantity sliders to calculate real-time elasticity and financial impact (+₹354 expected recovery).
-5. **Inventory Catalog**: Search and filter the 150-product catalog by category or risk status (`EXPIRY`, `STOCKOUT`, `MARGIN_LEAK`, `OVERSTOCK`, `HEALTHY`).
+5. **Inventory Operating System**: Search and filter the 150-product catalog by category or risk status (`EXPIRY`, `STOCKOUT`, `MARGIN_LEAK`, `OVERSTOCK`, `HEALTHY`).
 6. **Theme Engine**: Toggle seamlessly between Light Mode, Dark Mode, and System Mode preferences.
 
 ---
