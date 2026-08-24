@@ -8,6 +8,7 @@ interface OpportunityRowProps {
 }
 
 export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }) => {
+  const fmt = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 
   const riskBadge = (status: ProductItem['riskStatus']) => {
     switch (status) {
@@ -40,7 +41,7 @@ export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }
       onClick={() => onSelect(item)}
       style={{ padding: '16px 4px' }}
     >
-      {/* Product Name & Context Reason */}
+      {/* Product Name & Context Signal */}
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontWeight: 800, fontSize: 15, color: 'var(--text-main)' }}>{item.name}</span>
@@ -53,14 +54,32 @@ export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }
         </div>
       </div>
 
-      {/* Recommended Action & Review Link */}
+      {/* Exposed, Recoverable, Recommended Action & Review Link */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
         <div style={{ textAlign: 'right' }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--risk-red)' }}>
+            {fmt(item.revenueAtRisk)}
+          </div>
+          <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
+            EXPOSED
+          </div>
+        </div>
+
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--emerald-green)' }}>
+            {fmt(item.recoverableRevenue)}
+          </div>
+          <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
+            RECOVERABLE
+          </div>
+        </div>
+
+        <div style={{ textAlign: 'right', minWidth: 120 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)' }}>
             {item.recommendedAction}
           </div>
-          <div style={{ fontSize: 10, color: 'var(--text-sub)', marginTop: 2 }}>
-            Recommended action
+          <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
+            RECOMMENDED
           </div>
         </div>
 
