@@ -168,160 +168,167 @@ export default function App() {
           </div>
         )}
 
-        {/* Left Sidebar (~220px) */}
-        <Sidebar
+        {/* Top Header Bar Across Entire Viewport (Matching Reference Image) */}
+        <Header
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           secondaryTab={secondaryTab}
           setSecondaryTab={setSecondaryTab}
-          totalProductsCount={inventoryStats.totalProducts}
-          itemsAtRiskCount={inventoryStats.itemsAtRiskCount}
-          isCollapsed={isSidebarCollapsed}
-          setIsCollapsed={setIsSidebarCollapsed}
+          theme={theme}
+          setTheme={setTheme}
+          setShowStoreProfile={setShowStoreProfile}
+          setShowStatusModal={setShowStatusModal}
         />
 
-        {/* Main Workspace Area */}
-        <div className="main-wrapper">
+        {/* App Shell Body (Permanent Left Sidebar + Main Content Grid) */}
+        <div className="shell-body">
 
-          {/* Top Header Bar */}
-          <Header
-            theme={theme}
-            setTheme={setTheme}
-            setShowStoreProfile={setShowStoreProfile}
-            setShowStatusModal={setShowStatusModal}
+          {/* Left Sidebar (~220px Permanent Sidebar) */}
+          <Sidebar
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            secondaryTab={secondaryTab}
+            setSecondaryTab={setSecondaryTab}
+            isCollapsed={isSidebarCollapsed}
+            setIsCollapsed={setIsSidebarCollapsed}
           />
 
-          {/* Offline / Demo Mode Banner */}
-          {!backendAvailable && (
-            <div style={{
-              background: 'var(--bg-subtle)', borderBottom: '1px solid var(--border-color)',
-              padding: '6px 24px', fontSize: 12, color: 'var(--text-sub)', textAlign: 'center',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12
-            }}>
-              <span>Backend API unavailable — MerchIntell is operating seamlessly in local deterministic demo mode.</span>
-              <button
-                onClick={fetchData}
-                style={{ background: 'none', border: 'none', color: 'var(--accent-purple)', fontWeight: 700, cursor: 'pointer', padding: 0 }}
-              >
-                Retry Connection
-              </button>
-            </div>
-          )}
+          {/* Main Content Area */}
+          <div className="main-content-wrapper">
 
-          {/* Dynamic Content Viewport */}
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: '80px 0' }}>
-              <RefreshCw size={24} color="var(--accent-purple)" style={{ animation: 'spin 1s linear infinite' }} />
-              <p style={{ marginTop: 12, color: 'var(--text-muted)', fontSize: 13 }}>Analyzing GreenBasket merchant catalog...</p>
-            </div>
-          ) : (
-            <>
-              {/* OVERVIEW / HOME FINANCIAL COMMAND CENTER */}
-              {activeTab === 'home' && (
-                <ErrorBoundary fallbackTitle="Overview Home View Error">
-                  <div className="content-grid">
-                    {/* Left Column: Financial Command Center */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                      <FinancialHero
-                        merchantName="Sanjay"
-                        protectedRevenue={27696}
-                        exposedRevenue={2138}
-                        inventoryHealthPct={94}
-                        activeOpportunitiesCount={36}
+            {/* Offline / Demo Mode Banner */}
+            {!backendAvailable && (
+              <div style={{
+                background: 'var(--bg-subtle)', borderBottom: '1px solid var(--border-color)',
+                padding: '6px 24px', fontSize: 12, color: 'var(--text-sub)', textAlign: 'center',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12
+              }}>
+                <span>Backend API unavailable — MerchIntell is operating seamlessly in local deterministic demo mode.</span>
+                <button
+                  onClick={fetchData}
+                  style={{ background: 'none', border: 'none', color: 'var(--accent-purple)', fontWeight: 700, cursor: 'pointer', padding: 0 }}
+                >
+                  Retry Connection
+                </button>
+              </div>
+            )}
+
+            {/* Dynamic Content Viewport */}
+            {loading ? (
+              <div style={{ textAlign: 'center', padding: '80px 0' }}>
+                <RefreshCw size={24} color="var(--accent-purple)" style={{ animation: 'spin 1s linear infinite' }} />
+                <p style={{ marginTop: 12, color: 'var(--text-muted)', fontSize: 13 }}>Analyzing GreenBasket merchant catalog...</p>
+              </div>
+            ) : (
+              <>
+                {/* OVERVIEW / HOME FINANCIAL COMMAND CENTER (Matching Reference Image Layout) */}
+                {activeTab === 'home' && (
+                  <ErrorBoundary fallbackTitle="Overview Home View Error">
+                    <div className="content-grid-3col">
+                      {/* Center Column: Financial Hero, Business Pulse, Attention Items */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
+                        <FinancialHero
+                          merchantName="Sanjay"
+                          protectedRevenue={27696}
+                          exposedRevenue={2138}
+                          inventoryHealthPct={94}
+                          activeOpportunitiesCount={36}
+                        />
+
+                        <BusinessPulse activeRisksCount={inventoryStats.itemsAtRiskCount} />
+
+                        <OpportunityList
+                          opportunities={homeOpportunities}
+                          onSelectProduct={setSelectedProductWorkspace}
+                          onViewAllInventory={() => setActiveTab('inventory')}
+                        />
+                      </div>
+
+                      {/* Right Column: Today's Signals, Revenue at Risk, Autopilot Performance */}
+                      <RightIntelligencePanel />
+                    </div>
+                  </ErrorBoundary>
+                )}
+
+                {/* INVENTORY WORKSPACE */}
+                {activeTab === 'inventory' && (
+                  <ErrorBoundary fallbackTitle="Inventory View Error">
+                    <div className="content-grid-full">
+                      <InventoryTable
+                        catalog={merchantCatalog}
+                        totalValue={inventoryStats.totalValue}
+                        itemsAtRiskCount={inventoryStats.itemsAtRiskCount}
+                        onSelectProduct={setSelectedProductWorkspace}
                       />
+                    </div>
+                  </ErrorBoundary>
+                )}
 
-                      <BusinessPulse activeRisksCount={inventoryStats.itemsAtRiskCount} />
-
+                {/* REVENUE OPPORTUNITIES */}
+                {activeTab === 'leaks' && (
+                  <ErrorBoundary fallbackTitle="Revenue Opportunities Error">
+                    <div className="content-grid-full">
                       <OpportunityList
-                        opportunities={homeOpportunities}
+                        opportunities={inventoryStats.itemsAtRisk}
                         onSelectProduct={setSelectedProductWorkspace}
                         onViewAllInventory={() => setActiveTab('inventory')}
                       />
                     </div>
+                  </ErrorBoundary>
+                )}
 
-                    {/* Right Column: Today's Signals, Revenue at Risk, Performance */}
-                    <RightIntelligencePanel />
-                  </div>
-                </ErrorBoundary>
-              )}
+                {/* DECISION CENTER */}
+                {activeTab === 'decisions' && (
+                  <ErrorBoundary fallbackTitle="Decision Center Error">
+                    <div className="content-grid-full">
+                      <DecisionPipeline
+                        onOpenSimulator={() => setActiveTab('whatif')}
+                        onApproveAction={handleApproveAction}
+                      />
+                    </div>
+                  </ErrorBoundary>
+                )}
 
-              {/* INVENTORY WORKSPACE */}
-              {activeTab === 'inventory' && (
-                <ErrorBoundary fallbackTitle="Inventory View Error">
-                  <div className="content-grid-full">
-                    <InventoryTable
-                      catalog={merchantCatalog}
-                      totalValue={inventoryStats.totalValue}
-                      itemsAtRiskCount={inventoryStats.itemsAtRiskCount}
-                      onSelectProduct={setSelectedProductWorkspace}
-                    />
-                  </div>
-                </ErrorBoundary>
-              )}
+                {/* WHAT-IF SIMULATOR */}
+                {activeTab === 'whatif' && (
+                  <ErrorBoundary fallbackTitle="Simulator Error">
+                    <div className="content-grid-full">
+                      <Simulator />
+                    </div>
+                  </ErrorBoundary>
+                )}
 
-              {/* REVENUE OPPORTUNITIES */}
-              {activeTab === 'leaks' && (
-                <ErrorBoundary fallbackTitle="Revenue Opportunities Error">
-                  <div className="content-grid-full">
-                    <OpportunityList
-                      opportunities={inventoryStats.itemsAtRisk}
-                      onSelectProduct={setSelectedProductWorkspace}
-                      onViewAllInventory={() => setActiveTab('inventory')}
-                    />
-                  </div>
-                </ErrorBoundary>
-              )}
-
-              {/* DECISION CENTER */}
-              {activeTab === 'decisions' && (
-                <ErrorBoundary fallbackTitle="Decision Center Error">
-                  <div className="content-grid-full">
-                    <DecisionPipeline
-                      onOpenSimulator={() => setActiveTab('whatif')}
-                      onApproveAction={handleApproveAction}
-                    />
-                  </div>
-                </ErrorBoundary>
-              )}
-
-              {/* WHAT-IF SIMULATOR */}
-              {activeTab === 'whatif' && (
-                <ErrorBoundary fallbackTitle="Simulator Error">
-                  <div className="content-grid-full">
-                    <Simulator />
-                  </div>
-                </ErrorBoundary>
-              )}
-
-              {/* MORE SUB-VIEWS */}
-              {activeTab === 'more' && (
-                <ErrorBoundary fallbackTitle="Secondary View Error">
-                  <div className="content-grid-full">
-                    {secondaryTab === 'insights' && <InsightFeed />}
-                    {secondaryTab === 'recovery' && <RecoveryView />}
-                    {secondaryTab === 'experiments' && <InsightFeed />}
-                    {secondaryTab === 'timeline' && <RecoveryView />}
-                    {secondaryTab === 'status' && (
-                      <div style={{ background: 'var(--bg-surface)', padding: 24, borderRadius: 12, border: '1px solid var(--border-color)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                          <Terminal size={18} color="var(--accent-purple)" />
-                          <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>System Telemetry & Audit</h3>
+                {/* MORE SUB-VIEWS */}
+                {activeTab === 'more' && (
+                  <ErrorBoundary fallbackTitle="Secondary View Error">
+                    <div className="content-grid-full">
+                      {secondaryTab === 'insights' && <InsightFeed />}
+                      {secondaryTab === 'recovery' && <RecoveryView />}
+                      {secondaryTab === 'experiments' && <InsightFeed />}
+                      {secondaryTab === 'timeline' && <RecoveryView />}
+                      {secondaryTab === 'status' && (
+                        <div style={{ background: 'var(--bg-surface)', padding: 24, borderRadius: 12, border: '1px solid var(--border-color)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                            <Terminal size={18} color="var(--accent-purple)" />
+                            <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>System Telemetry & Audit</h3>
+                          </div>
+                          <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.7 }}>
+                            <div>• Product Identity: <strong>MerchIntell (AI Revenue Copilot)</strong></div>
+                            <div>• Execution Mode: <strong>MOCK Deterministic Execution</strong></div>
+                            <div>• Catalog Count: <strong>{inventoryStats.totalProducts} items</strong></div>
+                            <div>• Store Context: <strong>GreenBasket Market (Store #1)</strong></div>
+                            <div>• Active Risks: <strong>{inventoryStats.itemsAtRiskCount} items</strong></div>
+                            <div>• System Health: <strong style={{ color: 'var(--emerald-green)' }}>OPERATIONAL</strong></div>
+                          </div>
                         </div>
-                        <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.7 }}>
-                          <div>• Product Identity: <strong>MerchIntell (AI Revenue Copilot)</strong></div>
-                          <div>• Mode: <strong>MOCK Deterministic Execution</strong></div>
-                          <div>• Catalog Count: <strong>{inventoryStats.totalProducts} items</strong></div>
-                          <div>• Store: <strong>GreenBasket Market (Store #1)</strong></div>
-                          <div>• Active Risks: <strong>{inventoryStats.itemsAtRiskCount} items</strong></div>
-                          <div>• System Health: <strong style={{ color: 'var(--emerald-green)' }}>OPERATIONAL</strong></div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </ErrorBoundary>
-              )}
-            </>
-          )}
+                      )}
+                    </div>
+                  </ErrorBoundary>
+                )}
+              </>
+            )}
+
+          </div>
 
         </div>
 
@@ -349,9 +356,8 @@ export default function App() {
               </div>
               <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>
                 <div>• Store Name: <strong>GreenBasket Market</strong></div>
-                <div>• Location: <strong>Hyderabad</strong></div>
                 <div>• Category: <strong>Grocery & Fresh Food</strong></div>
-                <div>• Context: <strong>Commercial IT Park Location</strong></div>
+                <div>• Store Context: <strong>Commercial IT Park Location</strong></div>
                 <div>• Store ID: <strong>1</strong></div>
                 <div>• Autopilot Mode: <strong style={{ color: 'var(--emerald-green)' }}>Policy-Gated Autonomy</strong></div>
               </div>
