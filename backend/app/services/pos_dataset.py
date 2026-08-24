@@ -287,7 +287,7 @@ class PosDataSetGenerator:
             }
         }
 
-    def get_validation_report((self) -> Dict[str, Any]:
+    def get_validation_report(self) -> Dict[str, Any]:
         tx_counts = [len([t for t in self.transactions if t["timestamp"].startswith((datetime.now() - timedelta(days=i)).strftime("%Y-%m-%d"))]) for i in range(30)]
         valid_counts = [c for c in tx_counts if c > 0] or [len(self.transactions) // 30]
 
