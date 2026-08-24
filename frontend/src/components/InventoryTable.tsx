@@ -75,7 +75,7 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
       {/* Operating System Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <h1 className="section-head" style={{ fontSize: 26 }}>Inventory</h1>
+          <h1 className="section-head" style={{ fontSize: 26 }}>Inventory Operating System</h1>
           <div className="section-sub">
             {catalog.length} products · {fmt(totalValue)} catalog value · {itemsAtRiskCount} risks · 94% inventory health
           </div>
@@ -186,7 +186,7 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
               <th>SKU</th>
               <th>CATEGORY</th>
               <th>PRICE</th>
-              <th>STOCK</th>
+              <th>UNIT STOCK</th>
               <th>VELOCITY</th>
               <th>MARGIN</th>
               <th>EXPIRY</th>
@@ -219,13 +219,13 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
                       {item.sku}
                     </td>
                     <td>{item.category}</td>
-                    <td>₹{item.sellingPrice}</td>
+                    <td>₹{item.sellingPrice}/{item.sellingUnit}</td>
                     <td>
-                      <strong>{item.currentStock}</strong> units
+                      <strong>{item.currentStock}</strong> {item.sellingUnit}s
                     </td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span>{item.dailyVelocity}/day</span>
+                        <span>{item.dailyVelocity} {item.sellingUnit}/day</span>
                         <Sparkline data={item.demandSparkline} isNegative={item.trend3d < 0} />
                       </div>
                     </td>
