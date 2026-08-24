@@ -44,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div
           style={{
             fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 100,
-            background: 'rgba(108, 78, 255, 0.08)', color: '#6C4EFF', border: '1px solid rgba(108, 78, 255, 0.15)',
+            background: 'var(--demo-pill-bg)', color: 'var(--demo-pill-text)', border: '1px solid var(--demo-pill-border)',
             letterSpacing: '0.04em', cursor: 'help'
           }}
           title="AI-assisted revenue intelligence backed by transparent 30-day POS transaction dataset calculations."
@@ -56,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={() => setShowStoreProfile(true)}
           style={{
             display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
-            background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(20,30,50,0.06)', borderRadius: 100,
+            background: 'var(--surface)', border: '1px solid var(--border-color)', borderRadius: 100,
             fontSize: 12, fontWeight: 600, color: 'var(--text-main)', cursor: 'pointer',
             backdropFilter: 'blur(8px)',
           }}
@@ -84,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Notifications"
             style={{
               width: 32, height: 32, borderRadius: '50%',
-              background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(20,30,50,0.06)',
+              background: 'var(--surface)', border: '1px solid var(--border-color)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
               position: 'relative'
             }}
@@ -121,11 +121,11 @@ export const Header: React.FC<HeaderProps> = ({
             title="Toggle Theme Mode"
             style={{
               width: 32, height: 32, borderRadius: '50%',
-              background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(20,30,50,0.06)',
+              background: 'var(--surface)', border: '1px solid var(--border-color)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
             }}
           >
-            {theme === 'dark' ? <Moon size={14} color="#8B6CFF" /> : <Sun size={14} color="#f59e0b" />}
+            {theme === 'dark' ? <Moon size={14} color="var(--accent-purple)" /> : <Sun size={14} color="#f59e0b" />}
           </button>
 
           {showThemeMenu && (

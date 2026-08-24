@@ -1,38 +1,68 @@
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 /* ═══════════════════════════════════════════
-   MERCHINTELL — MONASTIC FINTECH OPERATING SYSTEM
-   Apple + Stripe + Linear + Ramp Minimalist Aesthetics
+   MERCHINTELL — FINTECH DESIGN TOKENS
+   Standardized Light & Dark Theme System
    ═══════════════════════════════════════════ */
 :root {
-  --bg-page: #F5F6F8;
-  --bg-surface: rgba(255, 255, 255, 0.45);
+  --bg: #F4F5F7;
+  --bg-page: #F4F5F7;
+  --surface: rgba(255, 255, 255, 0.70);
+  --bg-surface: rgba(255, 255, 255, 0.70);
+  --surface-solid: #FFFFFF;
   --bg-surface-elevated: #FFFFFF;
+  --surface-hover: rgba(255, 255, 255, 0.85);
+  --bg-hover: rgba(255, 255, 255, 0.85);
   --bg-subtle: rgba(20, 30, 50, 0.025);
-  --bg-hover: rgba(255, 255, 255, 0.7);
   
+  --text-primary: #172033;
   --text-main: #172033;
+  --text-secondary: #667085;
   --text-sub: #667085;
   --text-muted: #98A2B3;
 
+  --border: rgba(20, 30, 50, 0.08);
+  --border-color: rgba(20, 30, 50, 0.08);
+  --border-strong: rgba(20, 30, 50, 0.12);
+  --border-glass: rgba(255, 255, 255, 0.7);
+
+  --accent: #6C4EFF;
   --accent-purple: #6C4EFF;
   --accent-purple-bg: rgba(108, 78, 255, 0.08);
   --accent-purple-border: rgba(108, 78, 255, 0.2);
 
-  --emerald-green: #00A878;
-  --emerald-green-bg: rgba(0, 168, 120, 0.08);
-  --emerald-green-border: rgba(0, 168, 120, 0.2);
+  --success: #10B981;
+  --emerald-green: #10B981;
+  --emerald-green-bg: rgba(16, 185, 129, 0.08);
+  --emerald-green-border: rgba(16, 185, 129, 0.2);
 
-  --risk-red: #E5484D;
-  --risk-red-bg: rgba(229, 72, 77, 0.08);
-  --risk-red-border: rgba(229, 72, 77, 0.2);
+  --danger: #FF4D5A;
+  --risk-red: #FF4D5A;
+  --risk-red-bg: rgba(255, 77, 90, 0.08);
+  --risk-red-border: rgba(255, 77, 90, 0.2);
 
-  --amber-gold: #E88A1A;
-  --amber-gold-bg: rgba(232, 138, 26, 0.08);
-  --amber-gold-border: rgba(232, 138, 26, 0.2);
+  --warning: #F59E0B;
+  --amber-gold: #F59E0B;
+  --amber-gold-bg: rgba(245, 158, 11, 0.08);
+  --amber-gold-border: rgba(245, 158, 11, 0.2);
 
-  --border-color: rgba(20, 30, 50, 0.07);
-  --border-glass: rgba(255, 255, 255, 0.7);
+  --demo-pill-bg: rgba(108, 78, 255, 0.08);
+  --demo-pill-border: rgba(108, 78, 255, 0.15);
+  --demo-pill-text: #6C4EFF;
+
+  --trend-pill-bg: rgba(255, 255, 255, 0.6);
+  --trend-pill-border: var(--border-color);
+  --trend-pill-text: var(--emerald-green);
+
+  --action-tile-bg: rgba(255, 255, 255, 0.45);
+  --action-tile-hover-bg: rgba(255, 255, 255, 0.95);
+  --action-tile-border: rgba(20, 30, 50, 0.06);
+
+  --today-panel-bg: rgba(255, 255, 255, 0.45);
+  --today-card-bg: rgba(255, 255, 255, 0.65);
+  --today-card-border: var(--border-color);
+  --today-card-title: var(--text-main);
+  --today-card-sub: var(--text-sub);
 
   --shadow-sm: none;
   --shadow-md: 0 4px 16px rgba(20, 30, 50, 0.025);
@@ -43,38 +73,68 @@
 }
 
 [data-theme="dark"] {
+  --bg: #0B0F19;
   --bg-page: #0B0F19;
-  --bg-surface: rgba(16, 21, 34, 0.6);
-  --bg-surface-elevated: #101522;
+  --surface: rgba(18, 24, 38, 0.72);
+  --bg-surface: rgba(18, 24, 38, 0.72);
+  --surface-solid: #111827;
+  --bg-surface-elevated: #111827;
+  --surface-hover: rgba(25, 32, 48, 0.90);
+  --bg-hover: rgba(25, 32, 48, 0.90);
   --bg-subtle: rgba(255, 255, 255, 0.04);
-  --bg-hover: rgba(255, 255, 255, 0.08);
   
+  --text-primary: #F8FAFC;
   --text-main: #F8FAFC;
-  --text-sub: #98A2B3;
-  --text-muted: #64748B;
+  --text-secondary: #A8B3C7;
+  --text-sub: #A8B3C7;
+  --text-muted: #718096;
 
-  --accent-purple: #8B6CFF;
-  --accent-purple-bg: rgba(139, 108, 255, 0.15);
-  --accent-purple-border: rgba(139, 108, 255, 0.35);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.13);
+  --border-glass: rgba(255, 255, 255, 0.12);
 
+  --accent: #8B7CFF;
+  --accent-purple: #8B7CFF;
+  --accent-purple-bg: rgba(139, 124, 255, 0.15);
+  --accent-purple-border: rgba(139, 124, 255, 0.3);
+
+  --success: #10B981;
   --emerald-green: #10B981;
   --emerald-green-bg: rgba(16, 185, 129, 0.15);
   --emerald-green-border: rgba(16, 185, 129, 0.3);
 
-  --risk-red: #F43F5E;
-  --risk-red-bg: rgba(244, 63, 94, 0.15);
-  --risk-red-border: rgba(244, 63, 94, 0.3);
+  --danger: #FF4D5A;
+  --risk-red: #FF4D5A;
+  --risk-red-bg: rgba(255, 77, 90, 0.15);
+  --risk-red-border: rgba(255, 77, 90, 0.3);
 
+  --warning: #F59E0B;
   --amber-gold: #F59E0B;
   --amber-gold-bg: rgba(245, 158, 11, 0.15);
   --amber-gold-border: rgba(245, 158, 11, 0.3);
 
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-glass: rgba(255, 255, 255, 0.12);
+  --demo-pill-bg: rgba(108, 78, 255, 0.10);
+  --demo-pill-border: rgba(108, 78, 255, 0.22);
+  --demo-pill-text: #A99BFF;
+
+  --trend-pill-bg: rgba(16, 185, 129, 0.08);
+  --trend-pill-border: rgba(16, 185, 129, 0.20);
+  --trend-pill-text: #6EE7B7;
+
+  --action-tile-bg: rgba(255, 255, 255, 0.045);
+  --action-tile-hover-bg: rgba(255, 255, 255, 0.075);
+  --action-tile-border: rgba(255, 255, 255, 0.08);
+
+  --today-panel-bg: rgba(17, 24, 39, 0.78);
+  --today-card-bg: rgba(255, 255, 255, 0.035);
+  --today-card-border: rgba(255, 255, 255, 0.08);
+  --today-card-title: #F8FAFC;
+  --today-card-sub: #94A3B8;
 
   --shadow-sm: none;
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-drawer: -12px 0 60px rgba(0, 0, 0, 0.7);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-drawer: -12px 0 60px rgba(0, 0, 0, 0.8);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -89,16 +149,20 @@ body {
   margin: 0;
   padding: 0;
   font-family: var(--font-sans);
-  background:
-    radial-gradient(
-      circle at 72% 0%,
-      rgba(108, 78, 255, 0.025),
-      transparent 32%
-    ),
-    var(--bg-page);
-  color: var(--text-main);
+  background: var(--bg);
+  color: var(--text-primary);
   min-height: 100vh;
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+[data-theme="dark"] body {
+  background:
+    radial-gradient(
+      circle at 70% 0%,
+      rgba(108, 78, 255, 0.08),
+      transparent 38%
+    ),
+    #0B0F19;
 }
 
 #root {
@@ -118,7 +182,7 @@ input, select, textarea {
 /* Custom Scrollbar */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(20, 30, 50, 0.12); border-radius: 100px; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 100px; }
 
 /* ═══════════════════════════════════════════
    TYPOGRAPHY HIERARCHY
@@ -127,7 +191,7 @@ input, select, textarea {
   font-family: var(--font-serif);
   font-size: 24px;
   font-weight: 400;
-  color: var(--text-main);
+  color: var(--text-primary);
   letter-spacing: -0.3px;
   line-height: 1.0;
 }
@@ -145,7 +209,7 @@ input, select, textarea {
 .statement-greeting {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   margin-bottom: 6px;
 }
 
@@ -153,7 +217,7 @@ input, select, textarea {
   font-family: var(--font-serif);
   font-size: 42px;
   font-weight: 400;
-  color: var(--text-main);
+  color: var(--text-primary);
   letter-spacing: -0.4px;
   margin: 0;
   line-height: 1.15;
@@ -162,26 +226,26 @@ input, select, textarea {
 .section-head {
   font-size: 22px;
   font-weight: 800;
-  color: var(--text-main);
+  color: var(--text-primary);
   letter-spacing: -0.4px;
   margin: 0;
 }
 
 .section-sub {
   font-size: 13px;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   margin-top: 4px;
 }
 
 /* ═══════════════════════════════════════════
-   SINGLE CANVAS & INVISIBLE HEADER LAYOUT
+   LAYOUT & CONTAINERS
    ═══════════════════════════════════════════ */
 .app-layout {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   background: transparent;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .top-floating-header {
@@ -245,25 +309,26 @@ input, select, textarea {
 }
 
 /* ═══════════════════════════════════════════
-   FLOATING ACTION TILES & UNBOXED WORKSPACE ROWS
+   ACTION TILES & UNBOXED WORKSPACE ROWS
    ═══════════════════════════════════════════ */
 .glass-action-tile {
   height: 52px;
   padding: 12px 16px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.45);
+  background: var(--action-tile-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(20, 30, 50, 0.06);
-  box-shadow: 0 4px 16px rgba(20, 30, 50, 0.025);
+  border: 1px solid var(--action-tile-border);
+  box-shadow: var(--shadow-md);
   display: flex;
   align-items: center;
   gap: 12px;
   transition: all 160ms ease;
   cursor: pointer;
+  color: var(--text-primary);
 }
 .glass-action-tile:hover {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--action-tile-hover-bg);
   transform: translateY(-1px);
 }
 
@@ -277,14 +342,15 @@ input, select, textarea {
   gap: 20px;
   transition: background-color 160ms ease, transform 160ms ease;
   cursor: pointer;
+  color: var(--text-primary);
 }
 .copilot-list-row:hover {
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--surface);
 }
 
 .copilot-list-row:hover .row-arrow-icon {
   transform: translateX(4px);
-  color: var(--accent-purple);
+  color: var(--accent);
 }
 .row-arrow-icon {
   transition: transform 0.18s ease, color 0.18s ease;
@@ -294,7 +360,7 @@ input, select, textarea {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--surface);
   backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
   border-radius: 12px;
@@ -303,7 +369,7 @@ input, select, textarea {
 }
 
 .inventory-table th {
-  background: rgba(20, 30, 50, 0.02);
+  background: var(--bg-subtle);
   color: var(--text-muted);
   font-weight: 700;
   text-transform: uppercase;
@@ -317,7 +383,7 @@ input, select, textarea {
 .inventory-table td {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-color);
-  color: var(--text-main);
+  color: var(--text-primary);
   vertical-align: middle;
 }
 
@@ -326,7 +392,7 @@ input, select, textarea {
 }
 
 .inventory-table tr:hover td {
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--surface-hover);
   cursor: pointer;
 }
 
@@ -347,7 +413,7 @@ input, select, textarea {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--emerald-green);
+  background: var(--success);
   animation: pulse-monitoring 2s infinite;
 }
 @keyframes pulse-monitoring {
@@ -374,28 +440,28 @@ input, select, textarea {
 }
 
 .btn-copilot-primary {
-  background: rgba(255, 255, 255, 0.55);
-  color: var(--text-main);
+  background: var(--surface);
+  color: var(--text-primary);
   border: 1px solid var(--border-color);
 }
 .btn-copilot-primary:hover {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--surface-hover);
   transform: translateY(-1px);
 }
 
 .btn-copilot-secondary {
-  background: rgba(255, 255, 255, 0.4);
-  color: var(--text-sub);
+  background: var(--surface);
+  color: var(--text-secondary);
   border: 1px solid var(--border-color);
 }
 .btn-copilot-secondary:hover {
-  background: rgba(255, 255, 255, 0.85);
-  color: var(--text-main);
+  background: var(--surface-hover);
+  color: var(--text-primary);
 }
 
 .btn-copilot-ghost {
   background: transparent;
-  color: var(--accent-purple);
+  color: var(--accent);
   padding: 4px 8px;
 }
 .btn-copilot-ghost:hover {
@@ -403,12 +469,12 @@ input, select, textarea {
 }
 
 /* ═══════════════════════════════════════════
-   DRAWER OVERLAY
+   DRAWER & MODAL OVERLAY
    ═══════════════════════════════════════════ */
 .workspace-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(20,30,50,0.3);
+  background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(4px);
   z-index: 200;
   display: flex;
@@ -417,8 +483,8 @@ input, select, textarea {
 }
 
 .workspace-drawer {
-  background: var(--bg-surface-elevated);
-  color: var(--text-main);
+  background: var(--surface-solid);
+  color: var(--text-primary);
   width: 100%;
   max-width: 620px;
   height: 100%;
@@ -426,6 +492,7 @@ input, select, textarea {
   padding: 36px 40px;
   box-shadow: var(--shadow-drawer);
   animation: slideLeft 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border-left: 1px solid var(--border-color);
 }
 
 @keyframes fadeIn {
@@ -444,8 +511,8 @@ input, select, textarea {
   top: 20px;
   right: 20px;
   z-index: 300;
-  background: var(--bg-surface-elevated);
-  color: var(--text-main);
+  background: var(--surface-solid);
+  color: var(--text-primary);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 12px 18px;
