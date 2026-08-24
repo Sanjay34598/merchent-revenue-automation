@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
-from backend.app.main import app
-from backend.app.services.pos_dataset import pos_engine, PosDataSetGenerator
+from app.main import app
+from app.services.pos_dataset import pos_engine, PosDataSetGenerator
 
 client = TestClient(app)
 
