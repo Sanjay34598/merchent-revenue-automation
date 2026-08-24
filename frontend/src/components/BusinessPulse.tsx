@@ -20,7 +20,7 @@ export const BusinessPulse: React.FC<BusinessPulseProps> = ({
       padding: '10px 0',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'space-between',
+      justify-content: 'space-between',
       fontSize: 13,
       fontWeight: 500,
       color: 'var(--text-sub)',

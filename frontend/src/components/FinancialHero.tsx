@@ -38,7 +38,7 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
       {/* Main Financial Statement */}
       <div className="statement-greeting">Good afternoon, {merchantName}</div>
       <h1 className="statement-main-serif">
-        MerchIntell protected <span style={{ color: '#6C4EFF', fontWeight: 700, fontFamily: 'var(--font-sans)' }}>{fmt(protectedRevenue)}</span><br />
+        MerchIntell protected <span style={{ color: 'var(--accent-purple)', fontWeight: 700, fontFamily: 'var(--font-sans)' }}>{fmt(protectedRevenue)}</span><br />
         in revenue this month.
       </h1>
 
@@ -57,19 +57,19 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
           {' '}currently at risk · {activeOpportunitiesCount} opportunities
         </span>
 
-        {/* Subtle Protected Revenue Trend Visualization */}
+        {/* Subtle Protected Revenue Trend Visualization Pill */}
         <div
           onClick={onViewRevenue}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
-            padding: '3px 10px', background: 'rgba(255,255,255,0.6)',
-            border: '1px solid var(--border-color)', borderRadius: 100,
+            padding: '3px 10px', background: 'var(--trend-pill-bg)',
+            border: '1px solid var(--trend-pill-border)', borderRadius: 100,
             cursor: 'pointer'
           }}
           title="Protected revenue 30-day trend — click to view revenue analysis"
         >
           <Sparkline data={protectedTrend} isNegative={false} width={50} height={16} />
-          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--emerald-green)' }}>+14.2% vs prev period</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--trend-pill-text)' }}>+14.2% vs prev period</span>
         </div>
       </div>
 

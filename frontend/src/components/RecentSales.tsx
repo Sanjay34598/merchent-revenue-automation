@@ -27,7 +27,7 @@ export const RecentSales: React.FC<RecentSalesProps> = ({
       
       {/* Compact 30-Day Sales Activity Analytics Header */}
       <div style={{
-        background: 'rgba(255, 255, 255, 0.45)', backdropFilter: 'blur(12px)',
+        background: 'var(--surface)', backdropFilter: 'blur(12px)',
         border: '1px solid var(--border-color)', borderRadius: 12, padding: '12px 16px',
         marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         flexWrap: 'wrap', gap: 12, fontSize: 12

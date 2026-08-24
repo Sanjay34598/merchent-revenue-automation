@@ -15,7 +15,7 @@ export const MerchantActionStrip: React.FC<MerchantActionStripProps> = ({
       key: 'sales' as const,
       label: '+ Record sale',
       icon: PlusCircle,
-      accent: '#6C4EFF',
+      accent: 'var(--accent-purple)',
       isPrimary: true,
     },
     {
@@ -43,7 +43,7 @@ export const MerchantActionStrip: React.FC<MerchantActionStripProps> = ({
       key: 'whatif' as const,
       label: 'Simulator',
       icon: Sliders,
-      accent: '#6C4EFF',
+      accent: 'var(--accent-purple)',
       isPrimary: false,
     },
     {
@@ -74,8 +74,8 @@ export const MerchantActionStrip: React.FC<MerchantActionStripProps> = ({
               height: 48,
               padding: '10px 16px',
               borderRadius: 12,
-              border: '1px solid var(--border-color)',
-              background: act.isPrimary ? 'rgba(255, 255, 255, 0.65)' : 'rgba(255, 255, 255, 0.45)',
+              border: '1px solid var(--action-tile-border)',
+              background: 'var(--action-tile-bg)',
               color: 'var(--text-main)',
               fontSize: 13,
               fontWeight: 600,
@@ -86,11 +86,11 @@ export const MerchantActionStrip: React.FC<MerchantActionStripProps> = ({
               transition: 'all 160ms ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
+              e.currentTarget.style.background = 'var(--action-tile-hover-bg)';
               e.currentTarget.style.transform = 'translateY(-1px)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = act.isPrimary ? 'rgba(255, 255, 255, 0.65)' : 'rgba(255, 255, 255, 0.45)';
+              e.currentTarget.style.background = 'var(--action-tile-bg)';
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >

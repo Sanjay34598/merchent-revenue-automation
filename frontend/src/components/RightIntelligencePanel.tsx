@@ -48,9 +48,9 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
 
       {/* TODAY / NEXT BEST ACTIONS SUMMARY PANEL */}
       <div style={{
-        background: 'rgba(255, 255, 255, 0.45)', backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(20, 30, 50, 0.06)', borderRadius: 16, padding: 18,
-        boxShadow: '0 4px 16px rgba(20, 30, 50, 0.025)'
+        background: 'var(--today-panel-bg)', backdropFilter: 'blur(12px)',
+        border: '1px solid var(--border-color)', borderRadius: 16, padding: 18,
+        boxShadow: 'var(--shadow-md)'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
@@ -68,7 +68,7 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
               onClick={onViewDecisions}
               style={{
                 display: 'flex', flexDirection: 'column', gap: 6, padding: '10px 12px',
-                background: 'rgba(255, 255, 255, 0.65)', border: '1px solid var(--border-color)',
+                background: 'var(--today-card-bg)', border: '1px solid var(--today-card-border)',
                 borderRadius: 10, cursor: 'pointer', transition: 'background-color 0.15s ease'
               }}
             >
@@ -77,7 +77,7 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
                   {act.num}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)' }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--today-card-title)' }}>
                     {act.title}
                   </div>
                 </div>
@@ -86,10 +86,10 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
 
               {/* Priority Bar Indicator & Recovery Value */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 2 }}>
-                <div style={{ width: 90, height: 4, background: 'rgba(20, 30, 50, 0.08)', borderRadius: 100, overflow: 'hidden' }}>
+                <div style={{ width: 90, height: 4, background: 'var(--border-color)', borderRadius: 100, overflow: 'hidden' }}>
                   <div style={{ width: `${act.pct}%`, height: '100%', background: 'var(--accent-purple)', borderRadius: 100 }} />
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-sub)' }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--today-card-sub)' }}>
                   {act.recovery}
                 </span>
               </div>
@@ -110,12 +110,12 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
         </button>
       </div>
 
-      {/* REVENUE AT RISK GRAPH TERMINAL PANEL */}
+      {/* REVENUE AT RISK CARD TERMINAL PANEL */}
       <div
         onClick={onViewRevenueRisks}
         style={{
           background: '#101522', color: '#F8FAFC', borderRadius: 18, padding: 20,
-          border: '1px solid #20283A', boxShadow: 'var(--shadow-md)', cursor: 'pointer'
+          border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-md)', cursor: 'pointer'
         }}
         title="Click to inspect 7-day revenue risk analysis"
       >
@@ -155,8 +155,8 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
             </defs>
 
             {/* Subtle horizontal grid lines */}
-            <line x1="0" y1="10" x2={chartWidth} y2="10" stroke="#20283A" strokeDasharray="3 3" />
-            <line x1="0" y1="35" x2={chartWidth} y2="35" stroke="#20283A" strokeDasharray="3 3" />
+            <line x1="0" y1="10" x2={chartWidth} y2="10" stroke="rgba(255,255,255,0.07)" strokeDasharray="3 3" />
+            <line x1="0" y1="35" x2={chartWidth} y2="35" stroke="rgba(255,255,255,0.07)" strokeDasharray="3 3" />
 
             {/* Area Fill */}
             <polygon points={areaPoints} fill="url(#riskGrad)" />
@@ -185,7 +185,7 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
             })}
           </svg>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#64748B', marginTop: 4 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#718096', marginTop: 4 }}>
             <span>Mon (₹1,420)</span>
             <span>Sun (₹2,138)</span>
           </div>
