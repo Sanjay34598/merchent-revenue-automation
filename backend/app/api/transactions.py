@@ -4,6 +4,7 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 from app.services.pos_dataset import pos_engine
 from app.services.analytics import analytics_service
+from app.core.pos_repository import pos_db
 
 router = APIRouter()
 
@@ -44,9 +45,39 @@ class TransactionRecord(BaseModel):
     grand_total: float
     status: str = "Processed"
 
-@router.get("/transactions", response_model=List[TransactionRecord])
-def get_transactions(limit: int = Query(20, ge=1, le=100)):
-    return pos_engine.transactions[:limit]
+@router.get("/transactions")
+def get_transactions(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    search: Optional[str] = None,
+    payment_method: Optional[str] = None,
+):
+    filtered = pos_engine.transactions
+
+    if payment_method and payment_method.upper() != "ALL":
+        filtered = [tx for tx in filtered if tx.get("payment_method", "").upper() == payment_method.upper()]
+
+    if search:
+        s_lower = search.lower()
+        filtered = [
+            tx for tx in filtered
+            if s_lower in tx.get("transaction_id", "").lower() or
+            any(s_lower in item.get("product_name", "").lower() for item in tx.get("items", []))
+        ]
+
+    total_count = len(filtered)
+    total_pages = max(1, (total_count + limit - 1) // limit)
+    start_idx = (page - 1) * limit
+    end_idx = start_idx + limit
+    sliced = filtered[start_idx:end_idx]
+
+    return {
+        "transactions": sliced,
+        "total": total_count,
+        "page": page,
+        "limit": limit,
+        "total_pages": total_pages
+    }
 
 @router.post("/transactions", response_model=TransactionRecord)
 def record_transaction(payload: TransactionCreate):
@@ -80,11 +111,13 @@ def record_transaction(payload: TransactionCreate):
     pos_engine.transactions.insert(0, record.dict())
     DATA_QUALITY_STATS["transactions_processed"] += 1
     pos_engine.recalculate_analytics()
+    pos_db.save() # Persist to JSON file
     return record
 
 @router.post("/transactions/import")
 def import_transactions_csv(count: int = Query(10, ge=1)):
     DATA_QUALITY_STATS["transactions_processed"] += count
+    pos_db.save()
     return {
         "status": "success",
         "imported_count": count,
