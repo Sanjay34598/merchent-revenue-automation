@@ -1,4 +1,5 @@
 import React from 'react';
+import { Sparkline } from './Sparkline';
 
 interface FinancialHeroProps {
   merchantName?: string;
@@ -13,53 +14,74 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
   protectedRevenue = 27696,
   exposedRevenue = 2138,
   inventoryHealthPct = 94,
-  activeOpportunitiesCount = 7,
+  activeOpportunitiesCount = 36,
 }) => {
   const fmt = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 
   return (
-    <div style={{ padding: '12px 0 16px' }}>
+    <div style={{ padding: '8px 0 12px' }}>
       <div className="statement-greeting">Good afternoon, {merchantName}</div>
       <h1 className="statement-main">
-        RevenuePilot protected <span style={{ color: 'var(--emerald-green)' }}>{fmt(protectedRevenue)}</span> in revenue this month.
+        MerchIntell protected <span style={{ color: 'var(--accent-purple)' }}>{fmt(protectedRevenue)}</span> in revenue this month.
       </h1>
-      <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-sub)', marginTop: 8, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+      <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-sub)', marginTop: 8, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+        <span>{fmt(exposedRevenue)} currently exposed across {activeOpportunitiesCount} opportunities.</span>
         <span className="badge-pill" style={{ background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: '1px solid var(--emerald-green-border)' }}>
           ↑ 14.2% vs previous period
         </span>
-        <span>{fmt(exposedRevenue)} exposed · {activeOpportunitiesCount} active opportunities · {inventoryHealthPct}% inventory health</span>
       </div>
 
-      {/* 3 Compact Typography-Driven Summary Metrics (NOT giant cards) */}
+      {/* Financial Summary Terminal Strip with Miniature Sparklines */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 48, marginTop: 28, padding: '20px 0 12px',
-        borderTop: '1px solid var(--border-color)', flexWrap: 'wrap'
+        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginTop: 24, padding: 18,
+        background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12
       }}>
-        <div>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            REVENUE PROTECTED
+        {/* Metric 1: Revenue Protected */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              REVENUE PROTECTED
+            </div>
+            <div style={{ fontSize: 24, fontWeight: 900, color: 'var(--emerald-green)', marginTop: 2, letterSpacing: '-0.5px' }}>
+              {fmt(protectedRevenue)}
+            </div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--emerald-green)', marginTop: 2 }}>
+              ↑ 14.2%
+            </div>
           </div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--emerald-green)', marginTop: 4, letterSpacing: '-0.5px' }}>
-            {fmt(protectedRevenue)}
-          </div>
+          <Sparkline data={[21000, 23500, 24000, 25800, 26900, 27696]} isNegative={false} width={80} height={28} />
         </div>
 
-        <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: 48 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            REVENUE EXPOSED
+        {/* Metric 2: Revenue Exposed */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderLeft: '1px solid var(--border-color)', paddingLeft: 16 }}>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              REVENUE EXPOSED
+            </div>
+            <div style={{ fontSize: 24, fontWeight: 900, color: 'var(--risk-red)', marginTop: 2, letterSpacing: '-0.5px' }}>
+              {fmt(exposedRevenue)}
+            </div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--emerald-green)', marginTop: 2 }}>
+              ↓ 5.6%
+            </div>
           </div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--risk-red)', marginTop: 4, letterSpacing: '-0.5px' }}>
-            {fmt(exposedRevenue)}
-          </div>
+          <Sparkline data={[3400, 3100, 2800, 2500, 2300, 2138]} isNegative={true} width={80} height={28} />
         </div>
 
-        <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: 48 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            INVENTORY HEALTH
+        {/* Metric 3: Inventory Health */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderLeft: '1px solid var(--border-color)', paddingLeft: 16 }}>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              INVENTORY HEALTH
+            </div>
+            <div style={{ fontSize: 24, fontWeight: 900, color: 'var(--text-main)', marginTop: 2, letterSpacing: '-0.5px' }}>
+              {inventoryHealthPct}%
+            </div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--emerald-green)', marginTop: 2 }}>
+              ↑ 3.1%
+            </div>
           </div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-main)', marginTop: 4, letterSpacing: '-0.5px' }}>
-            {inventoryHealthPct}%
-          </div>
+          <Sparkline data={[88, 89, 91, 92, 93, 94]} isNegative={false} width={80} height={28} />
         </div>
       </div>
     </div>

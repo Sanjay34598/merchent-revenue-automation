@@ -67,32 +67,24 @@ export const ProductWorkspace: React.FC<ProductWorkspaceProps> = ({
           </button>
         </div>
 
-        {/* Product Key Metrics Bar */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 24, textAlign: 'center' }}>
-          <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8 }}>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700 }}>PRICE</div>
-            <div style={{ fontSize: 15, fontWeight: 800, marginTop: 2 }}>₹{product.sellingPrice}</div>
+        {/* Exposed Header Metric */}
+        <div style={{ background: 'var(--risk-red-bg)', border: '1px solid var(--risk-red-border)', padding: 14, borderRadius: 10, marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--risk-red)', textTransform: 'uppercase' }}>REVENUE EXPOSED</div>
+            <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--risk-red)', marginTop: 2 }}>{fmt(product.revenueAtRisk)}</div>
           </div>
-          <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8 }}>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700 }}>COST</div>
-            <div style={{ fontSize: 15, fontWeight: 800, marginTop: 2 }}>₹{product.costPrice}</div>
-          </div>
-          <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8 }}>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700 }}>MARGIN</div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--emerald-green)', marginTop: 2 }}>{pct(product.marginPct)}</div>
-          </div>
-          <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8 }}>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700 }}>STOCK</div>
-            <div style={{ fontSize: 15, fontWeight: 800, marginTop: 2 }}>{product.currentStock} units</div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--emerald-green)', textTransform: 'uppercase' }}>EXPECTED RECOVERY</div>
+            <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--emerald-green)', marginTop: 2 }}>{fmt(product.recoverableRevenue)}</div>
           </div>
         </div>
 
         {/* WHY THIS MATTERS */}
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             WHY THIS MATTERS
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, textAlign: 'center', marginBottom: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, textAlign: 'center', marginBottom: 10 }}>
             <div style={{ background: 'var(--bg-subtle)', padding: 10, borderRadius: 8 }}>
               <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>DEMAND</div>
               <div style={{ fontSize: 15, fontWeight: 800, color: product.trend3d < 0 ? 'var(--risk-red)' : 'var(--emerald-green)' }}>
@@ -109,51 +101,49 @@ export const ProductWorkspace: React.FC<ProductWorkspaceProps> = ({
                 {product.expiryDays !== null ? `${product.expiryDays} days` : 'N/A'}
               </div>
             </div>
-            <div style={{ background: 'var(--bg-subtle)', padding: 10, borderRadius: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>VELOCITY</div>
-              <div style={{ fontSize: 15, fontWeight: 800 }}>{product.dailyVelocity}/day</div>
-            </div>
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'right' }}>
-            Supplier lead time: {product.supplierLeadTimeDays} day · Historical waste: {fmt(product.costPrice * 16)}
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: 8 }}>
+            <span>Velocity: {product.dailyVelocity}/day</span>
+            <span>Supplier lead time: {product.supplierLeadTimeDays} days</span>
+            <span>Historical waste: {fmt(product.costPrice * 16)}</span>
           </div>
         </div>
 
         {/* REVENUE IMPACT */}
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             REVENUE IMPACT
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, textAlign: 'center' }}>
-            <div style={{ background: 'var(--risk-red-bg)', border: '1px solid var(--risk-red-border)', padding: 12, borderRadius: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--risk-red)', fontWeight: 700 }}>REVENUE EXPOSED</div>
+            <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8 }}>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700 }}>EXPOSED</div>
               <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--risk-red)', marginTop: 2 }}>{fmt(product.revenueAtRisk)}</div>
             </div>
-            <div style={{ background: 'var(--emerald-green-bg)', border: '1px solid var(--emerald-green-border)', padding: 12, borderRadius: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--emerald-green)', fontWeight: 700 }}>EXPECTED RECOVERY</div>
+            <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8 }}>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700 }}>RECOVERY</div>
               <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--emerald-green)', marginTop: 2 }}>{fmt(product.recoverableRevenue)}</div>
             </div>
             <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8 }}>
               <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700 }}>WASTE RISK</div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--emerald-green)', marginTop: 2 }}>-42%</div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--emerald-green)', marginTop: 2 }}>↓ 42%</div>
             </div>
             <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8 }}>
               <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700 }}>CONFIDENCE</div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--primary-blue)', marginTop: 2 }}>88%</div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--accent-purple)', marginTop: 2 }}>88%</div>
             </div>
           </div>
         </div>
 
-        {/* REVENUEPILOT RECOMMENDS */}
+        {/* MERCHINTELL RECOMMENDS */}
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--primary-blue)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            REVENUEPILOT RECOMMENDS
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-purple)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            MERCHINTELL RECOMMENDS
           </div>
-          <div style={{ background: 'var(--primary-blue-bg)', border: '1.5px solid var(--primary-blue-border)', borderRadius: 12, padding: 18 }}>
-            <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--primary-blue)', marginBottom: 8 }}>
+          <div style={{ background: 'var(--accent-purple-bg)', border: '1.5px solid var(--accent-purple-border)', borderRadius: 12, padding: 18 }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--accent-purple)', marginBottom: 8 }}>
               {product.recommendedAction}
             </div>
-            <div style={{ display: 'flex', gap: 24, fontSize: 13, color: 'var(--primary-blue)' }}>
+            <div style={{ display: 'flex', gap: 24, fontSize: 13, color: 'var(--accent-purple)' }}>
               <span>Expected sell-through: <strong>+31%</strong></span>
               <span>Expected recovery: <strong>{fmt(product.recoverableRevenue)}</strong></span>
             </div>
@@ -184,9 +174,9 @@ export const ProductWorkspace: React.FC<ProductWorkspaceProps> = ({
               <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>10% DISCOUNT</div>
               <div style={{ fontSize: 14, fontWeight: 700, marginTop: 4 }}>₹271</div>
             </div>
-            <div style={{ background: 'var(--primary-blue-bg)', border: '1.5px solid var(--primary-blue)', padding: 12, borderRadius: 8, textAlign: 'center' }}>
-              <div style={{ fontSize: 10, color: 'var(--primary-blue)', fontWeight: 800 }}>15% DISCOUNT ★</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--primary-blue)', marginTop: 4 }}>₹354</div>
+            <div style={{ background: 'var(--accent-purple-bg)', border: '1.5px solid var(--accent-purple)', padding: 12, borderRadius: 8, textAlign: 'center' }}>
+              <div style={{ fontSize: 10, color: 'var(--accent-purple)', fontWeight: 800 }}>15% DISCOUNT ★</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--accent-purple)', marginTop: 4 }}>₹354</div>
             </div>
             <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8, textAlign: 'center' }}>
               <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>20% DISCOUNT</div>
