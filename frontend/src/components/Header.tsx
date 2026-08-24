@@ -39,6 +39,19 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right: Floating Utility Controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        
+        {/* Demo Data Credibility Pill */}
+        <div
+          style={{
+            fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 100,
+            background: 'rgba(108, 78, 255, 0.08)', color: '#6C4EFF', border: '1px solid rgba(108, 78, 255, 0.15)',
+            letterSpacing: '0.04em', cursor: 'help'
+          }}
+          title="30 days of deterministic POS activity generated from realistic retail purchasing patterns."
+        >
+          DEMO DATA
+        </div>
+
         <button
           onClick={() => setShowStoreProfile(true)}
           style={{
