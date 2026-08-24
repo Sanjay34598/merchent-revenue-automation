@@ -12,61 +12,23 @@ interface MerchantActionStripProps {
 
 export const MerchantActionStrip: React.FC<MerchantActionStripProps> = ({
   onActionClick,
-  atRiskAmount = 2138,
-  itemsAtRiskCount = 7,
-  totalProductsCount = 150,
 }) => {
   const actions = [
-    {
-      key: 'sales' as const,
-      label: 'Record Sale',
-      subtext: 'Add transaction',
-      icon: PlusCircle,
-      accent: 'var(--accent-purple)',
-    },
-    {
-      key: 'inventory' as const,
-      label: 'Inventory',
-      subtext: `${totalProductsCount} products`,
-      icon: ShoppingBag,
-      accent: 'var(--text-main)',
-    },
-    {
-      key: 'leaks' as const,
-      label: 'Revenue',
-      subtext: `₹${atRiskAmount.toLocaleString('en-IN')} at risk`,
-      icon: DollarSign,
-      accent: 'var(--risk-red)',
-    },
-    {
-      key: 'decisions' as const,
-      label: 'Decisions',
-      subtext: `${itemsAtRiskCount} actions`,
-      icon: Layers,
-      accent: 'var(--emerald-green)',
-    },
-    {
-      key: 'whatif' as const,
-      label: 'Simulator',
-      subtext: 'Test strategy',
-      icon: Sliders,
-      accent: 'var(--accent-purple)',
-    },
-    {
-      key: 'recovery' as const,
-      label: 'Recovery',
-      subtext: '₹27.7K recovered',
-      icon: RotateCcw,
-      accent: 'var(--emerald-green)',
-    },
+    { key: 'sales' as const, label: '+ Record sale', icon: PlusCircle, isPrimary: true },
+    { key: 'inventory' as const, label: 'Inventory', icon: ShoppingBag, isPrimary: false },
+    { key: 'leaks' as const, label: 'Revenue', icon: DollarSign, isPrimary: false },
+    { key: 'decisions' as const, label: 'Decisions', icon: Layers, isPrimary: false },
+    { key: 'whatif' as const, label: 'Simulator', icon: Sliders, isPrimary: false },
+    { key: 'recovery' as const, label: 'Recovery', icon: RotateCcw, isPrimary: false },
   ];
 
   return (
     <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-      gap: 14,
-      margin: '20px 0 28px'
+      display: 'flex',
+      alignItems: 'center',
+      gap: 8,
+      flexWrap: 'wrap',
+      margin: '24px 0 28px'
     }}>
       {actions.map((act) => {
         const Icon = act.icon;
@@ -75,50 +37,34 @@ export const MerchantActionStrip: React.FC<MerchantActionStripProps> = ({
             key={act.key}
             onClick={() => onActionClick(act.key)}
             style={{
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border-color)',
-              borderRadius: 12,
-              padding: '14px 16px',
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
-              gap: 14,
-              textAlign: 'left',
-              transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
+              gap: 6,
+              padding: act.isPrimary ? '7px 16px' : '7px 12px',
+              borderRadius: 8,
+              border: act.isPrimary ? 'none' : 'none',
+              background: act.isPrimary ? 'var(--text-main)' : 'transparent',
+              color: act.isPrimary ? 'var(--bg-surface)' : 'var(--text-sub)',
+              fontSize: 13,
+              fontWeight: act.isPrimary ? 700 : 500,
               cursor: 'pointer',
-              boxShadow: 'var(--shadow-sm)',
+              transition: 'background-color 0.15s ease, color 0.15s ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'var(--accent-purple-border)';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+              if (!act.isPrimary) {
+                e.currentTarget.style.background = 'var(--bg-subtle)';
+                e.currentTarget.style.color = 'var(--text-main)';
+              }
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'var(--border-color)';
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+              if (!act.isPrimary) {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = 'var(--text-sub)';
+              }
             }}
           >
-            <div style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              background: 'var(--bg-subtle)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0
-            }}>
-              <Icon size={18} color={act.accent} />
-            </div>
-
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.2 }}>
-                {act.label}
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>
-                {act.subtext}
-              </div>
-            </div>
+            <Icon size={14} color={act.isPrimary ? 'var(--bg-surface)' : 'var(--text-sub)'} />
+            <span>{act.label}</span>
           </button>
         );
       })}

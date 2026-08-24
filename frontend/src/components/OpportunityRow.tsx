@@ -1,7 +1,6 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { ProductItem } from '../data/merchantInventory';
-import { ProductThumbnail } from './ProductThumbnail';
 
 interface OpportunityRowProps {
   item: ProductItem;
@@ -11,80 +10,71 @@ interface OpportunityRowProps {
 export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }) => {
   const fmt = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 
-  const riskBadgeStyle = (status: ProductItem['riskStatus']) => {
+  const riskLabelStyle = (status: ProductItem['riskStatus']) => {
     switch (status) {
-      case 'EXPIRY':     return { label: 'Expiry Risk',   bg: 'var(--risk-red-bg)', color: 'var(--risk-red)', border: 'var(--risk-red-border)' };
-      case 'STOCKOUT':   return { label: 'Stockout Risk', bg: '#EFF4FF', color: '#3B82F6', border: '#C7D7FE' };
-      case 'MARGIN_LEAK':return { label: 'Margin Leak',   bg: '#FFF6ED', color: '#D97706', border: '#FFE0C2' };
-      case 'OVERSTOCK':  return { label: 'Overstock',     bg: '#F5F3FF', color: '#6D28D9', border: '#DDD6FE' };
-      default:           return { label: 'Healthy',       bg: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: 'var(--emerald-green-border)' };
+      case 'EXPIRY':     return { label: 'Expiry risk',   color: 'var(--risk-red)' };
+      case 'STOCKOUT':   return { label: 'Stockout risk', color: '#2563EB' };
+      case 'MARGIN_LEAK':return { label: 'Margin leak',   color: 'var(--amber-gold)' };
+      case 'OVERSTOCK':  return { label: 'Overstock',     color: '#7C3AED' };
+      default:           return { label: 'Healthy',       color: 'var(--emerald-green)' };
     }
   };
 
-  const badge = riskBadgeStyle(item.riskStatus);
+  const badge = riskLabelStyle(item.riskStatus);
 
   const getSignalDescription = () => {
     if (item.riskStatus === 'EXPIRY') {
-      return `Demand ↓ ${Math.abs(item.trend3d)}% · ${item.currentStock} units left · Expires in ${item.expiryDays ?? 2} days`;
+      return `${item.currentStock} ${item.sellingUnit}s · expires in ${item.expiryDays ?? 2} days`;
     }
     if (item.riskStatus === 'STOCKOUT') {
-      return `Demand ↑ ${Math.abs(item.trend3d)}% · ${item.currentStock} units left · Cover ${(item.currentStock / Math.max(item.dailyVelocity, 0.1)).toFixed(1)} days`;
+      return `${item.currentStock} ${item.sellingUnit}s left · Cover ${(item.currentStock / Math.max(item.dailyVelocity, 0.1)).toFixed(1)} days`;
     }
     if (item.riskStatus === 'MARGIN_LEAK') {
       return `Supplier cost ↑ 6.2% · Margin ↓ 3.1pp`;
     }
-    if (item.riskStatus === 'OVERSTOCK') {
-      return `Stock level high (${item.currentStock} units) · Cover ${(item.currentStock / Math.max(item.dailyVelocity, 0.1)).toFixed(0)} days`;
-    }
-    return `Stock: ${item.currentStock} units · Velocity: ${item.dailyVelocity}/day`;
+    return `Stock: ${item.currentStock} ${item.sellingUnit}s`;
   };
 
   return (
     <div
-      className="copilot-row"
+      className="copilot-list-row"
       onClick={() => onSelect(item)}
     >
-      {/* Left: Product Thumbnail & Name Details */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1 }}>
-        <ProductThumbnail name={item.name} category={item.category} size={48} />
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontWeight: 800, fontSize: 15, color: 'var(--text-main)' }}>{item.name}</span>
-            <span className="badge-pill" style={{ background: badge.bg, color: badge.color, border: `1px solid ${badge.border}` }}>
-              {badge.label}
-            </span>
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 3 }}>
-            {item.category} · <span style={{ fontFamily: 'monospace' }}>{item.sku}</span>
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2, fontWeight: 500 }}>
-            {getSignalDescription()}
-          </div>
+      {/* Product & Signal Details */}
+      <div style={{ flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontWeight: 800, fontSize: 15, color: 'var(--text-main)' }}>{item.name}</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: badge.color }}>
+            {badge.label}
+          </span>
+        </div>
+        <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 4 }}>
+          {getSignalDescription()}
         </div>
       </div>
 
-      {/* Right Metrics: Exposed, Recoverable, Recommendation, Review Button */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+      {/* Exposed, Recoverable, Recommendation & Review Button */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--risk-red)', letterSpacing: '0.04em' }}>EXPOSED</div>
-          <div style={{ fontSize: 15, fontWeight: 900, color: 'var(--risk-red)', marginTop: 2 }}>{fmt(item.revenueAtRisk)}</div>
+          <div style={{ fontSize: 14, fontWeight: 900, color: 'var(--risk-red)' }}>{fmt(item.revenueAtRisk)}</div>
+          <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>EXPOSED</div>
         </div>
 
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--emerald-green)', letterSpacing: '0.04em' }}>RECOVERABLE</div>
-          <div style={{ fontSize: 15, fontWeight: 900, color: 'var(--emerald-green)', marginTop: 2 }}>{fmt(item.recoverableRevenue)}</div>
+          <div style={{ fontSize: 14, fontWeight: 900, color: 'var(--emerald-green)' }}>{fmt(item.recoverableRevenue)}</div>
+          <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>RECOVERABLE</div>
         </div>
 
-        <div style={{ textAlign: 'right', minWidth: 130 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.04em' }}>RECOMMENDS</div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)', marginTop: 2 }}>{item.recommendedAction}</div>
+        <div style={{ textAlign: 'right', minWidth: 120 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)' }}>{item.recommendedAction}</div>
+          <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>RECOMMENDED</div>
         </div>
 
         <button
           className="row-arrow-icon"
           style={{
-            display: 'flex', alignItems: 'center', gap: 4, padding: '8px 14px',
-            borderRadius: 100, border: 'none', background: 'var(--accent-purple-bg)',
+            display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px',
+            borderRadius: 6, border: 'none', background: 'transparent',
             color: 'var(--accent-purple)', fontSize: 12, fontWeight: 700, cursor: 'pointer'
           }}
         >

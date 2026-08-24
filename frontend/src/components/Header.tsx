@@ -22,9 +22,9 @@ export const Header: React.FC<HeaderProps> = ({
   const [showNotifications, setShowNotifications] = useState(false);
 
   return (
-    <header className="top-header-full">
+    <header className="top-floating-header">
       
-      {/* Left: Minimal Brand Wordmark (Refined Serif Display, Zero Flash Icon) */}
+      {/* Left: Small, Restrained Wordmark (Zero Flash Icon) */}
       <div
         style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', userSelect: 'none' }}
         onClick={onBrandClick}
@@ -37,12 +37,12 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Right: Small Utility Controls (Store Selector, Autopilot Pill, Notifications, Theme, Avatar) */}
+      {/* Right: Floating Utility Controls (No Header Box Container) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <button
           onClick={() => setShowStoreProfile(true)}
           style={{
-            display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px',
+            display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
             background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 100,
             fontSize: 12, fontWeight: 600, color: 'var(--text-main)', cursor: 'pointer',
           }}
@@ -55,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={() => setShowStatusModal(true)}
           style={{
-            display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px',
+            display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
             background: 'var(--emerald-green-bg)', border: '1px solid var(--emerald-green-border)', borderRadius: 100,
             fontSize: 12, fontWeight: 600, color: 'var(--emerald-green)', cursor: 'pointer',
           }}
@@ -69,17 +69,17 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setShowNotifications(!showNotifications)}
             title="Notifications"
             style={{
-              width: 36, height: 36, borderRadius: '50%',
+              width: 32, height: 32, borderRadius: '50%',
               background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
               position: 'relative'
             }}
           >
-            <Bell size={15} color="var(--text-sub)" />
+            <Bell size={14} color="var(--text-sub)" />
             <span style={{
-              position: 'absolute', top: 2, right: 2, width: 15, height: 15,
+              position: 'absolute', top: 1, right: 1, width: 14, height: 14,
               borderRadius: '50%', background: 'var(--risk-red)', color: '#ffffff',
-              fontSize: 9, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center'
+              fontSize: 8, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center'
             }}>
               3
             </span>
@@ -91,7 +91,7 @@ export const Header: React.FC<HeaderProps> = ({
               background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12,
               boxShadow: 'var(--shadow-md)', padding: 16, width: 280, zIndex: 100, fontSize: 12
             }}>
-              <div style={{ fontWeight: 700, marginBottom: 8, color: 'var(--text-main)' }}>Priorities Alert</div>
+              <div style={{ fontWeight: 700, marginBottom: 8, color: 'var(--text-main)' }}>Notifications</div>
               <div style={{ color: 'var(--text-sub)', lineHeight: 1.5 }}>
                 • Fresh Milk 1L clearance discount ready for review.<br />
                 • POS sale processed (TXN-00129). Inventory updated.<br />
@@ -106,12 +106,12 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setShowThemeMenu(!showThemeMenu)}
             title="Toggle Theme Mode"
             style={{
-              width: 36, height: 36, borderRadius: '50%',
+              width: 32, height: 32, borderRadius: '50%',
               background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
             }}
           >
-            {theme === 'dark' ? <Moon size={15} color="#8B6CFF" /> : <Sun size={15} color="#f59e0b" />}
+            {theme === 'dark' ? <Moon size={14} color="#8B6CFF" /> : <Sun size={14} color="#f59e0b" />}
           </button>
 
           {showThemeMenu && (
@@ -143,8 +143,8 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div style={{
-          width: 36, height: 36, borderRadius: '50%', background: 'var(--text-main)', color: 'var(--bg-page)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700,
+          width: 32, height: 32, borderRadius: '50%', background: 'var(--text-main)', color: 'var(--bg-page)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700,
         }}>
           PK
         </div>
