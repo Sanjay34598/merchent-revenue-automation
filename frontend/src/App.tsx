@@ -394,8 +394,8 @@ export default function App() {
                   />
                 )}
 
-                {/* RECOVERY WORKSPACE */}
-                {activeTab === 'leaks' && (
+                {/* REVENUE & RECOVERY WORKSPACE */}
+                {(activeTab === 'leaks' || activeTab === 'recovery') && (
                   <RecoveryView />
                 )}
 
@@ -412,11 +412,6 @@ export default function App() {
                 {/* WHAT-IF SIMULATOR WORKSPACE */}
                 {activeTab === 'whatif' && (
                   <Simulator />
-                )}
-
-                {/* RECOVERY STRATEGY WORKSPACE */}
-                {activeTab === 'recovery' && (
-                  <RecoveryView />
                 )}
               </>
             )}

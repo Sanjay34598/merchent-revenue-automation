@@ -84,7 +84,7 @@ export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--primary-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              RECOMMENDED ACTION FOR FRESH JUICE 500ML
+              RECOMMENDED ACTION FOR PROD-100043 FEMME FOOTWEAR BOOT
             </div>
             <h2 style={{ fontSize: 24, fontWeight: 800, color: 'var(--primary-blue)', margin: '4px 0 0' }}>
               15% clearance discount
@@ -164,7 +164,7 @@ export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({
             WHY THIS DECISION?
           </h4>
           <p style={{ margin: 0, fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>
-            Demand has fallen 21% over the last 3 days while 18 units remain and the product expires in 2 days. The model compared historical demand patterns and simulated alternative discount strategies. A 15% discount maximizes net recovery (₹354) while preserving more margin than a 20% clearance (₹321 recovery).
+            Demand velocity has fallen 24% over the last 3 days while 84 units remain tied up in inventory. The model compared historical demand patterns and simulated alternative markdown strategies. A 15% discount maximizes net recovery (₹1,266) while preserving more margin than a 20% clearance strategy.
           </p>
         </div>
 

@@ -47,7 +47,7 @@ export const MerchantActionStrip: React.FC<MerchantActionStripProps> = ({
       isPrimary: false,
     },
     {
-      key: 'recovery' as const,
+      key: 'leaks' as const,
       label: 'Recovery',
       icon: RotateCcw,
       accent: 'var(--emerald-green)',

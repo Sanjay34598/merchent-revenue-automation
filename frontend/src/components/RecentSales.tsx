@@ -15,9 +15,9 @@ export const RecentSales: React.FC<RecentSalesProps> = ({
   avgBill = 44.3,
 }) => {
   const recentTransactions = [
-    { id: 'TXN-20260824-00129', items: 'India Gate Basmati Rice + Fortune Oil', total: 542, pay: 'UPI', time: 'Just now' },
-    { id: 'TXN-20260824-00128', items: 'Fresh Milk 1L + Brown Bread', total: 286, pay: 'Cash', time: '14m ago' },
-    { id: 'TXN-20260824-00127', items: 'Toor Dal 1kg + Tata Salt', total: 418, pay: 'UPI', time: '42m ago' },
+    { id: 'TXN-20260824-00129', items: 'PROD-100043 Femme Footwear Boot + PROD-100128 Scholar Derby', total: 542, pay: 'UPI', time: 'Just now' },
+    { id: 'TXN-20260824-00128', items: 'PROD-100342 Junior Apparel Denim Essentials', total: 286, pay: 'Cash', time: '14m ago' },
+    { id: 'TXN-20260824-00127', items: 'PROD-100844 Stiletto Elegance + PROD-100512 Sandal Studio', total: 418, pay: 'UPI', time: '42m ago' },
   ];
 
   const fmt = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;

@@ -38,11 +38,11 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
       {/* Main Financial Statement */}
       <div className="statement-greeting">Good afternoon, {merchantName}</div>
       <h1 className="statement-main-serif">
-        MerchIntell protected <span style={{ color: 'var(--accent-purple)', fontWeight: 700, fontFamily: 'var(--font-sans)' }}>{fmt(protectedRevenue)}</span><br />
-        in retail revenue this period.
+        Historical revenue analyzed: <span style={{ color: 'var(--accent-purple)', fontWeight: 700, fontFamily: 'var(--font-sans)' }}>{fmt(protectedRevenue)}</span><br />
+        across 40 store outposts (Jun 2025 – Apr 2026).
       </h1>
 
-      {/* Exposed Revenue Subhead & Protected Revenue Trend Line */}
+      {/* Exposed Revenue Subhead & Historical Revenue Trend Line */}
       <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-sub)', marginTop: 14, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
         <span>
           <button
@@ -54,10 +54,10 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
           >
             {fmt(exposedRevenue)}
           </button>
-          {' '}currently at risk · {activeOpportunitiesCount} risk opportunities
+          {' '}currently at risk · {activeOpportunitiesCount} active risk opportunities
         </span>
 
-        {/* Protected Revenue Trend Visualization Pill */}
+        {/* Historical Revenue Trend Visualization Pill */}
         <div
           onClick={onViewRevenue}
           style={{
@@ -66,10 +66,10 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
             border: '1px solid var(--trend-pill-border)', borderRadius: 100,
             cursor: 'pointer'
           }}
-          title="Protected revenue 30-day trend — click to view revenue analysis"
+          title="Historical sales baseline trend — click to view revenue analysis"
         >
           <Sparkline data={protectedTrend} isNegative={false} width={50} height={16} />
-          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--trend-pill-text)' }}>+14.2% vs prev period</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--trend-pill-text)' }}>+14.2% vs baseline</span>
         </div>
       </div>
 

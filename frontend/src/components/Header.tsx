@@ -58,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
           }}
           title="AI-assisted revenue intelligence backed by historical retail sales & inventory dataset."
         >
-          HISTORICAL DATASET · 125,751 SALES · 284,755 INVENTORY RECORDS
+          DATASET VERIFIED
         </div>
 
         {/* Store Selector Dropdown */}

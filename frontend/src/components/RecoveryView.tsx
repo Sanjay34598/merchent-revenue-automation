@@ -24,7 +24,7 @@ export const RecoveryView: React.FC = () => {
       {/* Main Metric Banner */}
       <div style={{ background: 'var(--emerald-green-bg)', border: '1px solid var(--emerald-green-border)', borderRadius: 12, padding: 24 }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--emerald-green)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          TOTAL REVENUE PROTECTED FROM HISTORICAL SALES
+          HISTORICAL REVENUE BASELINE ANALYZED
         </div>
         <div style={{ fontSize: 42, fontWeight: 900, color: 'var(--emerald-green)', marginTop: 4 }}>
           {fmt(10482110)}
@@ -36,7 +36,7 @@ export const RecoveryView: React.FC = () => {
             <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--emerald-green)', marginTop: 2 }}>{fmt(1854948)}</div>
           </div>
           <div>
-            <div style={{ fontSize: 11, color: 'var(--emerald-green)', fontWeight: 700 }}>GROSS MARGIN PROTECTED</div>
+            <div style={{ fontSize: 11, color: 'var(--emerald-green)', fontWeight: 700 }}>HISTORICAL GROSS MARGIN</div>
             <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--emerald-green)', marginTop: 2 }}>{fmt(4634359)}</div>
           </div>
           <div>
