@@ -1,5 +1,93 @@
 [
   {
+    "id": "AUD-20260825230858-0015",
+    "timestamp": "2026-08-25T23:08:58.174207",
+    "action": "TEST_ACTION",
+    "entity": "Test Entity",
+    "reason": "Verification of audit logger",
+    "before_state": "",
+    "after_state": "",
+    "source": "TEST",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260825230858-0014",
+    "timestamp": "2026-08-25T23:08:58.111025",
+    "action": "AI_DECISION_GENERATED",
+    "entity": "Test Product (STR-1001)",
+    "reason": "Inventory days of cover (84d) exceeds 45-day baseline velocity threshold. Recommended 15.0% targeted markdown to accelerate sell-through.",
+    "before_state": "Risk: SLOW_MOVING \u00b7 Exposure: \u20b96000",
+    "after_state": "Action: MARKDOWN \u00b7 Recov: \u20b94500",
+    "source": "DETERMINISTIC_FALLBACK",
+    "status": "PROPOSED"
+  },
+  {
+    "id": "AUD-20260825230851-0013",
+    "timestamp": "2026-08-25T23:08:51.668637",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260825-17898",
+    "reason": "Recorded POS checkout: 1 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9450 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260825230848-0012",
+    "timestamp": "2026-08-25T23:08:48.191439",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260825-17897",
+    "reason": "Recorded POS checkout: 1 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9700 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260825230842-0011",
+    "timestamp": "2026-08-25T23:08:42.343940",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260825-17896",
+    "reason": "Recorded POS checkout: 1 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b956 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260825230729-0010",
+    "timestamp": "2026-08-25T23:07:29.442896",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260825-17895",
+    "reason": "Recorded POS checkout: 1 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9227 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260825230725-0009",
+    "timestamp": "2026-08-25T23:07:25.443810",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260825-17894",
+    "reason": "Recorded POS checkout: 1 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9379 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260825230721-0008",
+    "timestamp": "2026-08-25T23:07:21.329733",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260825-17893",
+    "reason": "Recorded POS checkout: 2 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9542 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
     "id": "AUD-20260825230247-0007",
     "timestamp": "2026-08-25T23:02:47.097949",
     "action": "TEST_ACTION",

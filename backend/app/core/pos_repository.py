@@ -71,7 +71,7 @@ class PosRepository:
                 "id": p.product_id,
                 "name": p.name,
                 "sku": p.sku,
-                "division": p.division,
+                "division": getattr(p, "division", p.category),
                 "category": p.category,
                 "sellingPrice": p.selling_price,
                 "currentStock": p.current_stock,
@@ -79,7 +79,7 @@ class PosRepository:
                 "riskStatus": p.risk_status,
                 "revenueAtRisk": p.revenue_at_risk,
                 "recoverableRevenue": p.recoverable_revenue,
-                "supplier": p.supplier,
+                "supplier": getattr(p, "supplier", "General Supplier"),
                 "marginPct": getattr(p, "margin_pct", 35.0),
             })
         return res

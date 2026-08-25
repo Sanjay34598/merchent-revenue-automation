@@ -54,29 +54,63 @@ def approve_action(id: int, req: Optional[ActionApprovalRequest] = None, db: Ses
     """
     Approves a proposed action. Updates SQLite & triggers bounded execution.
     """
-    notes = req.merchant_notes if req else None
-    
-    # Try DB match first
     action = db.query(AgentAction).filter(AgentAction.id == id).first()
-    if action:
-        action.status = "APPROVED"
-        approval = ActionApproval(
-            action_id=id,
-            approved=True,
-            merchant_notes=notes,
-            approved_at=datetime.utcnow()
-        )
-        db.add(approval)
-        db.commit()
+    if not action:
+        # Also attempt recovery engine execution
+        exec_result = recovery_engine.execute_recovery_action(id, "MARKDOWN", {"discount_percent": 15.0})
+        return {
+            "status": "APPROVED",
+            "action_id": id,
+            "execution": exec_result,
+            "message": f"Action #{id} approved and executed successfully."
+        }
+        
+    action.status = "APPROVED"
+    notes = req.merchant_notes if req else "Approved by merchant."
+    approval = ActionApproval(
+        action_id=action.id,
+        approved=True,
+        merchant_notes=notes,
+        approved_at=datetime.utcnow()
+    )
+    db.add(approval)
+    db.commit()
+    db.refresh(action)
 
-    # Execute recovery engine bounded action
     exec_result = recovery_engine.execute_recovery_action(id, "MARKDOWN", {"discount_percent": 15.0})
 
     return {
         "status": "APPROVED",
-        "action_id": id,
+        "action_id": action.id,
         "execution": exec_result,
-        "message": f"Action #{id} approved and executed successfully."
+        "message": f"Action #{id} has been approved by merchant and queued for execution."
+    }
+
+@router.post("/actions/{id}/reject")
+def reject_action(id: int, req: Optional[ActionApprovalRequest] = None, db: Session = Depends(get_db)):
+    """
+    Rejects a proposed action in SQLite.
+    """
+    action = db.query(AgentAction).filter(AgentAction.id == id).first()
+    if not action:
+        raise HTTPException(status_code=404, detail=f"Action with ID {id} not found.")
+
+    action.status = "REJECTED"
+    notes = req.merchant_notes if req else "Rejected by merchant."
+    approval = ActionApproval(
+        action_id=action.id,
+        approved=False,
+        merchant_notes=notes,
+        approved_at=datetime.utcnow()
+    )
+    db.add(approval)
+    db.commit()
+    db.refresh(action)
+
+    return {
+        "status": "REJECTED",
+        "action_id": action.id,
+        "message": f"Action #{id} was rejected by merchant."
     }
 
 class RecoveryExecuteRequest(BaseModel):
