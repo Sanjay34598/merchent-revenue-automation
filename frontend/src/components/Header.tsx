@@ -3,6 +3,8 @@ import {
   Store, Sun, Moon, Monitor, Bell, ChevronDown
 } from 'lucide-react';
 
+import { CalendarContext } from './CalendarContext';
+
 interface HeaderProps {
   selectedStore?: string | number;
   onStoreChange?: (storeId: string) => void;
@@ -49,6 +51,9 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Right: Floating Utility Controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         
+        {/* Lightweight Regional Calendar Context Layer */}
+        <CalendarContext selectedStore={currentStoreLabel} />
+
         {/* Dynamic Data Status Pill */}
         <div
           style={{

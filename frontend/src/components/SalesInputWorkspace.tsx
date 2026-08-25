@@ -251,12 +251,12 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
 
   // Demo Adapter Action: Simulate POS Sale
   const handleSimulatePosSale = () => {
-    const rice = catalog.find(p => p.name.includes('Rice')) || catalog[0];
-    const oil = catalog.find(p => p.name.includes('Oil')) || catalog[1];
+    const boot = catalog.find(p => p.name.includes('Boot')) || catalog[0];
+    const derby = catalog.find(p => p.name.includes('Derby')) || catalog[1];
 
     const presetItems = [
-      { productId: rice.id, quantity: 2.5, unit: 'kg', unitPrice: 120, discount: 0, lineTotal: 300 },
-      { productId: oil.id, quantity: 1.5, unit: 'L', unitPrice: 168, discount: 10, lineTotal: 242 }
+      { productId: boot.id, quantity: 2, unit: boot.sellingUnit || 'piece', unitPrice: boot.sellingPrice, discount: 0, lineTotal: boot.sellingPrice * 2 },
+      { productId: derby.id, quantity: 1, unit: derby.sellingUnit || 'piece', unitPrice: derby.sellingPrice, discount: 0, lineTotal: derby.sellingPrice * 1 }
     ];
 
     setLineItems(presetItems);
