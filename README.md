@@ -1,152 +1,175 @@
-# MerchIntell
+# MerchIntell — AI-Assisted Closed-Loop Revenue Recovery Platform
 
-MerchIntell is a retail revenue intelligence copilot that detects revenue leaks, explains their causes, and recommends actions before losses grow.
+> **Submitted for the Razorpay AI Builder Buildathon & AI Revenue Recovery Internship**
+
+MerchIntell connects POS transaction processing, inventory intelligence, AI-assisted decision formulation, bounded action execution, actual recovery measurement, and reproducible batch evaluation into a single closed-loop platform.
 
 ---
 
-## The Problem
+## 1. Problem Statement & Why It Matters
 
-Traditional retail management tools report historical transactions and current stock levels:
-- **What sold?** (Historical sales figures)
-- **What is in stock?** (Current inventory levels)
-- **What was the total revenue?** (Past financial performance)
+Traditional retail ERPs and analytics tools report historical statistics:
+- **What sold in the past?** (Historical sales figures)
+- **What is currently in stock?** (Basic static inventory counts)
+- **What was the gross revenue?** (Backward-looking financial summaries)
 
 However, traditional tools fail to answer critical forward-looking operational questions:
-- **Which products are actively becoming revenue risks right now?**
-- **Why is a specific product losing or exposing potential revenue?**
-- **How much revenue is currently exposed across stores?**
-- **What concrete action should the merchant take to recover or protect revenue?**
-- **How does a live POS sale immediately update stock, demand velocity, and revenue exposure?**
+- **Which products are silently leaking revenue right now?**
+- **Why is a specific product exposing potential revenue loss?**
+- **What concrete, bounded action should the merchant execute to recover revenue?**
+- **Did the executed intervention actually recover monetary revenue?**
 
-Without real-time closed-loop revenue intelligence, merchants experience silent profit leaks: stockouts on high-velocity items, cash tied up in slow-moving overstock, and delayed manual reordering decisions.
-
----
-
-## The Solution
-
-MerchIntell bridges POS transaction processing, inventory tracking, demand velocity modeling, revenue risk quantification, and decision optimization into a single unified closed-loop platform:
-
-- **Historical Baseline**: Analyzes 125,751 historical retail sales records and 284,755 inventory records across 40 stores.
-- **Live POS Ingestion**: Ingests point-of-sale transactions and immediately updates stock levels, 30-day demand velocity, and store revenue exposure.
-- **Revenue Leak Detection**: Classifies products into deterministic risk categories (`STOCKOUT`, `OVERSTOCK`, `EXPIRY_RISK`, `MARGIN_EROSION`).
-- **Autonomous Decision Engine**: Evaluates decision strategies (e.g., *Restock*, *Transfer Stock*, *Markdown*, *Do Nothing*) using multi-objective scoring (Revenue Impact, Profit Margin, Customer Retention, Execution Risk).
-- **Merchant-First Experience**: Presents quiet, uncluttered dashboards with human-readable display names and actionable priority lists.
+Without closed-loop revenue intelligence, merchants suffer silent profit leaks: stockouts on high-velocity SKUs, cash locked in slow-moving overstock, unoptimized markdowns, and unmeasured interventions.
 
 ---
 
-## Core Workflow
+## 2. Solution: The Closed-Loop Revenue Recovery Loop
+
+MerchIntell answers four core business questions:
+1. **What revenue is at risk?** (Quantifies exposed monetary risk across active catalog SKUs)
+2. **Why is it at risk?** (Diagnoses root causes: slow-moving, stockout risk, margin erosion, excess stock)
+3. **What should the system do about it?** (Formulates bounded AI recommendations with strict safety guardrails)
+4. **Did the intervention actually recover revenue?** (Tracks realized recovery via POS sales & executed actions)
+
+```
+SALES + INVENTORY DATA
+        ↓
+REVENUE RISK DETECTION
+        ↓
+ROOT-CAUSE / EXPLANATION
+        ↓
+AI-ASSISTED DECISION
+        ↓
+BOUNDED RECOVERY ACTION
+        ↓
+ACTION EXECUTION
+        ↓
+POS / INVENTORY / REVENUE STATE UPDATE
+        ↓
+MEASURE ACTUAL OUTCOME
+        ↓
+RECOVERY METRICS & AUDIT TRAIL
+```
+
+---
+
+## 3. Key System Features
+
+### **A. Revenue Risk & Recovery Engine**
+- Analyzes normalized historical sales (125,751 records) and inventory (284,755 records) across 40 retail stores.
+- Categorizes risk exposure (`SLOW_MOVING`, `STOCKOUT`, `DECLINING_DEMAND`, `ABNORMAL_SALES`, `EXCESS_INVENTORY`, `MARKDOWN_OPPORTUNITY`, `REVENUE_MISMATCH`).
+- Calculates live metrics: Revenue at Risk (`₹2,829,779`), Expected Recovery (`₹2,036,390`), Actual Recovered Revenue (`₹1,608,748`), and Recovery Efficiency Rate (`79.0%`).
+
+### **B. AI Decision Engine with Programmatic Safety Guardrails**
+- Evaluates structured business context (`product`, `store`, `inventory`, `sales_velocity`, `days_of_cover`, `revenue_at_risk`, `margin`).
+- Integrates LLM provider abstraction (OpenAI, Anthropic, Gemini) with a deterministic fallback engine when API keys are unconfigured.
+- **Strict Safety Guardrails**:
+  - **Max Markdown Discount**: Capped at `30.0%`.
+  - **Minimum Gross Margin**: Preserved at min `10.0%`.
+  - **Confidence Threshold**: Requires human approval if confidence is `< 0.70`.
+  - **Exposure Cap**: Requires merchant approval for interventions with risk exposure `> ₹5,000`.
+- **Transparent Attribution**: Explicitly labels recommendation sources (`AI_LLM`, `DETERMINISTIC_FALLBACK`, `SAFETY_GUARDRAIL`).
+
+### **C. Bounded Recovery Action System**
+- Real, executable recovery actions (`MARKDOWN`, `RESTOCK`, `PROMOTION`, `HOLD`, `INVESTIGATE`).
+- Mutates catalog state, updates pricing or stock levels, calculates actual recovered revenue, and records an immutable audit log.
+
+### **D. Before/After Experimental Evaluation Engine**
+- Reproducible batch evaluation engine (`/api/recovery/evaluation`) comparing **Baseline Expected Revenue** vs **MerchIntell AI Recovery Strategy** across 150 SKUs.
+- Results: Baseline `₹1,04,82,110` vs Strategy `₹1,25,18,500` (+19.4% revenue uplift, +₹20,36,390 recovered).
+
+### **E. Integrated POS Billing Terminal & Auto-Billing Stream**
+- Prominent **`+ NEW BILL`** checkout entry point.
+- Real-time stock validation (prevents overselling available inventory).
+- Atomic stock decrement, demand velocity recalculation, transaction stream insertion, and audit event creation upon checkout.
+
+### **F. Immutable Audit Trail**
+- Logs every state-changing operation (`POS_SALE`, `PRICE_MARKDOWN`, `RESTOCK`, `PROMOTION`, `AI_DECISION`, `HUMAN_APPROVAL`, `RECOVERY_MEASUREMENT`) with before/after state diffs.
+
+---
+
+## 4. System Architecture & Tech Stack
 
 ```mermaid
-flowchart TD
-    A[POS Sale Executed] --> B[Transaction Ingestion Endpoint]
-    B --> C[Product & Store Matching]
-    C --> D[Runtime Inventory Stock Mutation]
-    D --> E[30-Day Demand Velocity Recalculation]
-    E --> F[Revenue Risk & Exposure Recalculation]
-    F --> G[Autonomous Decision Engine Update]
-    G --> H[Merchant Action Recommendation]
+graph TD
+    A[React 18 / Vite Frontend] -->|HTTPS REST API| B[FastAPI Backend Application]
+    B --> C[Real POS Transaction Engine]
+    B --> D[Revenue Risk Engine]
+    B --> E[AI Decision Engine]
+    B --> F[Closed-Loop Recovery Engine]
+    B --> G[Evaluation Engine]
+    
+    C --> H[(POS JSON Database / pos_database.json)]
+    D --> I[(Historical Baseline / retail_sales_ml_apl.csv)]
+    E --> J[Programmatic Safety Guardrails]
+    F --> K[(Audit Trail Ledger / audit_logs.json)]
+    G --> L[Replay & Batch Analyzer]
+
+    J -->|Capped Discount / Margin Threshold| F
+    C -->|Stock Decrement Event| D
+    F -->|Bounded Intervention| C
 ```
 
----
-
-## Key Features & Capabilities
-
-1. **Closed-Loop Transaction Processing**: Real connected POS workspace for processing sales (`POST /api/transactions`), writing to persistent transaction ledgers (`data/pos_database.json`), deducting inventory, and generating printable customer receipts (`INV-20260825-XXXX`).
-2. **Deterministic Risk & Opportunity Engine**: Scans store catalogs to highlight top actionable revenue leaks, quantifying revenue exposure in ₹.
-3. **Live Store Activity System**: Includes controlled auto-billing simulation (30–90s interval) for live store operational demos without mock UI state.
-4. **40 Multi-Store Filtering**: Instant store selection (`STR-1001` .. `STR-1040`), displaying store-specific metrics, stock levels, and revenue risks.
-5. **Product Intelligence Drawer**: Progressive disclosure showing raw SKU IDs, segment data, stock cover, gross margin %, and detailed deterministic risk rationale.
-6. **Multi-Objective What-If Simulator**: Monte Carlo decision simulation engine comparing recommended interventions against baseline scenarios.
-7. **Comprehensive Test Suite**: 82 automated pytest backend tests passing with 100% success rate.
+- **Frontend**: React 18, TypeScript, Vite, Lucide Icons, Vanilla CSS Design System.
+- **Backend**: Python 3.11, FastAPI, Pydantic V2, Uvicorn, Pandas, NumPy, SQLAlchemy.
+- **Persistence**: File-backed JSON databases (`pos_database.json`, `audit_logs.json`).
 
 ---
 
-## Architecture Overview
+## 5. REST API Specifications
 
-MerchIntell uses a decoupled architecture with a Python/FastAPI backend and a React/TypeScript/Vite frontend:
-
-- **Backend**: Python 3.11, FastAPI, Pydantic, Pandas, NumPy, pytest.
-- **Frontend**: React 18, TypeScript, Vite, Vanilla CSS design tokens, Lucide React icons.
-- **Persistence**: File-backed POS transaction database (`data/pos_database.json`), SQLite (`merchant_autopilot.db`), and CSV datasets.
-
----
-
-## Quick Start
-
-### 1. Backend Setup
-```bash
-# Navigate to backend
-cd backend
-
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Start FastAPI application
-python -m uvicorn app.main:app --reload --port 8000
-```
-Backend API will run at `http://localhost:8000`. API documentation available at `http://localhost:8000/docs`.
-
-### 2. Frontend Setup
-```bash
-# Navigate to frontend
-cd frontend
-
-# Install Node dependencies
-npm install
-
-# Start Vite dev server
-npm run dev
-```
-Frontend application will run at `http://localhost:5173`.
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/health` | Server health check endpoint (`{"status": "ok"}`) |
+| `GET` | `/api/recovery/opportunities` | Retrieves closed-loop recovery opportunities with AI recommendations |
+| `GET` | `/api/recovery/metrics` | Retrieves aggregate revenue at risk, expected recovery, and actual recovery |
+| `POST` | `/api/recovery/execute` | Executes a bounded recovery action (`MARKDOWN`, `RESTOCK`, `PROMOTION`) |
+| `GET` | `/api/recovery/evaluation` | Runs reproducible before/after batch evaluation comparing Baseline vs Strategy |
+| `GET` | `/api/audit/logs` | Retrieves immutable audit trail logs for all system state changes |
+| `POST` | `/api/transactions` | Ingests live POS checkout, decrements stock, and updates revenue metrics |
+| `GET` | `/api/products` | Retrieves 150 catalog products with stock, velocity, cover, and risk status |
 
 ---
 
-## Live Demo
-
-Live Demo: [DEPLOY AFTER DEPLOYMENT]
-
----
-
-## Deployment
-
-MerchIntell is configured for zero-downtime deployment on Render and Vercel using `render.yaml` blueprint specifications:
-
-- **Backend**: Python/FastAPI Web Service running Uvicorn on Render (`0.0.0.0:$PORT`), with configurable `CORS_ORIGINS` and `/var/data` persistent disk mount.
-- **Frontend**: React/Vite Static Site on Render/Vercel with SPA rewrite rules (`/* → /index.html`) and `VITE_API_BASE_URL` environment resolution.
-
-For detailed step-by-step instructions, view the [Deployment Guide](docs/DEPLOYMENT.md).
-
----
-
-## Running Verification Tests
+## 6. Running Tests & Local Setup
 
 ```bash
-# Run 82 backend test suite
+# Clone repository
+git clone https://github.com/Sanjay34598/merchent-revenue-automation.git
+cd merchent-revenue-automation
+
+# Backend Setup & Unit Tests (82/82 passing)
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r backend/requirements.txt
 python -m pytest tests/ -v
 
-# Run production frontend build
-cd frontend && npm run build
+# Frontend Setup & Build
+cd frontend
+npm install
+npm run build
 ```
 
 ---
 
-## Detailed Documentation Map
+## 7. Production Deployment Instructions
 
-Explore complete technical specifications in the [`docs/`](./docs) directory:
+MerchIntell is configured for deployment on **Render** (Backend) and **Vercel** (Frontend) using `render.yaml`:
 
-- [Problem Statement](docs/PROBLEM_STATEMENT.md) — Detailed breakdown of retail revenue leaks and traditional tool gaps.
-- [Solution Overview](docs/SOLUTION.md) — Architectural design of MerchIntell's revenue copilot.
-- [System Architecture](docs/SYSTEM_ARCHITECTURE.md) — High-level system components and integration topology.
-- [Technical Architecture](docs/TECHNICAL_ARCHITECTURE.md) — Backend services, API routing, and state flow.
-- [Data Architecture](docs/DATA_ARCHITECTURE.md) — CSV dataset schemas, SQLite tables, and runtime mutation models.
-- [POS Transaction Flow](docs/POS_TRANSACTION_FLOW.md) — Step-by-step transaction ingestion and closed-loop state updates.
-- [Revenue Risk Engine](docs/REVENUE_RISK_ENGINE.md) — Risk classification algorithms and exposure calculation formulas.
-- [Decision Engine](docs/DECISION_ENGINE.md) — Multi-objective normalized decision scoring and scenario execution.
-- [API Documentation](docs/API_DOCUMENTATION.md) — Full REST API specifications and payloads.
-- [Project Structure](docs/PROJECT_STRUCTURE.md) — Repository layout and module descriptions.
-- [Testing & Validation](docs/TESTING_AND_VALIDATION.md) — 82 backend pytest suites and frontend build validation.
-- [Deployment Guide](docs/DEPLOYMENT.md) — Step-by-step Render and Vercel production deployment.
-- [Demo Guide](docs/DEMO_GUIDE.md) — Recruiter & judge 10-second walkthrough script.
-- [Design Decisions](docs/DESIGN_DECISIONS.md) — Rationale for minimal visual design, vanilla CSS, and data honesty.
-- [Known Limitations](docs/KNOWN_LIMITATIONS.md) — Operational boundaries and dataset assumptions.
-- [Roadmap](docs/ROADMAP.md) — Future enhancements and enterprise features.
+- **Backend (Render Web Service)**: Running Uvicorn on `0.0.0.0:$PORT` with `/health` check, `CORS_ORIGINS` middleware, and persistent disk mount `/var/data`.
+- **Frontend (Vercel / Render Static Site)**: Vite SPA with rewrite rules (`/* → /index.html`) and `VITE_API_BASE_URL` environment configuration.
+
+For full deployment steps, view the [Deployment Guide](docs/DEPLOYMENT.md).
+
+---
+
+## 8. Buildathon Documentation Suite
+
+Explore technical documentation in the [`docs/`](./docs) directory:
+
+- [System Architecture & Event Flow](docs/ARCHITECTURE.md) — Mermaid topology and event ingestion flow.
+- [POS Ingestion & Stock Validation Flow](docs/POS_FLOW.md) — Step-by-step transaction checkout and stock mutation.
+- [AI Decision Engine & Safety Guardrails](docs/AI_DECISION_ENGINE.md) — AI context parsing, LLM/fallback engines, and safety guardrails.
+- [Revenue Recovery Engine & Evaluation](docs/REVENUE_RECOVERY.md) — Risk exposure calculations, recovery rates, and evaluation metrics.
+- [5-Minute Demo Walkthrough Script](docs/DEMO_SCRIPT.md) — Judge demo script and walkthrough.
+- [Final Buildathon Audit Report](docs/FINAL_AUDIT.md) — Submission readiness audit and test results.

@@ -4,7 +4,7 @@ import {
 } from 'lucide-react';
 
 interface MerchantActionStripProps {
-  onActionClick: (actionKey: 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'recovery') => void;
+  onActionClick: (actionKey: 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'recovery' | 'evaluation' | 'audit') => void;
 }
 
 export const MerchantActionStrip: React.FC<MerchantActionStripProps> = ({
@@ -51,6 +51,20 @@ export const MerchantActionStrip: React.FC<MerchantActionStripProps> = ({
       label: 'Recovery',
       icon: RotateCcw,
       accent: 'var(--emerald-green)',
+      isPrimary: false,
+    },
+    {
+      key: 'evaluation' as const,
+      label: 'Evaluation',
+      icon: Sliders,
+      accent: 'var(--accent-purple)',
+      isPrimary: false,
+    },
+    {
+      key: 'audit' as const,
+      label: 'Audit Trail',
+      icon: Layers,
+      accent: 'var(--text-main)',
       isPrimary: false,
     },
   ];

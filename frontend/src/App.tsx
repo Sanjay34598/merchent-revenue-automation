@@ -16,6 +16,8 @@ import { InventoryTable } from './components/InventoryTable';
 import { DecisionPipeline } from './components/DecisionPipeline';
 import { Simulator } from './components/Simulator';
 import { RecoveryView } from './components/RecoveryView';
+import { RecoveryEvaluationView } from './components/RecoveryEvaluationView';
+import { AuditTrailView } from './components/AuditTrailView';
 import { RightIntelligencePanel } from './components/RightIntelligencePanel';
 import { SalesInputWorkspace } from './components/SalesInputWorkspace';
 import { getApiUrl } from './services/apiConfig';
@@ -409,6 +411,16 @@ export default function App() {
                 {/* REVENUE & RECOVERY WORKSPACE */}
                 {(activeTab === 'leaks' || activeTab === 'recovery') && (
                   <RecoveryView />
+                )}
+
+                {/* RECOVERY EVALUATION WORKSPACE */}
+                {activeTab === 'evaluation' && (
+                  <RecoveryEvaluationView />
+                )}
+
+                {/* AUDIT TRAIL WORKSPACE */}
+                {activeTab === 'audit' && (
+                  <AuditTrailView />
                 )}
 
                 {/* DECISION PIPELINE WORKSPACE */}

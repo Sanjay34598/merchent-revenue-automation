@@ -63,4 +63,34 @@ class PosRepository:
         with open(self.db_path, "w", encoding="utf-8") as f:
             json.dump(payload, f, indent=2)
 
+    def get_catalog(self) -> List[Dict[str, Any]]:
+        """Returns catalog dicts from pos_engine"""
+        res = []
+        for p in pos_engine.catalog:
+            res.append({
+                "id": p.product_id,
+                "name": p.name,
+                "sku": p.sku,
+                "division": p.division,
+                "category": p.category,
+                "sellingPrice": p.selling_price,
+                "currentStock": p.current_stock,
+                "dailyVelocity": p.daily_velocity,
+                "riskStatus": p.risk_status,
+                "revenueAtRisk": p.revenue_at_risk,
+                "recoverableRevenue": p.recoverable_revenue,
+                "supplier": p.supplier,
+                "marginPct": getattr(p, "margin_pct", 35.0),
+            })
+        return res
+
+    def update_product_stock(self, product_id: int, new_stock: float):
+        """Updates product stock in pos_engine catalog and saves to disk"""
+        match = next((p for p in pos_engine.catalog if p.product_id == product_id), None)
+        if match:
+            match.current_stock = max(0.0, round(new_stock, 1))
+            match.days_of_cover = round(match.current_stock / max(match.daily_velocity, 0.1), 1)
+        self.save()
+
 pos_db = PosRepository()
+pos_repository = pos_db

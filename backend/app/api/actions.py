@@ -5,6 +5,9 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.models import AgentAction, ActionApproval
+from app.services.recovery_engine import recovery_engine
+from app.services.evaluation_engine import evaluation_engine
+from app.core.audit_repository import audit_repository
 
 router = APIRouter()
 
@@ -49,57 +52,76 @@ def get_actions(store_id: Optional[int] = None, db: Session = Depends(get_db)):
 @router.post("/actions/{id}/approve")
 def approve_action(id: int, req: Optional[ActionApprovalRequest] = None, db: Session = Depends(get_db)):
     """
-    Merchant explicitly approves a proposed action.
+    Approves a proposed action. Updates SQLite & triggers bounded execution.
     """
+    notes = req.merchant_notes if req else None
+    
+    # Try DB match first
     action = db.query(AgentAction).filter(AgentAction.id == id).first()
-    if not action:
-        raise HTTPException(status_code=404, detail=f"Action with ID {id} not found.")
+    if action:
+        action.status = "APPROVED"
+        approval = ActionApproval(
+            action_id=id,
+            approved=True,
+            merchant_notes=notes,
+            approved_at=datetime.utcnow()
+        )
+        db.add(approval)
+        db.commit()
 
-    action.status = "APPROVED"
-    
-    notes = req.merchant_notes if req else "Approved by merchant."
-    approval = ActionApproval(
-        action_id=action.id,
-        approved=True,
-        merchant_notes=notes,
-        approved_at=datetime.utcnow()
-    )
-    
-    db.add(approval)
-    db.commit()
-    db.refresh(action)
+    # Execute recovery engine bounded action
+    exec_result = recovery_engine.execute_recovery_action(id, "MARKDOWN", {"discount_percent": 15.0})
 
     return {
         "status": "APPROVED",
-        "action_id": action.id,
-        "message": f"Action #{id} has been approved by merchant and queued for execution."
+        "action_id": id,
+        "execution": exec_result,
+        "message": f"Action #{id} approved and executed successfully."
     }
 
-@router.post("/actions/{id}/reject")
-def reject_action(id: int, req: Optional[ActionApprovalRequest] = None, db: Session = Depends(get_db)):
-    """
-    Merchant explicitly rejects a proposed action.
-    """
-    action = db.query(AgentAction).filter(AgentAction.id == id).first()
-    if not action:
-        raise HTTPException(status_code=404, detail=f"Action with ID {id} not found.")
+class RecoveryExecuteRequest(BaseModel):
+    action_id: int
+    action_type: str
+    discount_percent: Optional[float] = 15.0
+    restock_quantity: Optional[int] = 25
 
-    action.status = "REJECTED"
-    
-    notes = req.merchant_notes if req else "Rejected by merchant."
-    approval = ActionApproval(
-        action_id=action.id,
-        approved=False,
-        merchant_notes=notes,
-        approved_at=datetime.utcnow()
+@router.post("/recovery/execute")
+def execute_recovery(req: RecoveryExecuteRequest):
+    """
+    Executes a bounded recovery action (MARKDOWN, RESTOCK, PROMOTION).
+    Updates catalog, records audit log, and calculates actual recovered revenue.
+    """
+    result = recovery_engine.execute_recovery_action(
+        req.action_id,
+        req.action_type,
+        {"discount_percent": req.discount_percent, "restock_quantity": req.restock_quantity}
     )
-    
-    db.add(approval)
-    db.commit()
-    db.refresh(action)
+    return result
 
-    return {
-        "status": "REJECTED",
-        "action_id": action.id,
-        "message": f"Action #{id} was rejected by merchant."
-    }
+@router.get("/recovery/opportunities")
+def get_recovery_opportunities(store_id: Optional[str] = "STR-1001"):
+    """
+    Retrieves normalized closed-loop recovery opportunities with AI recommendations.
+    """
+    return recovery_engine.get_recovery_opportunities(store_id)
+
+@router.get("/recovery/metrics")
+def get_recovery_metrics():
+    """
+    Retrieves closed-loop recovery metrics: revenue at risk, expected recovery, actual recovery, recovery rate.
+    """
+    return recovery_engine.get_summary_recovery_metrics()
+
+@router.get("/recovery/evaluation")
+def get_recovery_evaluation(store_id: Optional[str] = "STR-1001", batch_size: int = 150):
+    """
+    Retrieves reproducible before/after batch evaluation comparing Baseline vs Strategy.
+    """
+    return evaluation_engine.run_batch_evaluation(store_id, batch_size)
+
+@router.get("/audit/logs")
+def get_audit_logs(limit: int = 50, action_filter: Optional[str] = None):
+    """
+    Retrieves immutable audit trail logs for all system state changes.
+    """
+    return audit_repository.get_logs(limit, action_filter)

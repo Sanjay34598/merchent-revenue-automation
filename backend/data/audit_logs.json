@@ -1,0 +1,79 @@
+[
+  {
+    "id": "AUD-20260825230247-0007",
+    "timestamp": "2026-08-25T23:02:47.097949",
+    "action": "TEST_ACTION",
+    "entity": "Test Entity",
+    "reason": "Verification of audit logger",
+    "before_state": "",
+    "after_state": "",
+    "source": "TEST",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260825230247-0006",
+    "timestamp": "2026-08-25T23:02:47.032115",
+    "action": "AI_DECISION_GENERATED",
+    "entity": "Test Product (STR-1001)",
+    "reason": "Inventory days of cover (84d) exceeds 45-day baseline velocity threshold. Recommended 15.0% targeted markdown to accelerate sell-through.",
+    "before_state": "Risk: SLOW_MOVING \u00b7 Exposure: \u20b96000",
+    "after_state": "Action: MARKDOWN \u00b7 Recov: \u20b94500",
+    "source": "DETERMINISTIC_FALLBACK",
+    "status": "PROPOSED"
+  },
+  {
+    "id": "AUD-20260825230238-0005",
+    "timestamp": "2026-08-25T23:02:38.116828",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260825-17892",
+    "reason": "Recorded POS checkout: 1 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9450 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260825230232-0004",
+    "timestamp": "2026-08-25T23:02:32.077918",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260825-17891",
+    "reason": "Recorded POS checkout: 1 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9700 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260825230226-0003",
+    "timestamp": "2026-08-25T23:02:26.865678",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260825-17890",
+    "reason": "Recorded POS checkout: 1 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b956 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260825-0001",
+    "timestamp": "2026-08-25T23:01:12.846887",
+    "action": "SYSTEM_INITIALIZED",
+    "entity": "MerchIntell Revenue Engine",
+    "reason": "Baseline 40 stores historical dataset loaded and verified.",
+    "before_state": "Uninitialized",
+    "after_state": "40 Stores / 150 SKUs Active",
+    "source": "SYSTEM",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260825-0002",
+    "timestamp": "2026-08-25T23:01:12.846887",
+    "action": "RISK_SCAN_COMPLETED",
+    "entity": "Revenue Risk Engine",
+    "reason": "Identified 7 high-exposure opportunities across active catalog.",
+    "before_state": "\u20b90 Exposure",
+    "after_state": "\u20b92,829,779 Revenue at Risk",
+    "source": "AI_ENGINE",
+    "status": "SUCCESS"
+  }
+]
