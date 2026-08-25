@@ -87,7 +87,8 @@ def record_transaction(payload: TransactionCreate):
 
     # Deduct stock & recalculate velocity on matching catalog items
     for item in payload.items:
-        match_prod = next((p for p in pos_engine.catalog if p.name.lower() == item.product_name.lower()), None)
+        p_name_lower = item.product_name.lower()
+        match_prod = next((p for p in pos_engine.catalog if p.name.lower() == p_name_lower or p.sku.lower() == p_name_lower or p_name_lower in p.name.lower()), None)
         if match_prod:
             match_prod.sold_stock = round(match_prod.sold_stock + item.quantity, 1)
             match_prod.current_stock = max(0.0, round(match_prod.opening_stock - match_prod.sold_stock, 1))

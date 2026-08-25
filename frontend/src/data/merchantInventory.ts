@@ -85,7 +85,7 @@ export function generateMerchantInventory(): ProductItem[] {
   for (let i = 0; i < 150; i++) {
     const seed = REAL_PRODUCTS_SEED[i % REAL_PRODUCTS_SEED.length];
     const id = 1000 + i;
-    const sku = i < REAL_PRODUCTS_SEED.length ? seed.sku : `PROD-1${(0000 + i).toString().padStart(5, '0')}`;
+    const sku = i < REAL_PRODUCTS_SEED.length ? seed.sku : `PROD-1${i.toString().padStart(5, '0')}`;
     const name = i < REAL_PRODUCTS_SEED.length ? seed.name : `${seed.division} ${seed.category.split(' ')[2] || 'Item'} Variant #${i + 1}`;
     
     const sellingPrice = seed.price + (i % 7) * 5;

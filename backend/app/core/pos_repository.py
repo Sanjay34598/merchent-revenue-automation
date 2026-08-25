@@ -1,7 +1,7 @@
 import os
 import json
 from typing import List, Dict, Any, Optional
-from backend.app.services.pos_dataset import pos_engine
+from app.services.pos_dataset import pos_engine
 
 DB_FILE_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data", "pos_database.json")
 
