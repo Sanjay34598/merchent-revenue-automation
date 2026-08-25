@@ -2,920 +2,36 @@
   "store_id": 1,
   "store_name": "GreenBasket Market",
   "last_updated": "",
-  "transactions_count": 7897,
+  "transactions_count": 7859,
   "transactions": [
     {
-      "transaction_id": "TXN-20260825-17897",
-      "timestamp": "2026-08-25 13:21",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 1.5,
-          "unit": "piece",
-          "unit_price": 151.58,
-          "discount": 0.0,
-          "line_total": 227.4
-        }
-      ],
-      "subtotal": 227.4,
-      "discount": 0.0,
-      "grand_total": 227.4,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17896",
-      "timestamp": "2026-08-25 13:21",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 2.5,
-          "unit": "piece",
-          "unit_price": 151.58,
-          "discount": 0.0,
-          "line_total": 379.0
-        }
-      ],
-      "subtotal": 379.0,
-      "discount": 0.0,
-      "grand_total": 379.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17895",
-      "timestamp": "2026-08-25 13:21",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "India Gate Basmati Rice",
-          "quantity": 2.5,
-          "unit": "kg",
-          "unit_price": 120.0,
-          "discount": 0.0,
-          "line_total": 300.0
-        },
-        {
-          "product_name": "Fortune Sunflower Oil 1L",
-          "quantity": 1.5,
-          "unit": "L",
-          "unit_price": 168.0,
-          "discount": 10.0,
-          "line_total": 242.0
-        }
-      ],
-      "subtotal": 552.0,
-      "discount": 10.0,
-      "grand_total": 542.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17894",
-      "timestamp": "2026-08-25 13:19",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189474 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 3.0,
-          "unit": "piece",
-          "unit_price": 150.0,
-          "discount": 0.0,
-          "line_total": 450.0
-        }
-      ],
-      "subtotal": 450.0,
-      "discount": 0.0,
-      "grand_total": 450.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17893",
-      "timestamp": "2026-08-25 13:19",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189473 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 5.0,
-          "unit": "piece",
-          "unit_price": 140.0,
-          "discount": 0.0,
-          "line_total": 700.0
-        }
-      ],
-      "subtotal": 700.0,
-      "discount": 0.0,
-      "grand_total": 700.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17892",
-      "timestamp": "2026-08-25 13:19",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "Tata Salt Iodized",
-          "quantity": 2.0,
-          "unit": "pack",
-          "unit_price": 28.0,
-          "discount": 0.0,
-          "line_total": 56.0
-        }
-      ],
-      "subtotal": 56.0,
-      "discount": 0.0,
-      "grand_total": 56.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17891",
-      "timestamp": "2026-08-25 12:53",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 1.5,
-          "unit": "piece",
-          "unit_price": 151.58,
-          "discount": 0.0,
-          "line_total": 227.4
-        }
-      ],
-      "subtotal": 227.4,
-      "discount": 0.0,
-      "grand_total": 227.4,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17890",
-      "timestamp": "2026-08-25 12:53",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 2.5,
-          "unit": "piece",
-          "unit_price": 151.58,
-          "discount": 0.0,
-          "line_total": 379.0
-        }
-      ],
-      "subtotal": 379.0,
-      "discount": 0.0,
-      "grand_total": 379.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17889",
-      "timestamp": "2026-08-25 12:53",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "India Gate Basmati Rice",
-          "quantity": 2.5,
-          "unit": "kg",
-          "unit_price": 120.0,
-          "discount": 0.0,
-          "line_total": 300.0
-        },
-        {
-          "product_name": "Fortune Sunflower Oil 1L",
-          "quantity": 1.5,
-          "unit": "L",
-          "unit_price": 168.0,
-          "discount": 10.0,
-          "line_total": 242.0
-        }
-      ],
-      "subtotal": 552.0,
-      "discount": 10.0,
-      "grand_total": 542.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17888",
-      "timestamp": "2026-08-25 12:51",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189474 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 3.0,
-          "unit": "piece",
-          "unit_price": 150.0,
-          "discount": 0.0,
-          "line_total": 450.0
-        }
-      ],
-      "subtotal": 450.0,
-      "discount": 0.0,
-      "grand_total": 450.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17887",
-      "timestamp": "2026-08-25 12:51",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189473 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 5.0,
-          "unit": "piece",
-          "unit_price": 140.0,
-          "discount": 0.0,
-          "line_total": 700.0
-        }
-      ],
-      "subtotal": 700.0,
-      "discount": 0.0,
-      "grand_total": 700.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17886",
-      "timestamp": "2026-08-25 12:51",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "Tata Salt Iodized",
-          "quantity": 2.0,
-          "unit": "pack",
-          "unit_price": 28.0,
-          "discount": 0.0,
-          "line_total": 56.0
-        }
-      ],
-      "subtotal": 56.0,
-      "discount": 0.0,
-      "grand_total": 56.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17885",
-      "timestamp": "2026-08-25 12:43",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 1.5,
-          "unit": "piece",
-          "unit_price": 151.58,
-          "discount": 0.0,
-          "line_total": 227.4
-        }
-      ],
-      "subtotal": 227.4,
-      "discount": 0.0,
-      "grand_total": 227.4,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17884",
-      "timestamp": "2026-08-25 12:43",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 2.5,
-          "unit": "piece",
-          "unit_price": 151.58,
-          "discount": 0.0,
-          "line_total": 379.0
-        }
-      ],
-      "subtotal": 379.0,
-      "discount": 0.0,
-      "grand_total": 379.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17883",
-      "timestamp": "2026-08-25 12:43",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "India Gate Basmati Rice",
-          "quantity": 2.5,
-          "unit": "kg",
-          "unit_price": 120.0,
-          "discount": 0.0,
-          "line_total": 300.0
-        },
-        {
-          "product_name": "Fortune Sunflower Oil 1L",
-          "quantity": 1.5,
-          "unit": "L",
-          "unit_price": 168.0,
-          "discount": 10.0,
-          "line_total": 242.0
-        }
-      ],
-      "subtotal": 552.0,
-      "discount": 10.0,
-      "grand_total": 542.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17882",
-      "timestamp": "2026-08-25 12:39",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189474 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 3.0,
-          "unit": "piece",
-          "unit_price": 150.0,
-          "discount": 0.0,
-          "line_total": 450.0
-        }
-      ],
-      "subtotal": 450.0,
-      "discount": 0.0,
-      "grand_total": 450.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17881",
-      "timestamp": "2026-08-25 12:39",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189473 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 5.0,
-          "unit": "piece",
-          "unit_price": 140.0,
-          "discount": 0.0,
-          "line_total": 700.0
-        }
-      ],
-      "subtotal": 700.0,
-      "discount": 0.0,
-      "grand_total": 700.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17880",
-      "timestamp": "2026-08-25 12:39",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "Tata Salt Iodized",
-          "quantity": 2.0,
-          "unit": "pack",
-          "unit_price": 28.0,
-          "discount": 0.0,
-          "line_total": 56.0
-        }
-      ],
-      "subtotal": 56.0,
-      "discount": 0.0,
-      "grand_total": 56.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17879",
-      "timestamp": "2026-08-25 12:38",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 1.5,
-          "unit": "piece",
-          "unit_price": 151.58,
-          "discount": 0.0,
-          "line_total": 227.4
-        }
-      ],
-      "subtotal": 227.4,
-      "discount": 0.0,
-      "grand_total": 227.4,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17878",
-      "timestamp": "2026-08-25 12:38",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 2.5,
-          "unit": "piece",
-          "unit_price": 151.58,
-          "discount": 0.0,
-          "line_total": 379.0
-        }
-      ],
-      "subtotal": 379.0,
-      "discount": 0.0,
-      "grand_total": 379.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17877",
-      "timestamp": "2026-08-25 12:38",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "India Gate Basmati Rice",
-          "quantity": 2.5,
-          "unit": "kg",
-          "unit_price": 120.0,
-          "discount": 0.0,
-          "line_total": 300.0
-        },
-        {
-          "product_name": "Fortune Sunflower Oil 1L",
-          "quantity": 1.5,
-          "unit": "L",
-          "unit_price": 168.0,
-          "discount": 10.0,
-          "line_total": 242.0
-        }
-      ],
-      "subtotal": 552.0,
-      "discount": 10.0,
-      "grand_total": 542.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17876",
-      "timestamp": "2026-08-25 12:35",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189474 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 3.0,
-          "unit": "piece",
-          "unit_price": 150.0,
-          "discount": 0.0,
-          "line_total": 450.0
-        }
-      ],
-      "subtotal": 450.0,
-      "discount": 0.0,
-      "grand_total": 450.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17875",
-      "timestamp": "2026-08-25 12:35",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189473 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 5.0,
-          "unit": "piece",
-          "unit_price": 140.0,
-          "discount": 0.0,
-          "line_total": 700.0
-        }
-      ],
-      "subtotal": 700.0,
-      "discount": 0.0,
-      "grand_total": 700.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17874",
-      "timestamp": "2026-08-25 12:35",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "Tata Salt Iodized",
-          "quantity": 2.0,
-          "unit": "pack",
-          "unit_price": 28.0,
-          "discount": 0.0,
-          "line_total": 56.0
-        }
-      ],
-      "subtotal": 56.0,
-      "discount": 0.0,
-      "grand_total": 56.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17873",
-      "timestamp": "2026-08-25 12:32",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 1.5,
-          "unit": "piece",
-          "unit_price": 151.58,
-          "discount": 0.0,
-          "line_total": 227.4
-        }
-      ],
-      "subtotal": 227.4,
-      "discount": 0.0,
-      "grand_total": 227.4,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17872",
-      "timestamp": "2026-08-25 12:32",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 2.5,
-          "unit": "piece",
-          "unit_price": 151.58,
-          "discount": 0.0,
-          "line_total": 379.0
-        }
-      ],
-      "subtotal": 379.0,
-      "discount": 0.0,
-      "grand_total": 379.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17871",
-      "timestamp": "2026-08-25 12:32",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "India Gate Basmati Rice",
-          "quantity": 2.5,
-          "unit": "kg",
-          "unit_price": 120.0,
-          "discount": 0.0,
-          "line_total": 300.0
-        },
-        {
-          "product_name": "Fortune Sunflower Oil 1L",
-          "quantity": 1.5,
-          "unit": "L",
-          "unit_price": 168.0,
-          "discount": 10.0,
-          "line_total": 242.0
-        }
-      ],
-      "subtotal": 552.0,
-      "discount": 10.0,
-      "grand_total": 542.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17870",
-      "timestamp": "2026-08-25 12:29",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189474 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 3.0,
-          "unit": "piece",
-          "unit_price": 150.0,
-          "discount": 0.0,
-          "line_total": 450.0
-        }
-      ],
-      "subtotal": 450.0,
-      "discount": 0.0,
-      "grand_total": 450.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17869",
-      "timestamp": "2026-08-25 12:29",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189473 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 5.0,
-          "unit": "piece",
-          "unit_price": 140.0,
-          "discount": 0.0,
-          "line_total": 700.0
-        }
-      ],
-      "subtotal": 700.0,
-      "discount": 0.0,
-      "grand_total": 700.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17868",
-      "timestamp": "2026-08-25 12:29",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "Tata Salt Iodized",
-          "quantity": 2.0,
-          "unit": "pack",
-          "unit_price": 28.0,
-          "discount": 0.0,
-          "line_total": 56.0
-        }
-      ],
-      "subtotal": 56.0,
-      "discount": 0.0,
-      "grand_total": 56.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17867",
-      "timestamp": "2026-08-25 12:27",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 1.5,
-          "unit": "piece",
-          "unit_price": 151.58,
-          "discount": 0.0,
-          "line_total": 227.4
-        }
-      ],
-      "subtotal": 227.4,
-      "discount": 0.0,
-      "grand_total": 227.4,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17866",
-      "timestamp": "2026-08-25 12:27",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 2.5,
-          "unit": "piece",
-          "unit_price": 151.58,
-          "discount": 0.0,
-          "line_total": 379.0
-        }
-      ],
-      "subtotal": 379.0,
-      "discount": 0.0,
-      "grand_total": 379.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17865",
-      "timestamp": "2026-08-25 12:27",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "India Gate Basmati Rice",
-          "quantity": 2.5,
-          "unit": "kg",
-          "unit_price": 120.0,
-          "discount": 0.0,
-          "line_total": 300.0
-        },
-        {
-          "product_name": "Fortune Sunflower Oil 1L",
-          "quantity": 1.5,
-          "unit": "L",
-          "unit_price": 168.0,
-          "discount": 10.0,
-          "line_total": 242.0
-        }
-      ],
-      "subtotal": 552.0,
-      "discount": 10.0,
-      "grand_total": 542.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17864",
-      "timestamp": "2026-08-25 12:25",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189474 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 3.0,
-          "unit": "piece",
-          "unit_price": 150.0,
-          "discount": 0.0,
-          "line_total": 450.0
-        }
-      ],
-      "subtotal": 450.0,
-      "discount": 0.0,
-      "grand_total": 450.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17863",
-      "timestamp": "2026-08-25 12:24",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189473 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 5.0,
-          "unit": "piece",
-          "unit_price": 140.0,
-          "discount": 0.0,
-          "line_total": 700.0
-        }
-      ],
-      "subtotal": 700.0,
-      "discount": 0.0,
-      "grand_total": 700.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17862",
-      "timestamp": "2026-08-25 12:24",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "Tata Salt Iodized",
-          "quantity": 2.0,
-          "unit": "pack",
-          "unit_price": 28.0,
-          "discount": 0.0,
-          "line_total": 56.0
-        }
-      ],
-      "subtotal": 56.0,
-      "discount": 0.0,
-      "grand_total": 56.0,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17861",
-      "timestamp": "2026-08-25 12:23",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 1.5,
-          "unit": "piece",
-          "unit_price": 151.58,
-          "discount": 0.0,
-          "line_total": 227.4
-        }
-      ],
-      "subtotal": 227.4,
-      "discount": 0.0,
-      "grand_total": 227.4,
-      "status": "Processed"
-    },
-    {
-      "transaction_id": "TXN-20260825-17860",
-      "timestamp": "2026-08-25 12:23",
-      "store_id": 1,
-      "terminal_id": "Terminal-#01",
-      "cashier_id": "Cashier-101",
-      "payment_method": "UPI",
-      "items": [
-        {
-          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
-          "quantity": 2.5,
-          "unit": "piece",
-          "unit_price": 151.58,
-          "discount": 0.0,
-          "line_total": 379.0
-        }
-      ],
-      "subtotal": 379.0,
-      "discount": 0.0,
-      "grand_total": 379.0,
-      "status": "Processed"
-    },
-    {
       "transaction_id": "TXN-20260825-17859",
-      "timestamp": "2026-08-25 12:23",
+      "timestamp": "2026-08-25 13:22",
       "store_id": 1,
       "terminal_id": "Terminal-#01",
       "cashier_id": "Cashier-101",
       "payment_method": "UPI",
       "items": [
         {
-          "product_name": "India Gate Basmati Rice",
-          "quantity": 2.5,
-          "unit": "kg",
-          "unit_price": 120.0,
+          "product_name": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
+          "quantity": 2.0,
+          "unit": "piece",
+          "unit_price": 151.58,
           "discount": 0.0,
-          "line_total": 300.0
+          "line_total": 303.16
         },
         {
-          "product_name": "Fortune Sunflower Oil 1L",
-          "quantity": 1.5,
-          "unit": "L",
-          "unit_price": 168.0,
-          "discount": 10.0,
-          "line_total": 242.0
+          "product_name": "PROD-189473 SEG-520541 Femme Footwear Boot Collection Plushfoot",
+          "quantity": 1.0,
+          "unit": "piece",
+          "unit_price": 140.0,
+          "discount": 0.0,
+          "line_total": 140.0
         }
       ],
-      "subtotal": 552.0,
-      "discount": 10.0,
-      "grand_total": 542.0,
+      "subtotal": 443.16,
+      "discount": 0.0,
+      "grand_total": 443.16,
       "status": "Processed"
     },
     {
@@ -346489,603 +345605,603 @@
     }
   ],
   "catalog_stock": {
-    "557415": {
-      "sold_stock": 20.0,
-      "current_stock": 26.0
+    "798288": {
+      "sold_stock": 18.0,
+      "current_stock": 28.0
     },
-    "210132": {
-      "sold_stock": 29.0,
-      "current_stock": 24.0
+    "133019": {
+      "sold_stock": 25.0,
+      "current_stock": 28.0
     },
-    "770960": {
-      "sold_stock": 17.0,
-      "current_stock": 19.0
+    "108734": {
+      "sold_stock": 14.0,
+      "current_stock": 22.0
     },
-    "780172": {
+    "17737": {
       "sold_stock": 10.0,
       "current_stock": 11.0
     },
-    "550596": {
+    "167726": {
       "sold_stock": 11.0,
       "current_stock": 28.0
     },
-    "260632": {
+    "729973": {
       "sold_stock": 66.0,
       "current_stock": 42.0
     },
-    "157254": {
+    "672532": {
       "sold_stock": 89.0,
       "current_stock": 44.0
     },
-    "609975": {
+    "531467": {
       "sold_stock": 110.0,
       "current_stock": 65.0
     },
-    "31791": {
+    "884422": {
       "sold_stock": 188.0,
       "current_stock": 65.0
     },
-    "53180": {
+    "557385": {
       "sold_stock": 213.0,
       "current_stock": 73.0
     },
-    "587682": {
+    "211438": {
       "sold_stock": 263.0,
       "current_stock": 41.0
     },
-    "39638": {
+    "386577": {
       "sold_stock": 132.0,
       "current_stock": 13.0
     },
-    "245478": {
+    "523480": {
       "sold_stock": 59.0,
       "current_stock": 0.0
     },
-    "451559": {
+    "847804": {
       "sold_stock": 51.0,
       "current_stock": 46.0
     },
-    "249545": {
+    "135417": {
       "sold_stock": 38.0,
       "current_stock": 46.0
     },
-    "410591": {
+    "765624": {
       "sold_stock": 218.0,
       "current_stock": 39.0
     },
-    "671651": {
+    "316415": {
       "sold_stock": 216.0,
       "current_stock": 66.0
     },
-    "490805": {
+    "71467": {
       "sold_stock": 271.0,
       "current_stock": 42.0
     },
-    "778926": {
+    "698039": {
       "sold_stock": 292.0,
       "current_stock": 63.0
     },
-    "755926": {
+    "974669": {
       "sold_stock": 354.0,
       "current_stock": 93.0
     },
-    "784763": {
+    "770345": {
       "sold_stock": 312.0,
       "current_stock": 94.0
     },
-    "723244": {
+    "664269": {
       "sold_stock": 499.0,
       "current_stock": 145.0
     },
-    "359926": {
+    "827665": {
       "sold_stock": 61.0,
       "current_stock": 56.0
     },
-    "172484": {
+    "637450": {
       "sold_stock": 127.0,
       "current_stock": 113.0
     },
-    "89240": {
+    "423993": {
       "sold_stock": 270.0,
       "current_stock": 86.0
     },
-    "569894": {
+    "156875": {
       "sold_stock": 217.0,
       "current_stock": 87.0
     },
-    "957649": {
+    "411857": {
       "sold_stock": 328.0,
       "current_stock": 98.0
     },
-    "932771": {
+    "624601": {
       "sold_stock": 293.0,
       "current_stock": 78.0
     },
-    "877915": {
+    "195617": {
       "sold_stock": 264.0,
       "current_stock": 107.0
     },
-    "304054": {
+    "73339": {
       "sold_stock": 120.0,
       "current_stock": 98.0
     },
-    "448046": {
+    "769303": {
       "sold_stock": 74.0,
       "current_stock": 144.0
     },
-    "728211": {
+    "419924": {
       "sold_stock": 120.0,
       "current_stock": 72.0
     },
-    "7332": {
+    "124871": {
       "sold_stock": 199.0,
       "current_stock": 224.0
     },
-    "358785": {
+    "497500": {
       "sold_stock": 405.0,
       "current_stock": 97.0
     },
-    "592335": {
+    "187994": {
       "sold_stock": 427.0,
       "current_stock": 105.0
     },
-    "433714": {
+    "562783": {
       "sold_stock": 514.0,
       "current_stock": 43.0
     },
-    "813827": {
+    "928699": {
       "sold_stock": 640.0,
       "current_stock": 16.0
     },
-    "906476": {
+    "757555": {
       "sold_stock": 816.0,
       "current_stock": 201.0
     },
-    "379503": {
+    "830084": {
       "sold_stock": 834.0,
       "current_stock": 212.0
     },
-    "502162": {
+    "309503": {
       "sold_stock": 1170.0,
       "current_stock": 179.0
     },
-    "101701": {
+    "892459": {
       "sold_stock": 55.0,
       "current_stock": 199.0
     },
-    "50460": {
+    "518997": {
       "sold_stock": 129.0,
       "current_stock": 158.0
     },
-    "485610": {
+    "869697": {
       "sold_stock": 107.0,
       "current_stock": 187.0
     },
-    "677304": {
+    "219625": {
       "sold_stock": 128.0,
       "current_stock": 167.0
     },
-    "671439": {
+    "658040": {
       "sold_stock": 155.0,
       "current_stock": 203.0
     },
-    "546370": {
+    "857427": {
       "sold_stock": 191.0,
       "current_stock": 304.0
     },
-    "939692": {
+    "187885": {
       "sold_stock": 219.0,
       "current_stock": 282.0
     },
-    "74417": {
+    "926237": {
       "sold_stock": 368.0,
       "current_stock": 339.0
     },
-    "626130": {
+    "548093": {
       "sold_stock": 35.0,
       "current_stock": 112.0
     },
-    "988504": {
+    "687664": {
       "sold_stock": 13.0,
       "current_stock": 33.0
     },
-    "905491": {
+    "576001": {
       "sold_stock": 19.0,
       "current_stock": 35.0
     },
-    "568581": {
+    "739513": {
       "sold_stock": 16.0,
       "current_stock": 38.0
     },
-    "724687": {
+    "510311": {
       "sold_stock": 29.0,
       "current_stock": 35.0
     },
-    "734353": {
+    "248004": {
       "sold_stock": 23.0,
       "current_stock": 40.0
     },
-    "784667": {
+    "126610": {
       "sold_stock": 25.0,
       "current_stock": 39.0
     },
-    "611159": {
+    "178716": {
       "sold_stock": 18.0,
       "current_stock": 32.0
     },
-    "686644": {
+    "4514": {
       "sold_stock": 22.0,
       "current_stock": 33.0
     },
-    "656507": {
+    "145584": {
       "sold_stock": 44.0,
       "current_stock": 43.0
     },
-    "856018": {
+    "276713": {
       "sold_stock": 44.0,
       "current_stock": 41.0
     },
-    "923131": {
+    "507197": {
       "sold_stock": 62.0,
       "current_stock": 40.0
     },
-    "445065": {
+    "476565": {
       "sold_stock": 59.0,
       "current_stock": 44.0
     },
-    "669336": {
+    "216865": {
       "sold_stock": 91.0,
       "current_stock": 49.0
     },
-    "93194": {
+    "542285": {
       "sold_stock": 89.0,
       "current_stock": 47.0
     },
-    "889805": {
+    "91339": {
       "sold_stock": 139.0,
       "current_stock": 51.0
     },
-    "224788": {
+    "355868": {
       "sold_stock": 24.0,
       "current_stock": 52.0
     },
-    "898544": {
+    "282383": {
       "sold_stock": 40.0,
       "current_stock": 100.0
     },
-    "816055": {
+    "122716": {
       "sold_stock": 35.0,
       "current_stock": 100.0
     },
-    "249442": {
+    "847432": {
       "sold_stock": 9.0,
       "current_stock": 10.0
     },
-    "577232": {
+    "212314": {
       "sold_stock": 17.0,
       "current_stock": 12.0
     },
-    "576203": {
+    "24796": {
       "sold_stock": 7.0,
       "current_stock": 2.0
     },
-    "425988": {
+    "573643": {
       "sold_stock": 42.0,
       "current_stock": 86.0
     },
-    "771743": {
+    "121315": {
       "sold_stock": 13.0,
       "current_stock": 17.0
     },
-    "368795": {
+    "778246": {
       "sold_stock": 21.0,
       "current_stock": 31.0
     },
-    "563440": {
+    "166409": {
       "sold_stock": 23.0,
       "current_stock": 21.0
     },
-    "940560": {
+    "940507": {
       "sold_stock": 11.0,
       "current_stock": 9.0
     },
-    "423764": {
+    "425464": {
       "sold_stock": 59.0,
       "current_stock": 34.0
     },
-    "347545": {
+    "34999": {
       "sold_stock": 37.0,
       "current_stock": 23.0
     },
-    "729062": {
+    "605307": {
       "sold_stock": 28.0,
       "current_stock": 34.0
     },
-    "884775": {
+    "645236": {
       "sold_stock": 30.0,
       "current_stock": 24.0
     },
-    "165057": {
+    "269916": {
       "sold_stock": 42.0,
       "current_stock": 67.0
     },
-    "977882": {
+    "674943": {
       "sold_stock": 10.0,
       "current_stock": 26.0
     },
-    "164783": {
+    "912171": {
       "sold_stock": 18.0,
       "current_stock": 2.0
     },
-    "869254": {
+    "346872": {
       "sold_stock": 20.0,
       "current_stock": 4.0
     },
-    "597875": {
+    "352025": {
       "sold_stock": 38.0,
       "current_stock": 15.0
     },
-    "257014": {
+    "135748": {
       "sold_stock": 11.0,
       "current_stock": 11.0
     },
-    "5916": {
+    "719775": {
       "sold_stock": 36.0,
       "current_stock": 10.0
     },
-    "768024": {
+    "970264": {
       "sold_stock": 27.0,
       "current_stock": 14.0
     },
-    "440218": {
+    "427725": {
       "sold_stock": 9.0,
       "current_stock": 11.0
     },
-    "950442": {
+    "495700": {
       "sold_stock": 47.0,
       "current_stock": 9.0
     },
-    "287508": {
+    "879979": {
       "sold_stock": 60.0,
       "current_stock": 10.0
     },
-    "852212": {
+    "233982": {
       "sold_stock": 97.0,
       "current_stock": 12.0
     },
-    "857182": {
+    "919814": {
       "sold_stock": 56.0,
       "current_stock": 8.0
     },
-    "766569": {
+    "355424": {
       "sold_stock": 58.0,
       "current_stock": 8.0
     },
-    "464325": {
+    "756262": {
       "sold_stock": 95.0,
       "current_stock": 15.0
     },
-    "695971": {
+    "982459": {
       "sold_stock": 14.0,
       "current_stock": 40.0
     },
-    "864807": {
+    "788372": {
       "sold_stock": 15.0,
       "current_stock": 42.0
     },
-    "898009": {
+    "829325": {
       "sold_stock": 37.0,
       "current_stock": 61.0
     },
-    "103714": {
+    "510427": {
       "sold_stock": 26.0,
       "current_stock": 67.0
     },
-    "336910": {
+    "236495": {
       "sold_stock": 42.0,
       "current_stock": 57.0
     },
-    "253305": {
+    "148998": {
       "sold_stock": 39.0,
       "current_stock": 59.0
     },
-    "263532": {
+    "650225": {
       "sold_stock": 34.0,
       "current_stock": 62.0
     },
-    "911898": {
+    "954418": {
       "sold_stock": 17.0,
       "current_stock": 40.0
     },
-    "102900": {
+    "93721": {
       "sold_stock": 24.0,
       "current_stock": 62.0
     },
-    "672572": {
+    "701721": {
       "sold_stock": 69.0,
       "current_stock": 44.0
     },
-    "424907": {
+    "186542": {
       "sold_stock": 93.0,
       "current_stock": 24.0
     },
-    "536438": {
+    "504254": {
       "sold_stock": 73.0,
       "current_stock": 12.0
     },
-    "998704": {
+    "4547": {
       "sold_stock": 32.0,
       "current_stock": 4.0
     },
-    "632362": {
+    "443975": {
       "sold_stock": 19.0,
       "current_stock": 12.0
     },
-    "235936": {
+    "269776": {
       "sold_stock": 39.0,
       "current_stock": 8.0
     },
-    "228091": {
+    "798503": {
       "sold_stock": 42.0,
       "current_stock": 55.0
     },
-    "696001": {
+    "232268": {
       "sold_stock": 32.0,
       "current_stock": 54.0
     },
-    "632169": {
+    "996309": {
       "sold_stock": 84.0,
       "current_stock": 118.0
     },
-    "303195": {
+    "967652": {
       "sold_stock": 58.0,
       "current_stock": 46.0
     },
-    "528496": {
+    "626436": {
       "sold_stock": 96.0,
       "current_stock": 84.0
     },
-    "541352": {
+    "197181": {
       "sold_stock": 107.0,
       "current_stock": 60.0
     },
-    "504521": {
+    "948124": {
       "sold_stock": 150.0,
       "current_stock": 38.0
     },
-    "688660": {
+    "45643": {
       "sold_stock": 15.0,
       "current_stock": 29.0
     },
-    "88460": {
+    "721776": {
       "sold_stock": 21.0,
       "current_stock": 17.0
     },
-    "366946": {
+    "306699": {
       "sold_stock": 17.0,
       "current_stock": 17.0
     },
-    "119294": {
+    "535179": {
       "sold_stock": 16.0,
       "current_stock": 12.0
     },
-    "184086": {
+    "447410": {
       "sold_stock": 14.0,
       "current_stock": 12.0
     },
-    "678543": {
+    "127406": {
       "sold_stock": 23.0,
       "current_stock": 23.0
     },
-    "247443": {
+    "56420": {
       "sold_stock": 28.0,
       "current_stock": 13.0
     },
-    "415970": {
+    "660599": {
       "sold_stock": 16.0,
       "current_stock": 14.0
     },
-    "731012": {
+    "589079": {
       "sold_stock": 15.0,
       "current_stock": 13.0
     },
-    "432931": {
+    "888520": {
       "sold_stock": 114.0,
       "current_stock": 37.0
     },
-    "778708": {
+    "190296": {
       "sold_stock": 153.0,
       "current_stock": 33.0
     },
-    "235878": {
+    "433201": {
       "sold_stock": 193.0,
       "current_stock": 64.0
     },
-    "40522": {
+    "844282": {
       "sold_stock": 141.0,
       "current_stock": 14.0
     },
-    "162752": {
+    "257416": {
       "sold_stock": 201.0,
       "current_stock": 58.0
     },
-    "920530": {
+    "502465": {
       "sold_stock": 196.0,
       "current_stock": 75.0
     },
-    "932088": {
+    "101798": {
       "sold_stock": 207.0,
       "current_stock": 82.0
     },
-    "500637": {
+    "778456": {
       "sold_stock": 45.0,
       "current_stock": 26.0
     },
-    "314246": {
+    "444138": {
       "sold_stock": 78.0,
       "current_stock": 11.0
     },
-    "398744": {
+    "231248": {
       "sold_stock": 48.0,
       "current_stock": 9.0
     },
-    "789434": {
+    "282810": {
       "sold_stock": 87.0,
       "current_stock": 11.0
     },
-    "701133": {
+    "21000": {
       "sold_stock": 125.0,
       "current_stock": 21.0
     },
-    "174789": {
+    "121935": {
       "sold_stock": 138.0,
       "current_stock": 19.0
     },
-    "123010": {
+    "568918": {
       "sold_stock": 152.0,
       "current_stock": 21.0
     },
-    "884156": {
+    "415916": {
       "sold_stock": 174.0,
       "current_stock": 14.0
     },
-    "743312": {
+    "404341": {
       "sold_stock": 37.0,
       "current_stock": 16.0
     },
-    "819207": {
+    "824710": {
       "sold_stock": 10.0,
       "current_stock": 34.0
     },
-    "746868": {
+    "56414": {
       "sold_stock": 22.0,
       "current_stock": 31.0
     },
-    "386979": {
+    "806302": {
       "sold_stock": 9.0,
       "current_stock": 18.0
     },
-    "777005": {
+    "364187": {
       "sold_stock": 20.0,
       "current_stock": 13.0
     },
-    "688859": {
+    "630770": {
       "sold_stock": 23.0,
       "current_stock": 8.0
     },
-    "344055": {
+    "857595": {
       "sold_stock": 17.0,
       "current_stock": 6.0
     },
-    "272106": {
+    "473581": {
       "sold_stock": 17.0,
       "current_stock": 5.0
     },
-    "870117": {
+    "802794": {
       "sold_stock": 34.0,
       "current_stock": 0.0
     },
-    "925927": {
+    "250058": {
       "sold_stock": 27.0,
       "current_stock": 5.0
     }
