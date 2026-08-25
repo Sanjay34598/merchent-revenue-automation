@@ -331,45 +331,24 @@ export default function App() {
                 {/* PRIMARY MERCHANT COMMAND CENTER (HOME VIEW) */}
                 {activeTab === 'home' && (
                   <ErrorBoundary fallbackTitle="Command Center View Error">
-                    <div className="content-grid-3col">
-                      {/* Main Column: Financial Hero, Action Strip, Business Pulse, Attention Items, Recent Sales */}
-                      <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                        <FinancialHero
-                          merchantName="Sanjay"
-                          protectedRevenue={protectedRevenueVal}
-                          exposedRevenue={exposedRevenueVal}
-                          activeOpportunitiesCount={homeOpportunities.length || 36}
-                          totalProductsCount={merchantCatalog.length || 2326}
-                          onViewRevenue={() => setActiveTab('leaks')}
-                        />
-
-                        {/* MERCHANT ACTION ICON STRIP */}
-                        <MerchantActionStrip
-                          onActionClick={(tabKey) => setActiveTab(tabKey)}
-                          atRiskAmount={exposedRevenueVal}
-                          itemsAtRiskCount={homeOpportunities.length || 7}
-                          totalProductsCount={merchantCatalog.length || 2326}
-                        />
-
-                        <BusinessPulse />
-
-                        <OpportunityList
-                          opportunities={homeOpportunities as any}
-                          onSelectProduct={setSelectedProductWorkspace}
-                          onViewAllInventory={() => setActiveTab('inventory')}
-                        />
-
-                        <RecentSales
-                          onViewAllTransactions={() => setActiveTab('sales')}
-                        />
-                      </div>
-
-                      {/* Right Column: Next Best Actions Summary & Revenue at Risk */}
-                      <RightIntelligencePanel
-                        catalog={merchantCatalog}
+                    <div style={{ maxWidth: 960, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
+                      <FinancialHero
+                        merchantName="Sanjay"
+                        protectedRevenue={protectedRevenueVal}
                         exposedRevenue={exposedRevenueVal}
-                        onViewDecisions={() => setActiveTab('decisions')}
-                        onViewRevenueRisks={() => setActiveTab('leaks')}
+                        activeOpportunitiesCount={homeOpportunities.length || 36}
+                        totalProductsCount={merchantCatalog.length || 2326}
+                        onViewRevenue={() => setActiveTab('leaks')}
+                      />
+
+                      <OpportunityList
+                        opportunities={homeOpportunities as any}
+                        onSelectProduct={setSelectedProductWorkspace}
+                        onViewAllInventory={() => setActiveTab('inventory')}
+                      />
+
+                      <RecentSales
+                        onViewAllTransactions={() => setActiveTab('sales')}
                       />
                     </div>
                   </ErrorBoundary>
