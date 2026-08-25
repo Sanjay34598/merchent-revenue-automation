@@ -82,22 +82,22 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
       id: 'TXN-20260824-00128',
       timestamp: '2 mins ago',
       terminal: 'POS Terminal #01',
-      source: 'GreenBasket POS',
+      source: 'Retail POS',
       cashier: 'Sanjay M.',
       paymentMethod: 'UPI',
       items: [
-        { product: catalog.find(p => p.name.includes('Rice')) || catalog[0], quantity: 2.5, unit: 'kg', unitPrice: 120, discount: 0, lineTotal: 300 },
-        { product: catalog.find(p => p.name.includes('Oil')) || catalog[1], quantity: 1.5, unit: 'L', unitPrice: 168, discount: 10, lineTotal: 242 },
+        { product: catalog[0] || { id: 1, name: 'PROD-100043 Femme Footwear Boot', sku: 'PROD-100043', sellingPrice: 151.58, unit: 'piece' }, quantity: 2, unit: 'piece', unitPrice: catalog[0]?.sellingPrice || 151.58, discount: 0, lineTotal: (2 * (catalog[0]?.sellingPrice || 151.58)) },
+        { product: catalog[1] || { id: 2, name: 'PROD-100128 Scholar Footwear Derby', sku: 'PROD-100128', sellingPrice: 120.00, unit: 'piece' }, quantity: 1, unit: 'piece', unitPrice: catalog[1]?.sellingPrice || 120.00, discount: 10, lineTotal: (1 * (catalog[1]?.sellingPrice || 120.00)) - 10 },
       ],
-      subtotal: 552,
+      subtotal: 423.16,
       discount: 10,
-      grandTotal: 542,
+      grandTotal: 413.16,
       status: 'Processed',
       systemImpact: {
         inventoryUpdated: 2,
         demandModelsUpdated: 2,
         revenueExposureDelta: '₹360 exposed revenue cleared',
-        decisionEngineSignal: 'Basmati Rice stock cover reduced to 4.8 days'
+        decisionEngineSignal: 'Footwear stock cover updated to 4.8 days'
       }
     },
     {
@@ -108,18 +108,18 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
       cashier: 'Sanjay M.',
       paymentMethod: 'Card',
       items: [
-        { product: catalog.find(p => p.name.includes('Milk')) || catalog[2], quantity: 3.0, unit: 'pack', unitPrice: 68, discount: 0, lineTotal: 204 },
-        { product: catalog.find(p => p.name.includes('Bread')) || catalog[3], quantity: 2.0, unit: 'pack', unitPrice: 45, discount: 5, lineTotal: 85 },
+        { product: catalog[2] || { id: 3, name: 'PROD-100342 Junior Apparel Denim', sku: 'PROD-100342', sellingPrice: 85.00, unit: 'piece' }, quantity: 3, unit: 'piece', unitPrice: catalog[2]?.sellingPrice || 85.00, discount: 0, lineTotal: 255 },
+        { product: catalog[3] || { id: 4, name: 'PROD-100512 Femme Footwear Sandal', sku: 'PROD-100512', sellingPrice: 195.00, unit: 'piece' }, quantity: 1, unit: 'piece', unitPrice: catalog[3]?.sellingPrice || 195.00, discount: 15, lineTotal: 180 },
       ],
-      subtotal: 294,
-      discount: 5,
-      grandTotal: 289,
+      subtotal: 450,
+      discount: 15,
+      grandTotal: 435,
       status: 'Processed',
       systemImpact: {
         inventoryUpdated: 2,
         demandModelsUpdated: 2,
-        revenueExposureDelta: '₹0 impact (Healthy stock)',
-        decisionEngineSignal: 'Fresh Milk velocity +12%'
+        revenueExposureDelta: '₹435 revenue logged',
+        decisionEngineSignal: 'Stock on hand decremented by 4 units'
       }
     }
   ]);
