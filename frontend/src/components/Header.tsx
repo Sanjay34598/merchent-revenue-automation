@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Store, Sun, Moon, Monitor, Bell, ChevronDown
+  Store, Sun, Moon, Monitor, Bell, ChevronDown, Menu, X
 } from 'lucide-react';
 
 import { CalendarContext } from './CalendarContext';
@@ -27,6 +27,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showStoreDropdown, setShowStoreDropdown] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Generate 40 real store options STR-1001 to STR-1040
   const storeOptions = Array.from({ length: 40 }, (_, i) => `STR-${1001 + i}`);
@@ -35,25 +36,29 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="top-floating-header">
       
-      {/* Left: Understated Serif Brand Wordmark */}
-      <div
-        style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', userSelect: 'none' }}
-        onClick={onBrandClick}
-      >
-        <div className="brand-wordmark">
-          MerchIntell
+      {/* Left: Understated Serif Brand Wordmark & Calendar Pill */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+        <div
+          style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', userSelect: 'none' }}
+          onClick={onBrandClick}
+        >
+          <div className="brand-wordmark">
+            MerchIntell
+          </div>
+          <div className="brand-subtitle">
+            AI REVENUE COPILOT
+          </div>
         </div>
-        <div className="brand-subtitle">
-          AI REVENUE COPILOT
+
+        {/* Lightweight Regional Calendar Context Layer */}
+        <div className="desktop-calendar-pill">
+          <CalendarContext selectedStore={currentStoreLabel} />
         </div>
       </div>
 
-      {/* Right: Floating Utility Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      {/* Right: Desktop Utility Controls */}
+      <div className="desktop-header-controls" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         
-        {/* Lightweight Regional Calendar Context Layer */}
-        <CalendarContext selectedStore={currentStoreLabel} />
-
         {/* Store Selector Dropdown */}
         <div style={{ position: 'relative' }}>
           <button
@@ -62,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({
               display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
               background: 'var(--surface)', border: '1px solid var(--border-color)', borderRadius: 100,
               fontSize: 12, fontWeight: 600, color: 'var(--text-main)', cursor: 'pointer',
-              backdropFilter: 'blur(8px)',
+              backdropFilter: 'blur(8px)', minHeight: 36
             }}
           >
             <Store size={13} color="var(--text-sub)" />
@@ -101,7 +106,7 @@ export const Header: React.FC<HeaderProps> = ({
           style={{
             display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
             background: 'var(--emerald-green-bg)', border: '1px solid var(--emerald-green-border)', borderRadius: 100,
-            fontSize: 12, fontWeight: 600, color: 'var(--emerald-green)', cursor: 'pointer',
+            fontSize: 12, fontWeight: 600, color: 'var(--emerald-green)', cursor: 'pointer', minHeight: 36
           }}
         >
           <span className="monitoring-dot" />
@@ -113,7 +118,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setShowNotifications(!showNotifications)}
             title="Notifications"
             style={{
-              width: 32, height: 32, borderRadius: '50%',
+              width: 36, height: 36, borderRadius: '50%',
               background: 'var(--surface)', border: '1px solid var(--border-color)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
               position: 'relative'
@@ -150,7 +155,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setShowThemeMenu(!showThemeMenu)}
             title="Toggle Theme Mode"
             style={{
-              width: 32, height: 32, borderRadius: '50%',
+              width: 36, height: 36, borderRadius: '50%',
               background: 'var(--surface)', border: '1px solid var(--border-color)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
             }}
@@ -187,12 +192,85 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div style={{
-          width: 32, height: 32, borderRadius: '50%', background: 'var(--text-main)', color: 'var(--bg-page)',
+          width: 36, height: 36, borderRadius: '50%', background: 'var(--text-main)', color: 'var(--bg-page)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700,
         }}>
           PK
         </div>
       </div>
+
+      {/* Mobile Header Toggle Button */}
+      <button
+        className="mobile-header-toggle"
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        aria-label="Toggle Navigation Menu"
+        style={{
+          display: 'none', alignItems: 'center', justifyContent: 'center',
+          width: 40, height: 40, borderRadius: 8, background: 'var(--surface)',
+          border: '1px solid var(--border-color)', color: 'var(--text-main)', cursor: 'pointer'
+        }}
+      >
+        {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
+
+      {/* Mobile Header Dropdown Drawer */}
+      {mobileMenuOpen && (
+        <div className="mobile-header-drawer" style={{
+          position: 'fixed', top: 64, left: 0, right: 0,
+          background: 'var(--bg-surface-elevated)', borderBottom: '1px solid var(--border-color)',
+          padding: 16, display: 'flex', flexDirection: 'column', gap: 14, zIndex: 190,
+          boxShadow: 'var(--shadow-md)'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)' }}>RETAIL OUTPOST</span>
+            <select
+              value={currentStoreLabel}
+              onChange={(e) => {
+                if (onStoreChange) onStoreChange(e.target.value);
+              }}
+              style={{
+                padding: '6px 10px', borderRadius: 8, border: '1px solid var(--border-color)',
+                background: 'var(--bg-page)', color: 'var(--text-main)', fontSize: 12, fontWeight: 600
+              }}
+            >
+              {storeOptions.map(st => (
+                <option key={st} value={st}>{st}</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <button
+              onClick={() => { setShowStatusModal(true); setMobileMenuOpen(false); }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px',
+                background: 'var(--emerald-green-bg)', border: '1px solid var(--emerald-green-border)', borderRadius: 100,
+                fontSize: 12, fontWeight: 600, color: 'var(--emerald-green)'
+              }}
+            >
+              <span className="monitoring-dot" />
+              <span>Autopilot Active</span>
+            </button>
+
+            <button
+              onClick={() => { setTheme(theme === 'dark' ? 'light' : 'dark'); }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px',
+                background: 'var(--surface)', border: '1px solid var(--border-color)', borderRadius: 100,
+                fontSize: 12, fontWeight: 600, color: 'var(--text-main)'
+              }}
+            >
+              {theme === 'dark' ? <Moon size={14} color="var(--accent-purple)" /> : <Sun size={14} color="#f59e0b" />}
+              <span>{theme === 'dark' ? 'Dark' : 'Light'}</span>
+            </button>
+          </div>
+
+          <div style={{ paddingTop: 6, borderTop: '1px solid var(--border-color)' }}>
+            <CalendarContext selectedStore={currentStoreLabel} />
+          </div>
+        </div>
+      )}
+
     </header>
   );
 };

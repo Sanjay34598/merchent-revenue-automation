@@ -79,7 +79,7 @@ export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }
       </div>
 
       {/* Exposed, Recoverable, Recommended Action & Review Link */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+      <div className="row-metrics-group" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
         <div style={{ textAlign: 'right' }}>
           <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--risk-red)' }}>
             {fmt(item.revenueAtRisk)}

@@ -334,7 +334,7 @@ export default function App() {
                   <ErrorBoundary fallbackTitle="Command Center View Error">
                     <div className="content-grid-3col">
                       {/* Main Column */}
-                      <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                      <div className="dashboard-main-col" style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                         <FinancialHero
                           merchantName="Sanjay"
                           protectedRevenue={protectedRevenueVal}
@@ -343,6 +343,15 @@ export default function App() {
                           totalProductsCount={merchantCatalog.length || 2326}
                           onViewRevenue={() => setActiveTab('leaks')}
                         />
+
+                        <div className="mobile-priorities-slot">
+                          <RightIntelligencePanel
+                            catalog={merchantCatalog}
+                            exposedRevenue={exposedRevenueVal}
+                            onViewDecisions={() => setActiveTab('decisions')}
+                            onViewRevenueRisks={() => setActiveTab('leaks')}
+                          />
+                        </div>
 
                         <MerchantActionStrip
                           onActionClick={(tabKey) => setActiveTab(tabKey)}
@@ -364,13 +373,15 @@ export default function App() {
                         />
                       </div>
 
-                      {/* Right Column: Today's Priorities & Revenue at Risk Card */}
-                      <RightIntelligencePanel
-                        catalog={merchantCatalog}
-                        exposedRevenue={exposedRevenueVal}
-                        onViewDecisions={() => setActiveTab('decisions')}
-                        onViewRevenueRisks={() => setActiveTab('leaks')}
-                      />
+                      {/* Right Column (Desktop Only): Today's Priorities & Revenue at Risk Card */}
+                      <div className="dashboard-side-col">
+                        <RightIntelligencePanel
+                          catalog={merchantCatalog}
+                          exposedRevenue={exposedRevenueVal}
+                          onViewDecisions={() => setActiveTab('decisions')}
+                          onViewRevenueRisks={() => setActiveTab('leaks')}
+                        />
+                      </div>
                     </div>
                   </ErrorBoundary>
                 )}

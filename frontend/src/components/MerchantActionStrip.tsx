@@ -56,13 +56,7 @@ export const MerchantActionStrip: React.FC<MerchantActionStripProps> = ({
   ];
 
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 10,
-      flexWrap: 'wrap',
-      margin: '24px 0 28px'
-    }}>
+    <div className="quick-actions-strip">
       {actions.map((act) => {
         const Icon = act.icon;
         return (

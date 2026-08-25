@@ -13,7 +13,7 @@ export const BusinessPulse: React.FC<BusinessPulseProps> = ({
   onViewInventory,
 }) => {
   return (
-    <div style={{
+    <div className="business-pulse-strip" style={{
       background: 'transparent',
       borderTop: '1px solid var(--border-color)',
       borderBottom: '1px solid var(--border-color)',
@@ -31,7 +31,7 @@ export const BusinessPulse: React.FC<BusinessPulseProps> = ({
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
         BUSINESS PULSE
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
+      <div className="business-pulse-metrics" style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
         
         {/* Revenue Metric with Micro Trend */}
         <div

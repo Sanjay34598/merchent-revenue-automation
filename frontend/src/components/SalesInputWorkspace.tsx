@@ -465,37 +465,69 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
                 Open Terminal →
               </button>
             </div>
-
-            <table className="inventory-table">
-              <thead>
-                <tr>
-                  <th>TRANSACTION ID</th>
-                  <th>TIME</th>
-                  <th>ITEMS</th>
-                  <th>QTY</th>
-                  <th>NET</th>
-                  <th>PAYMENT</th>
-                  <th>STATUS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactionsLedger.map((tx) => (
-                  <tr key={tx.id} onClick={() => setSelectedTransactionDetail(tx)} style={{ cursor: 'pointer' }}>
-                    <td style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--accent-purple)' }}>{tx.id}</td>
-                    <td>{tx.timestamp}</td>
-                    <td>{tx.items.map(i => getCleanTitle(i.product.name)).join(', ')}</td>
-                    <td>{tx.items.reduce((sum, i) => sum + i.quantity, 0)} units</td>
-                    <td><strong style={{ color: 'var(--text-main)' }}>₹{Math.round(tx.grandTotal)}</strong></td>
-                    <td>{tx.paymentMethod}</td>
-                    <td>
-                      <span className="badge-pill" style={{ background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: '1px solid var(--emerald-green-border)' }}>
-                        {tx.status}
-                      </span>
-                    </td>
+            {/* Desktop Transactions Ledger Table */}
+            <div className="desktop-table-view" style={{ overflowX: 'auto' }}>
+              <table className="inventory-table">
+                <thead>
+                  <tr>
+                    <th>TRANSACTION ID</th>
+                    <th>TIME</th>
+                    <th>ITEMS</th>
+                    <th>QTY</th>
+                    <th>NET</th>
+                    <th>PAYMENT</th>
+                    <th>STATUS</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {transactionsLedger.map((tx) => (
+                    <tr key={tx.id} onClick={() => setSelectedTransactionDetail(tx)} style={{ cursor: 'pointer' }}>
+                      <td style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--accent-purple)' }}>{tx.id}</td>
+                      <td>{tx.timestamp}</td>
+                      <td>{tx.items.map(i => getCleanTitle(i.product.name)).join(', ')}</td>
+                      <td>{tx.items.reduce((sum, i) => sum + i.quantity, 0)} units</td>
+                      <td><strong style={{ color: 'var(--text-main)' }}>₹{Math.round(tx.grandTotal)}</strong></td>
+                      <td>{tx.paymentMethod}</td>
+                      <td>
+                        <span className="badge-pill" style={{ background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: '1px solid var(--emerald-green-border)' }}>
+                          {tx.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Transactions Cards List */}
+            <div className="mobile-cards-view" style={{ display: 'none', flexDirection: 'column', gap: 10 }}>
+              {transactionsLedger.map((tx) => (
+                <div
+                  key={tx.id}
+                  onClick={() => setSelectedTransactionDetail(tx)}
+                  style={{
+                    background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
+                    borderRadius: 12, padding: 14, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 6
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--accent-purple)', fontSize: 13 }}>{tx.id}</span>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{tx.timestamp}</span>
+                  </div>
+                  <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-main)' }}>
+                    {tx.items.map(i => getCleanTitle(i.product.name)).join(', ')}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, paddingTop: 6, borderTop: '1px solid var(--border-color)' }}>
+                    <span style={{ color: 'var(--text-sub)' }}>{tx.items.reduce((sum, i) => sum + i.quantity, 0)} units</span>
+                    <strong style={{ color: 'var(--text-main)', fontSize: 14 }}>₹{Math.round(tx.grandTotal)}</strong>
+                    <span style={{ color: 'var(--text-sub)' }}>{tx.paymentMethod}</span>
+                    <span className="badge-pill" style={{ background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: '1px solid var(--emerald-green-border)' }}>
+                      {tx.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Infrastructure Architecture Specs */}
@@ -526,7 +558,7 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
 
       {/* TAB 2: POS BILLING TERMINAL */}
       {activeSubTab === 'bill' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24 }}>
+        <div className="pos-billing-grid">
           <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 12, padding: 24 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <div>

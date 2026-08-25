@@ -183,8 +183,8 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
         </select>
       </div>
 
-      {/* Catalog Operating System Table */}
-      <div style={{ overflowX: 'auto' }}>
+      {/* Desktop Inventory Table */}
+      <div className="desktop-table-view" style={{ overflowX: 'auto' }}>
         <table className="inventory-table">
           <thead>
             <tr>
@@ -260,6 +260,55 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Card List View */}
+      <div className="mobile-cards-view" style={{ display: 'none', flexDirection: 'column', gap: 12 }}>
+        {filteredCatalog.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: 24, color: 'var(--text-muted)' }}>
+            No products matched your search or filters.
+          </div>
+        ) : (
+          filteredCatalog.map((item) => {
+            const badge = riskBadgeStyle(item.riskStatus);
+            const daysCover = Math.round(item.currentStock / Math.max(0.1, item.dailyVelocity));
+            return (
+              <div
+                key={item.id}
+                onClick={() => onSelectProduct(item)}
+                style={{
+                  background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
+                  borderRadius: 12, padding: 14, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 8
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-main)' }}>{item.name}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-sub)' }}>{item.division || item.category} · {item.supplier}</div>
+                  </div>
+                  <span className="badge-pill" style={{ background: badge.bg, color: badge.color, border: `1px solid ${badge.border}` }}>
+                    {badge.label}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12, paddingTop: 6, borderTop: '1px solid var(--border-color)' }}>
+                  <div>
+                    <span style={{ color: 'var(--text-muted)' }}>Price: </span>
+                    <strong style={{ color: 'var(--text-main)' }}>₹{item.sellingPrice}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--text-muted)' }}>Units: </span>
+                    <strong>{item.currentStock}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--text-muted)' }}>Cover: </span>
+                    <strong style={{ color: daysCover < 5 ? 'var(--risk-red)' : 'var(--text-main)' }}>{daysCover}d</strong>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
 
     </div>

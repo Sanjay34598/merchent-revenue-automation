@@ -35,7 +35,7 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
       </div>
 
       {/* Hero Headline & Subtitle */}
-      <h1 className="statement-main-serif" style={{ fontSize: 32, lineHeight: 1.2, margin: '4px 0 8px' }}>
+      <h1 className="statement-main-serif hero-headline" style={{ margin: '4px 0 8px' }}>
         Find revenue leaks before they become losses.
       </h1>
       <p style={{ fontSize: 14, color: 'var(--text-sub)', margin: '0 0 20px', maxWidth: 640, lineHeight: 1.5 }}>
@@ -43,7 +43,7 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
       </p>
 
       {/* Primary Financial Metric Banner */}
-      <div style={{
+      <div className="hero-revenue-risk-card" style={{
         background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
         borderRadius: 14, padding: '18px 22px', marginBottom: 20,
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16
@@ -61,7 +61,7 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <div style={{ textAlign: 'right' }}>
+          <div>
             <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>HISTORICAL BASELINE</div>
             <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-main)', marginTop: 2 }}>{fmt(protectedRevenue)}</div>
           </div>
@@ -83,11 +83,7 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
       </div>
 
       {/* 3-Step Product Workflow Banner */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12,
-        background: 'var(--bg-subtle)', border: '1px solid var(--border-color)',
-        borderRadius: 12, padding: '12px 16px'
-      }}>
+      <div className="hero-workflow-strip">
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--accent-purple-bg)', color: 'var(--accent-purple)', fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>1</span>
           <div>
@@ -95,14 +91,14 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
             <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>Find revenue risks</div>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderLeft: '1px solid var(--border-color)', paddingLeft: 12 }}>
+        <div className="workflow-step-middle" style={{ display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 12 }}>
           <span style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--accent-purple-bg)', color: 'var(--accent-purple)', fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
           <div>
             <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-main)', textTransform: 'uppercase' }}>EXPLAIN</div>
             <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>Understand why they happen</div>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderLeft: '1px solid var(--border-color)', paddingLeft: 12 }}>
+        <div className="workflow-step-last" style={{ display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 12 }}>
           <span style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>3</span>
           <div>
             <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-main)', textTransform: 'uppercase' }}>ACT</div>
