@@ -54,18 +54,6 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Lightweight Regional Calendar Context Layer */}
         <CalendarContext selectedStore={currentStoreLabel} />
 
-        {/* Dynamic Data Status Pill */}
-        <div
-          style={{
-            fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 100,
-            background: 'var(--demo-pill-bg)', color: 'var(--demo-pill-text)', border: '1px solid var(--demo-pill-border)',
-            letterSpacing: '0.04em', cursor: 'help'
-          }}
-          title="AI-assisted revenue intelligence backed by historical retail sales & inventory dataset."
-        >
-          DATASET VERIFIED
-        </div>
-
         {/* Store Selector Dropdown */}
         <div style={{ position: 'relative' }}>
           <button
