@@ -12,15 +12,15 @@ interface FinancialHeroProps {
 
 export const FinancialHero: React.FC<FinancialHeroProps> = ({
   merchantName = 'Sanjay',
-  protectedRevenue = 27696,
-  exposedRevenue = 2138,
+  protectedRevenue = 10482110,
+  exposedRevenue = 2829779,
   activeOpportunitiesCount = 36,
-  totalProductsCount = 150,
+  totalProductsCount = 2326,
   onViewRevenue,
 }) => {
-  const fmt = (n: number) => `₹${n.toLocaleString('en-IN')}`;
+  const fmt = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 
-  const protectedTrend = [22400, 23800, 24500, 25200, 26100, 26900, 27696];
+  const protectedTrend = [8400000, 8900000, 9200000, 9600000, 10000000, 10200000, protectedRevenue];
 
   return (
     <div style={{ padding: '0 0 4px' }}>
@@ -32,17 +32,17 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
         letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 12
       }}>
         <span className="monitoring-dot" />
-        <span>AI ACTIVITY · Monitoring {totalProductsCount} products · {activeOpportunitiesCount} risks detected · 7 requiring attention</span>
+        <span>AI ACTIVITY · Monitoring {totalProductsCount} dataset products · {activeOpportunitiesCount} active risk opportunities · 7 requiring attention</span>
       </div>
 
       {/* Main Financial Statement */}
       <div className="statement-greeting">Good afternoon, {merchantName}</div>
       <h1 className="statement-main-serif">
         MerchIntell protected <span style={{ color: 'var(--accent-purple)', fontWeight: 700, fontFamily: 'var(--font-sans)' }}>{fmt(protectedRevenue)}</span><br />
-        in revenue this month.
+        in retail revenue this period.
       </h1>
 
-      {/* Exposed Revenue Subhead & Subtle 30-Day Protection Trend Line */}
+      {/* Exposed Revenue Subhead & Protected Revenue Trend Line */}
       <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-sub)', marginTop: 14, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
         <span>
           <button
@@ -54,10 +54,10 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
           >
             {fmt(exposedRevenue)}
           </button>
-          {' '}currently at risk · {activeOpportunitiesCount} opportunities
+          {' '}currently at risk · {activeOpportunitiesCount} risk opportunities
         </span>
 
-        {/* Subtle Protected Revenue Trend Visualization Pill */}
+        {/* Protected Revenue Trend Visualization Pill */}
         <div
           onClick={onViewRevenue}
           style={{

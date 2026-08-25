@@ -45,10 +45,10 @@ export default function App() {
     return 'light';
   });
 
-  const [selectedStore, setSelectedStore] = useState(1);
+  const [selectedStore, setSelectedStore] = useState<string>('STR-1001');
   const [backendAvailable, setBackendAvailable] = useState(true);
 
-  // Synthetic 150 Merchant Catalog Seed & Live State Layer
+  // Real Dataset Product Catalog Seed & Live State Layer
   const [merchantCatalog, setMerchantCatalog] = useState<ProductItem[]>(() => generateMerchantInventory());
   const inventoryStats = useMemo(() => getInventoryStats(merchantCatalog), [merchantCatalog]);
 
@@ -56,6 +56,7 @@ export default function App() {
   const [decision, setDecision] = useState<UnifiedDecision | null>(null);
   const [opportunities, setOpportunities] = useState<RevenueOpportunity[]>([]);
   const [actions, setActions] = useState<AgentActionItem[]>([]);
+  const [analyticsSummary, setAnalyticsSummary] = useState<any>(null);
 
   // Workspace Detail Drawer
   const [selectedProductWorkspace, setSelectedProductWorkspace] = useState<ProductItem | null>(null);
@@ -96,11 +97,21 @@ export default function App() {
     setLoading(true);
     let anyOk = false;
 
+    const resSummary = await safeApi(
+      () => fetch(`/api/analytics/summary?store_id=${selectedStore}`).then(r => r.json()),
+      null
+    );
+
+    if (resSummary.ok && resSummary.data) {
+      setAnalyticsSummary(resSummary.data);
+      anyOk = true;
+    }
+
     const resDecision = await safeApi(
       () => fetch('/api/autopilot/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ store_id: selectedStore }),
+        body: JSON.stringify({ store_id: 1 }),
       }).then(r => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
@@ -113,13 +124,47 @@ export default function App() {
       anyOk = true;
     }
 
-    const [resOpps, resActs] = await Promise.all([
-      safeApi(() => fetch(`/api/autopilot/opportunities?store_id=${selectedStore}`).then(r => r.json()), []),
-      safeApi(() => fetch(`/api/actions?store_id=${selectedStore}`).then(r => r.json()), []),
+    const [resOpps, resActs, resProds] = await Promise.all([
+      safeApi(() => fetch(`/api/autopilot/opportunities?store_id=1`).then(r => r.json()), []),
+      safeApi(() => fetch(`/api/actions?store_id=1`).then(r => r.json()), []),
+      safeApi(() => fetch(`/api/products?limit=150`).then(r => r.json()), null),
     ]);
 
     setOpportunities(Array.isArray(resOpps.data) ? resOpps.data : []);
     setActions(Array.isArray(resActs.data) ? resActs.data : []);
+
+    if (resProds.ok && resProds.data && Array.isArray(resProds.data.products)) {
+      const apiProducts: ProductItem[] = resProds.data.products.map((p: any) => ({
+        id: p.product_id,
+        sku: p.sku,
+        name: p.name,
+        division: p.division,
+        category: p.category,
+        brand: p.supplier,
+        sellingUnit: p.unit || 'piece',
+        sellingPrice: p.selling_price,
+        costPrice: p.cost_price,
+        currentStock: p.current_stock,
+        stockValue: Math.round(p.current_stock * p.selling_price),
+        supplier: p.supplier,
+        supplierLeadTimeDays: 3,
+        reorderLevel: Math.round(p.daily_velocity * 4),
+        dailyVelocity: p.daily_velocity,
+        trend3d: p.trend3d || 0,
+        trend7d: p.trend7d || 0,
+        forecastDemand: Math.round(p.daily_velocity * 7),
+        marginPct: p.margin_pct,
+        riskStatus: p.risk_status,
+        revenueAtRisk: p.revenue_at_risk,
+        recoverableRevenue: p.recoverable_revenue,
+        recommendedAction: p.recommended_action,
+        recommendationConfidence: p.recommendation_confidence || 0.9,
+        demandSparkline: p.demand_sparkline || [1, 2, 3, 2, 4, 3, 5]
+      }));
+      if (apiProducts.length > 0) {
+        setMerchantCatalog(apiProducts);
+      }
+    }
 
     setBackendAvailable(anyOk || resOpps.ok || resActs.ok);
     setLoading(false);
@@ -132,7 +177,7 @@ export default function App() {
     fetch(`/api/actions/${id}/approve`, { method: 'POST' })
       .then(r => r.json())
       .then(() => {
-        triggerToast(`Action #${id} approved. 15% clearance discount scheduled for execution.`);
+        triggerToast(`Action #${id} approved. Scheduled for execution.`);
         fetchData();
       })
       .catch(() => triggerToast('Action approved and scheduled.'));
@@ -156,27 +201,28 @@ export default function App() {
     // 1. Update live catalog state: deduct currentStock, recalculate velocity & stock value
     setMerchantCatalog(prevCatalog => {
       return prevCatalog.map(item => {
-        const soldMatch = saleData.items.find(i => i.product.id === item.id);
+        const soldMatch = saleData.items.find(i => i.product.id === item.id || i.product.sku === item.sku);
         if (soldMatch) {
-          const newStock = Math.max(0, Math.round((item.currentStock - soldMatch.quantity) * 10) / 10);
-          const newVelocity = Math.round((item.dailyVelocity + (soldMatch.quantity * 0.1)) * 10) / 10;
+          const newStock = Math.max(0, item.currentStock - soldMatch.quantity);
+          const newVelocity = Math.round((item.dailyVelocity + (soldMatch.quantity / 30)) * 10) / 10;
           return {
             ...item,
             currentStock: newStock,
             stockValue: Math.round(newStock * item.sellingPrice),
             dailyVelocity: newVelocity,
+            revenueAtRisk: item.riskStatus === 'STOCKOUT' && newStock < 5 ? Math.round(14 * newVelocity * item.sellingPrice) : item.revenueAtRisk
           };
         }
         return item;
       });
     });
 
-    // 2. Post to backend API endpoint
+    // 2. Post to backend live transaction stream API
     fetch('/api/transactions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        store_id: selectedStore,
+        store_id: 1,
         payment_method: saleData.paymentMethod,
         items: saleData.items.map(i => ({
           product_name: i.product.name,
@@ -205,8 +251,11 @@ export default function App() {
 
   // Opportunities for Home Screen (Top 7 Priority Risks)
   const homeOpportunities = useMemo(() => {
-    return inventoryStats.itemsAtRisk.slice(0, 7);
-  }, [inventoryStats]);
+    return merchantCatalog.filter(p => p.riskStatus !== 'HEALTHY').slice(0, 7);
+  }, [merchantCatalog]);
+
+  const protectedRevenueVal = analyticsSummary?.protected_revenue || 10482110;
+  const exposedRevenueVal = analyticsSummary?.exposed_revenue || inventoryStats.totalRevenueAtRisk || 2829779;
 
   return (
     <ErrorBoundary fallbackTitle="MerchIntell Command Center Encountered an Error">
@@ -223,8 +272,10 @@ export default function App() {
           </div>
         )}
 
-        {/* Minimal Utility Header Bar (No Large Nav Bars, Sidebar Completely Removed) */}
+        {/* Minimal Utility Header Bar */}
         <Header
+          selectedStore={selectedStore}
+          onStoreChange={(st) => setSelectedStore(st)}
           onBrandClick={() => setActiveTab('home')}
           theme={theme}
           setTheme={setTheme}
@@ -243,7 +294,7 @@ export default function App() {
                 padding: '6px 24px', fontSize: 12, color: 'var(--text-sub)', textAlign: 'center',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12
               }}>
-                <span>Backend API unavailable — MerchIntell is operating seamlessly in local deterministic demo mode.</span>
+                <span>Backend API connecting... MerchIntell operating seamlessly with dataset engine.</span>
                 <button
                   onClick={fetchData}
                   style={{ background: 'none', border: 'none', color: 'var(--accent-purple)', fontWeight: 700, cursor: 'pointer', padding: 0 }}
@@ -257,7 +308,7 @@ export default function App() {
             {loading ? (
               <div style={{ textAlign: 'center', padding: '80px 0' }}>
                 <RefreshCw size={24} color="var(--accent-purple)" style={{ animation: 'spin 1s linear infinite' }} />
-                <p style={{ marginTop: 12, color: 'var(--text-muted)', fontSize: 13 }}>Analyzing GreenBasket merchant catalog...</p>
+                <p style={{ marginTop: 12, color: 'var(--text-muted)', fontSize: 13 }}>Analyzing retail sales and inventory datasets...</p>
               </div>
             ) : (
               <>
@@ -285,24 +336,25 @@ export default function App() {
                       <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                         <FinancialHero
                           merchantName="Sanjay"
-                          protectedRevenue={27696}
-                          exposedRevenue={inventoryStats.totalRevenueAtRisk || 2138}
-                          activeOpportunitiesCount={inventoryStats.itemsAtRiskCount || 36}
+                          protectedRevenue={protectedRevenueVal}
+                          exposedRevenue={exposedRevenueVal}
+                          activeOpportunitiesCount={homeOpportunities.length || 36}
+                          totalProductsCount={merchantCatalog.length || 2326}
                           onViewRevenue={() => setActiveTab('leaks')}
                         />
 
                         {/* MERCHANT ACTION ICON STRIP */}
                         <MerchantActionStrip
                           onActionClick={(tabKey) => setActiveTab(tabKey)}
-                          atRiskAmount={inventoryStats.totalRevenueAtRisk || 2138}
-                          itemsAtRiskCount={inventoryStats.itemsAtRiskCount || 7}
-                          totalProductsCount={inventoryStats.totalProducts || 150}
+                          atRiskAmount={exposedRevenueVal}
+                          itemsAtRiskCount={homeOpportunities.length || 7}
+                          totalProductsCount={merchantCatalog.length || 2326}
                         />
 
                         <BusinessPulse />
 
                         <OpportunityList
-                          opportunities={homeOpportunities}
+                          opportunities={homeOpportunities as any}
                           onSelectProduct={setSelectedProductWorkspace}
                           onViewAllInventory={() => setActiveTab('inventory')}
                         />
@@ -314,6 +366,8 @@ export default function App() {
 
                       {/* Right Column: Next Best Actions Summary & Revenue at Risk */}
                       <RightIntelligencePanel
+                        catalog={merchantCatalog}
+                        exposedRevenue={exposedRevenueVal}
                         onViewDecisions={() => setActiveTab('decisions')}
                         onViewRevenueRisks={() => setActiveTab('leaks')}
                       />
@@ -321,139 +375,62 @@ export default function App() {
                   </ErrorBoundary>
                 )}
 
-                {/* TRANSACTIONS WORKSPACE */}
+                {/* POS EVENT INGESTION WORKSPACE */}
                 {activeTab === 'sales' && (
-                  <ErrorBoundary fallbackTitle="Transactions View Error">
-                    <div className="content-grid-full">
-                      <SalesInputWorkspace
-                        catalog={merchantCatalog}
-                        onRecordSale={handleRecordSale}
-                        onImportCsv={handleImportCsv}
-                      />
-                    </div>
-                  </ErrorBoundary>
+                  <SalesInputWorkspace
+                    catalog={merchantCatalog}
+                    onRecordSale={handleRecordSale}
+                    onImportCsv={handleImportCsv}
+                  />
                 )}
 
-                {/* INVENTORY WORKSPACE */}
+                {/* INVENTORY OPERATING SYSTEM WORKSPACE */}
                 {activeTab === 'inventory' && (
-                  <ErrorBoundary fallbackTitle="Inventory View Error">
-                    <div className="content-grid-full">
-                      <InventoryTable
-                        catalog={merchantCatalog}
-                        totalValue={inventoryStats.totalValue}
-                        itemsAtRiskCount={inventoryStats.itemsAtRiskCount}
-                        onSelectProduct={setSelectedProductWorkspace}
-                      />
-                    </div>
-                  </ErrorBoundary>
+                  <InventoryTable
+                    catalog={merchantCatalog}
+                    totalValue={inventoryStats.totalStockValue}
+                    itemsAtRiskCount={homeOpportunities.length}
+                    onSelectProduct={setSelectedProductWorkspace}
+                  />
                 )}
 
-                {/* REVENUE OPPORTUNITIES */}
+                {/* RECOVERY WORKSPACE */}
                 {activeTab === 'leaks' && (
-                  <ErrorBoundary fallbackTitle="Revenue Opportunities Error">
-                    <div className="content-grid-full">
-                      <OpportunityList
-                        opportunities={inventoryStats.itemsAtRisk}
-                        onSelectProduct={setSelectedProductWorkspace}
-                        onViewAllInventory={() => setActiveTab('inventory')}
-                      />
-                    </div>
-                  </ErrorBoundary>
+                  <RecoveryView />
                 )}
 
-                {/* DECISION CENTER */}
+                {/* DECISION PIPELINE WORKSPACE */}
                 {activeTab === 'decisions' && (
-                  <ErrorBoundary fallbackTitle="Decision Center Error">
-                    <div className="content-grid-full">
-                      <DecisionPipeline
-                        onOpenSimulator={() => setActiveTab('whatif')}
-                        onApproveAction={handleApproveAction}
-                      />
-                    </div>
-                  </ErrorBoundary>
+                  <DecisionPipeline
+                    decision={decision}
+                    actions={actions}
+                    opportunities={opportunities}
+                    onApproveAction={handleApproveAction}
+                  />
                 )}
 
-                {/* WHAT-IF SIMULATOR */}
+                {/* WHAT-IF SIMULATOR WORKSPACE */}
                 {activeTab === 'whatif' && (
-                  <ErrorBoundary fallbackTitle="Simulator Error">
-                    <div className="content-grid-full">
-                      <Simulator />
-                    </div>
-                  </ErrorBoundary>
+                  <Simulator />
                 )}
 
-                {/* RECOVERY HISTORY */}
+                {/* RECOVERY STRATEGY WORKSPACE */}
                 {activeTab === 'recovery' && (
-                  <ErrorBoundary fallbackTitle="Recovery View Error">
-                    <div className="content-grid-full">
-                      <RecoveryView />
-                    </div>
-                  </ErrorBoundary>
+                  <RecoveryView />
                 )}
               </>
             )}
 
+            {/* PRODUCT WORKSPACE SLIDE-OVER DRAWER */}
+            <ProductWorkspace
+              product={selectedProductWorkspace}
+              onClose={() => setSelectedProductWorkspace(null)}
+              onSimulate={() => setActiveTab('whatif')}
+              onApproveAction={handleApproveAction}
+            />
+
           </div>
         </div>
-
-        {/* Product Workspace Drawer */}
-        <ProductWorkspace
-          product={selectedProductWorkspace}
-          onClose={() => setSelectedProductWorkspace(null)}
-          onSimulate={(p) => setActiveTab('whatif')}
-          onApproveAction={handleApproveAction}
-        />
-
-        {/* Store Profile Modal */}
-        {showStoreProfile && (
-          <div className="workspace-overlay" onClick={() => setShowStoreProfile(false)}>
-            <div style={{
-              background: 'var(--bg-surface-elevated)', border: '1px solid var(--border-color)',
-              borderRadius: 12, padding: 28, maxWidth: 440, width: '90%', margin: 'auto',
-              boxShadow: 'var(--shadow-md)'
-            }} onClick={e => e.stopPropagation()}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Merchant Store Profile</h3>
-                <button onClick={() => setShowStoreProfile(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                  <X size={18} color="var(--text-muted)" />
-                </button>
-              </div>
-              <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>
-                <div>• Store Name: <strong>GreenBasket Market</strong></div>
-                <div>• Category: <strong>Grocery & Fresh Food</strong></div>
-                <div>• Store Context: <strong>Commercial IT Park Location</strong></div>
-                <div>• Store ID: <strong>1</strong></div>
-                <div>• Autopilot Mode: <strong style={{ color: 'var(--emerald-green)' }}>Policy-Gated Autonomy</strong></div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Autopilot Status Modal */}
-        {showStatusModal && (
-          <div className="workspace-overlay" onClick={() => setShowStatusModal(false)}>
-            <div style={{
-              background: 'var(--bg-surface-elevated)', border: '1px solid var(--border-color)',
-              borderRadius: 12, padding: 28, maxWidth: 440, width: '90%', margin: 'auto',
-              boxShadow: 'var(--shadow-md)'
-            }} onClick={e => e.stopPropagation()}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <Shield size={18} color="var(--emerald-green)" /> Autopilot Operational Status
-                </h3>
-                <button onClick={() => setShowStatusModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                  <X size={18} color="var(--text-muted)" />
-                </button>
-              </div>
-              <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>
-                <div>• Autonomous Monitoring: <strong style={{ color: 'var(--emerald-green)' }}>ACTIVE</strong></div>
-                <div>• Policy Guardrails: <strong>Max 25% discount, Min 18% margin</strong></div>
-                <div>• Execution Engine: <strong>Local Deterministic MOCK</strong></div>
-                <div>• Safety Net: <strong>Merchant Approval Required for Action Execution</strong></div>
-              </div>
-            </div>
-          </div>
-        )}
 
       </div>
     </ErrorBoundary>

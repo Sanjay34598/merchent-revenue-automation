@@ -12,10 +12,10 @@ export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }
 
   const riskBadge = (status: ProductItem['riskStatus']) => {
     switch (status) {
-      case 'EXPIRY':     return { label: 'Expiry risk',   color: 'var(--risk-red)' };
-      case 'STOCKOUT':   return { label: 'Stockout risk', color: '#2563EB' };
-      case 'MARGIN_LEAK':return { label: 'Margin leak',   color: 'var(--amber-gold)' };
-      case 'OVERSTOCK':  return { label: 'Overstock',     color: '#7C3AED' };
+      case 'SLOW_MOVING':return { label: 'Slow moving',   color: '#c2410c' };
+      case 'STOCKOUT':   return { label: 'Stockout risk', color: 'var(--risk-red)' };
+      case 'MARGIN_LEAK':return { label: 'Margin leak',   color: '#1d4ed8' };
+      case 'OVERSTOCK':  return { label: 'Excess stock',  color: '#6d28d9' };
       default:           return { label: 'Attention',     color: 'var(--accent-purple)' };
     }
   };
@@ -23,16 +23,16 @@ export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }
   const badge = riskBadge(item.riskStatus);
 
   const getReasonText = () => {
-    if (item.riskStatus === 'EXPIRY') {
-      return `${item.currentStock} ${item.sellingUnit}s · expires in ${item.expiryDays ?? 3} days`;
+    if (item.riskStatus === 'SLOW_MOVING') {
+      return `${item.currentStock} units · ${Math.round(item.currentStock / Math.max(0.1, item.dailyVelocity))} days stock cover`;
     }
     if (item.riskStatus === 'STOCKOUT') {
-      return `1.4 days stock cover · ${item.currentStock} ${item.sellingUnit}s remaining`;
+      return `${Math.round(item.currentStock / Math.max(0.1, item.dailyVelocity))} days stock cover · ${item.currentStock} units remaining`;
     }
     if (item.riskStatus === 'MARGIN_LEAK') {
-      return `Supplier cost ↑ 6.2% · Margin ↓ 3.1pp`;
+      return `Margin is ${item.marginPct}% · below category target`;
     }
-    return `Stock: ${item.currentStock} ${item.sellingUnit}s`;
+    return `Stock: ${item.currentStock} units · Velocity: ${item.dailyVelocity}/day`;
   };
 
   return (

@@ -7,49 +7,49 @@ export const InsightFeed: React.FC = () => {
   const insights = [
     {
       id: 1,
-      title: "Weekend demand for dairy products is 18% higher than weekday demand.",
-      summary: "Consumer purchasing shifts toward weekend family consumption for milk, paneer, and curd.",
+      title: "Weekend demand for Scholar Footwear is 24% higher than weekday baseline.",
+      summary: "Consumer purchasing shifts toward weekend store visits for school and formal footwear.",
       evidence: [
-        "Aggregate sales data across 45 residential stores shows Saturday/Sunday volume spikes.",
-        "Reorder point for Amul Fresh Paneer and Nandini Milk should trigger on Thursday evening instead of Friday.",
-        "Expected revenue loss from uncaptured weekend stockouts: ₹4,200/month."
+        "Aggregate sales data across 40 retail stores shows Saturday/Sunday volume spikes.",
+        "Reorder point for Scholar Footwear Derby Classic should trigger on Thursday morning.",
+        "Expected revenue opportunity from optimizing weekend stock coverage: ₹34,200/month."
       ]
     },
     {
       id: 2,
-      title: "Fresh beverage demand falls 23% during non-working days.",
-      summary: "Commercial and office park retail locations experience sharp weekend demand drop.",
+      title: "Femme Footwear Boot Collection velocity drops during off-peak periods.",
+      summary: "High-value boots experience seasonal velocity shifts across regional outposts.",
       evidence: [
-        "IT Park stores show Friday afternoon footfall collapse.",
-        "Fresh Orange Juice 500ml and Tender Coconut Water inventory needs 25% lower Friday stocking.",
-        "Applying 15% clearance discount on Friday afternoon recovers 78% of perishable value."
+        "Sub-category sales trends indicate concentrated purchasing windows.",
+        "Stock cover exceeds 45 days for 12 slow-moving boot SKUs.",
+        "Targeted promotional markdown strategy recovers working capital without margin leakage."
       ]
     },
     {
       id: 3,
-      title: "Three products account for 62% of current expiry exposure.",
-      summary: "Fresh Orange Juice, Mother Dairy Paneer, and Whole Wheat Bread represent majority of risk.",
+      title: "Top 5 SKUs account for 48% of current inventory risk exposure.",
+      summary: "High inventory value tied up in concentrated slow-moving footwear items.",
       evidence: [
-        "Concentrated risk enables targeted automated intervention rather than blanket catalog discounting.",
-        "Total inventory value exposed: ₹1,340 out of ₹2,138 catalog total."
+        "Concentrated risk enables targeted merchant intervention rather than blanket catalog discounting.",
+        "Total inventory value exposed: ₹18,400 across top slow-moving SKUs."
       ]
     },
     {
       id: 4,
-      title: "Supplier lead time increased by 1.4 days this week.",
-      summary: "Regional distribution delays affecting Dairy and Frozen Food deliveries.",
+      title: "Supplier lead time averages 3.0 days across footwear and apparel vendors.",
+      summary: "Vendor 0064 and Vendor 0012 replenishment cycles are stable across 40 stores.",
       evidence: [
-        "Amul Distribution Ltd average lead time increased from 2.1 days to 3.5 days.",
-        "Safety stock levels automatically adjusted +20% to prevent stockout risk."
+        "Lead time variability is low (<0.5 days), allowing tight reorder point thresholds.",
+        "Safety stock levels optimized to minimize excess inventory holding costs."
       ]
     },
     {
       id: 5,
-      title: "Products with >25 days of stock are tying up ₹18,400 in inventory.",
-      summary: "Slow-moving packaged goods and non-perishables locking up merchant working capital.",
+      title: "Products with >60 days of cover tie up working capital across stores.",
+      summary: "Slow-moving junior apparel and footwear locking up merchant liquidity.",
       evidence: [
-        "14 SKUs identified in Overstock status.",
-        "Bundling slow-moving snacks with high-velocity staples recommended to free up liquidity."
+        "18 SKUs identified in Overstock status across stores.",
+        "Cross-store inventory rebalancing recommended to optimize stock turnover."
       ]
     }
   ];
@@ -59,51 +59,51 @@ export const InsightFeed: React.FC = () => {
       <div>
         <h1 className="section-head" style={{ fontSize: 26 }}>Autonomous Business Insights</h1>
         <div className="section-sub">
-          Synthesized patterns detected across catalog sales velocity, demand trends, and supplier performance.
+          AI-generated operational intelligence derived from 125k+ historical retail sales transactions.
         </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {insights.map(item => {
+        {insights.map((item) => {
           const isExpanded = expandedId === item.id;
           return (
             <div
               key={item.id}
               style={{
                 background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
-                borderRadius: 12, padding: 18, cursor: 'pointer',
-                transition: 'border-color 0.18s ease, box-shadow 0.18s ease'
+                borderRadius: 12, overflow: 'hidden', transition: 'all 0.15s ease'
               }}
-              onClick={() => setExpandedId(isExpanded ? null : item.id)}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div
+                onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                style={{
+                  padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  cursor: 'pointer', userSelect: 'none'
+                }}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <div style={{
-                    width: 32, height: 32, borderRadius: 8, background: 'var(--primary-blue-bg)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    width: 32, height: 32, borderRadius: 8, background: 'rgba(109, 40, 217, 0.08)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
                   }}>
-                    <Lightbulb size={16} color="var(--primary-blue)" />
+                    <Lightbulb size={16} color="var(--accent-purple)" />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: 15, fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>
-                      {item.title}
-                    </h4>
-                    <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '2px 0 0' }}>
-                      {item.summary}
-                    </p>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>{item.title}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>{item.summary}</div>
                   </div>
                 </div>
                 {isExpanded ? <ChevronUp size={16} color="var(--text-muted)" /> : <ChevronDown size={16} color="var(--text-muted)" />}
               </div>
 
               {isExpanded && (
-                <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border-color)', fontSize: 13, color: 'var(--text-sub)' }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--primary-blue)', textTransform: 'uppercase', marginBottom: 6 }}>
-                    SUPPORTING EVIDENCE & DATA SIGNAL
+                <div style={{ padding: '0 20px 20px 64px', borderTop: '1px solid var(--border-color)', paddingTop: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase' }}>
+                    DATA EVIDENCE & SUPPORTING ANALYTICS
                   </div>
-                  <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.6 }}>
-                    {item.evidence.map((ev, idx) => (
-                      <li key={idx}>{ev}</li>
+                  <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.6 }}>
+                    {item.evidence.map((ev, i) => (
+                      <li key={i}>{ev}</li>
                     ))}
                   </ul>
                 </div>

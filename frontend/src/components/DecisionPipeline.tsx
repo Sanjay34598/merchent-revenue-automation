@@ -14,11 +14,11 @@ export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({
 
   const pipelineSteps = [
     { label: 'OBSERVE', sub: 'Catalog Stream', info: 'Real-time monitoring of POS transactions, inventory velocity, and day-of-week demand patterns.' },
-    { label: 'DETECT', sub: 'Anomaly Risk', info: 'Identified 21% demand fall and 2-day expiry risk on 18 units of Fresh Juice 500ml (GB-FRV-042).' },
-    { label: 'FORECAST', sub: 'Elasticity Model', info: 'Price elasticity model estimates volume response to 5%, 10%, 15%, and 20% discount tiers.' },
-    { label: 'SIMULATE', sub: 'Monte Carlo', info: 'Ran 1,000 scenario simulations comparing sell-through, gross margin, and waste probability.' },
-    { label: 'POLICY', sub: 'Guardrails Check', info: 'Validated candidate strategies against merchant policies: max 25% discount, min 18% margin.' },
-    { label: 'RECOMMEND', sub: 'Rank Impact', info: 'Selected 15% clearance discount as optimal strategy, maximizing net recovery at ₹354.' },
+    { label: 'DETECT', sub: 'Anomaly Risk', info: 'Identified 24% demand fall and slow-moving inventory risk on 84 units of PROD-100043 (Femme Footwear Boot Collection).' },
+    { label: 'FORECAST', sub: 'Elasticity Model', info: 'Price elasticity model estimates volume response to 5%, 10%, 15%, and 20% markdown tiers.' },
+    { label: 'SIMULATE', sub: 'Monte Carlo', info: 'Ran 1,000 scenario simulations comparing sell-through, gross margin, and inventory holding cost.' },
+    { label: 'POLICY', sub: 'Guardrails Check', info: 'Validated candidate strategies against merchant policies: max 25% markdown, min 30% margin.' },
+    { label: 'RECOMMEND', sub: 'Rank Impact', info: 'Selected 15% markdown strategy as optimal, maximizing recoverable revenue at ₹1,266.' },
     { label: 'EXECUTE', sub: 'POS Integration', info: 'Scheduled approved price update to merchant POS catalog for immediate activation.' },
     { label: 'LEARN', sub: 'Feedback Loop', info: 'Measures post-execution sales variance to calibrate elasticity coefficients for future predictions.' },
   ];
@@ -31,7 +31,7 @@ export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--text-muted)', marginBottom: 4 }}>
           <span>Decision #74</span>
           <span>•</span>
-          <span>Target: Fresh Juice 500ml (GB-FRV-042)</span>
+          <span>Target: PROD-100043 Femme Footwear Boot Collection</span>
         </div>
         <h1 className="section-head" style={{ fontSize: 26 }}>Autonomous Decision Center</h1>
         <div className="section-sub">

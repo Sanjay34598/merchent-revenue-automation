@@ -4,6 +4,8 @@ import {
 } from 'lucide-react';
 
 interface HeaderProps {
+  selectedStore?: string | number;
+  onStoreChange?: (storeId: string) => void;
   onBrandClick: () => void;
   theme: 'light' | 'dark' | 'system';
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
@@ -12,6 +14,8 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({
+  selectedStore = 'STR-1001',
+  onStoreChange,
   onBrandClick,
   theme,
   setTheme,
@@ -20,6 +24,11 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showStoreDropdown, setShowStoreDropdown] = useState(false);
+
+  // Generate 40 real store options STR-1001 to STR-1040
+  const storeOptions = Array.from({ length: 40 }, (_, i) => `STR-${1001 + i}`);
+  const currentStoreLabel = typeof selectedStore === 'number' ? `STR-${selectedStore}` : selectedStore;
 
   return (
     <header className="top-floating-header">
@@ -47,24 +56,52 @@ export const Header: React.FC<HeaderProps> = ({
             background: 'var(--demo-pill-bg)', color: 'var(--demo-pill-text)', border: '1px solid var(--demo-pill-border)',
             letterSpacing: '0.04em', cursor: 'help'
           }}
-          title="AI-assisted revenue intelligence backed by transparent 30-day POS transaction dataset calculations."
+          title="AI-assisted revenue intelligence backed by historical retail sales & inventory dataset."
         >
-          30 DAYS · 8,124 BILLS · 150 SKUs
+          HISTORICAL DATASET · 125,751 SALES · 284,755 INVENTORY RECORDS
         </div>
 
-        <button
-          onClick={() => setShowStoreProfile(true)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
-            background: 'var(--surface)', border: '1px solid var(--border-color)', borderRadius: 100,
-            fontSize: 12, fontWeight: 600, color: 'var(--text-main)', cursor: 'pointer',
-            backdropFilter: 'blur(8px)',
-          }}
-        >
-          <Store size={13} color="var(--text-sub)" />
-          <span>GreenBasket Market</span>
-          <ChevronDown size={11} color="var(--text-sub)" />
-        </button>
+        {/* Store Selector Dropdown */}
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => setShowStoreDropdown(!showStoreDropdown)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px',
+              background: 'var(--surface)', border: '1px solid var(--border-color)', borderRadius: 100,
+              fontSize: 12, fontWeight: 600, color: 'var(--text-main)', cursor: 'pointer',
+              backdropFilter: 'blur(8px)',
+            }}
+          >
+            <Store size={13} color="var(--text-sub)" />
+            <span>{currentStoreLabel}</span>
+            <ChevronDown size={11} color="var(--text-sub)" />
+          </button>
+
+          {showStoreDropdown && (
+            <div style={{
+              position: 'absolute', right: 0, top: 'calc(100% + 8px)',
+              background: 'var(--bg-surface-elevated)', border: '1px solid var(--border-color)', borderRadius: 12,
+              boxShadow: 'var(--shadow-md)', padding: '6px 0', maxHeight: 240, overflowY: 'auto', minWidth: 160, zIndex: 100,
+            }}>
+              {storeOptions.map(st => (
+                <button
+                  key={st}
+                  onClick={() => {
+                    if (onStoreChange) onStoreChange(st);
+                    setShowStoreDropdown(false);
+                  }}
+                  style={{
+                    display: 'block', width: '100%', textAlign: 'left',
+                    padding: '8px 14px', background: currentStoreLabel === st ? 'var(--bg-subtle)' : 'none',
+                    border: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--text-main)', fontWeight: 500
+                  }}
+                >
+                  {st} (Retail Outpost)
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         <button
           onClick={() => setShowStatusModal(true)}
@@ -107,9 +144,9 @@ export const Header: React.FC<HeaderProps> = ({
             }}>
               <div style={{ fontWeight: 700, marginBottom: 8, color: 'var(--text-main)' }}>Notifications</div>
               <div style={{ color: 'var(--text-sub)', lineHeight: 1.5 }}>
-                • Fresh Milk 1L clearance discount ready for review.<br />
-                • POS sale processed (TXN-00129). Inventory updated.<br />
-                • Weekly recovery target 92% achieved.
+                • PROD-100043 markdown review ready.<br />
+                • POS sale processed (TXN-00128). Stock updated.<br />
+                • Store STR-1001 inventory reconciled.
               </div>
             </div>
           )}
