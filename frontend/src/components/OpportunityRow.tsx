@@ -35,22 +35,29 @@ export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }
     return `Stock: ${item.currentStock} units · Velocity: ${item.dailyVelocity}/day`;
   };
 
+  const getDisplayName = (rawName: string) => {
+    let name = rawName.replace(/^PROD-\d+\s*/i, '').replace(/^SEG-\d+\s*/i, '').trim();
+    return name || rawName;
+  };
+
   return (
     <div
       className="copilot-list-row"
       onClick={() => onSelect(item)}
-      style={{ padding: '16px 4px' }}
+      style={{ padding: '14px 4px' }}
     >
       {/* Product Name & Context Signal */}
-      <div style={{ flex: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontWeight: 800, fontSize: 15, color: 'var(--text-main)' }}>{item.name}</span>
-          <span style={{ fontSize: 11, fontWeight: 700, color: badge.color }}>
+      <div style={{ flex: 1, minWidth: 0, paddingRight: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'nowrap' }}>
+          <span style={{ fontWeight: 700, fontSize: 15, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 380 }}>
+            {getDisplayName(item.name)}
+          </span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: badge.color, flexShrink: 0 }}>
             {badge.label}
           </span>
         </div>
-        <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 4 }}>
-          {getReasonText()}
+        <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 3 }}>
+          Store STR-1001 · {getReasonText()}
         </div>
       </div>
 

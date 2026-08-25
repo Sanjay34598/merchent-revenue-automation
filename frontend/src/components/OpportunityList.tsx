@@ -26,12 +26,12 @@ export const OpportunityList: React.FC<OpportunityListProps> = ({
           style={{ background: 'none', border: 'none', color: 'var(--accent-purple)', fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: 0 }}
           onClick={onViewAllInventory}
         >
-          View all 150 catalog items →
+          View all opportunities →
         </button>
       </div>
 
       <div style={{ borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}>
-        {opportunities.map((item) => (
+        {opportunities.slice(0, 3).map((item) => (
           <OpportunityRow key={item.id} item={item} onSelect={onSelectProduct} />
         ))}
       </div>
