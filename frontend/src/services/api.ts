@@ -58,29 +58,31 @@ async function handleResponse<T>(res: Response): Promise<T> {
   return res.json();
 }
 
+import { getApiUrl } from './apiConfig';
+
 export const api = {
   async getAnalyticsSummary(): Promise<AnalyticsSummary> {
-    const res = await fetch('/api/analytics/summary');
+    const res = await fetch(getApiUrl('/api/analytics/summary'));
     return handleResponse<AnalyticsSummary>(res);
   },
 
   async getRevenueTrend(): Promise<RevenueTrendPoint[]> {
-    const res = await fetch('/api/analytics/revenue-trend');
+    const res = await fetch(getApiUrl('/api/analytics/revenue-trend'));
     return handleResponse<RevenueTrendPoint[]>(res);
   },
 
   async getProductPerformance(limit = 10): Promise<ProductPerformanceItem[]> {
-    const res = await fetch(`/api/analytics/product-performance?limit=${limit}`);
+    const res = await fetch(getApiUrl(`/api/analytics/product-performance?limit=${limit}`));
     return handleResponse<ProductPerformanceItem[]>(res);
   },
 
   async getTransactions(limit = 20) {
-    const res = await fetch(`/api/transactions?limit=${limit}`);
+    const res = await fetch(getApiUrl(`/api/transactions?limit=${limit}`));
     return handleResponse<any[]>(res);
   },
 
   async recordTransaction(payload: any) {
-    const res = await fetch('/api/transactions', {
+    const res = await fetch(getApiUrl('/api/transactions'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -89,17 +91,17 @@ export const api = {
   },
 
   async getInventory() {
-    const res = await fetch('/api/inventory');
+    const res = await fetch(getApiUrl('/api/inventory'));
     return handleResponse<any[]>(res);
   },
 
   async getRisks() {
-    const res = await fetch('/api/risks');
+    const res = await fetch(getApiUrl('/api/risks'));
     return handleResponse<any[]>(res);
   },
 
   async getDataQuality() {
-    const res = await fetch('/api/data-quality');
+    const res = await fetch(getApiUrl('/api/data-quality'));
     return handleResponse<any>(res);
   }
 };

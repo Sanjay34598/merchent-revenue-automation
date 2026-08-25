@@ -1,80 +1,90 @@
-# Deployment & Production Readiness Guide
+# MerchIntell — Production Deployment Guide
 
-This guide details configuration, environment variables, CORS policy, Docker deployment, and health monitoring for **Merchant Revenue Autopilot**.
+## Overview
 
----
-
-## 1. Environment Configuration
-
-Copy `.env.example` to `.env` in the repository root:
-
-```bash
-cp .env.example .env
-```
-
-### Key Parameters:
-```env
-PROJECT_NAME="Merchant Revenue Autopilot"
-ENVIRONMENT="production"
-PORT=8000
-DATABASE_URL="sqlite:///./merchant_autopilot.db"
-EXECUTION_MODE="MOCK"
-
-# Optional External Credentials (Disabled by Default)
-RAZORPAY_KEY_ID=""
-RAZORPAY_KEY_SECRET=""
-```
-
-> [!NOTE]
-> `EXECUTION_MODE` defaults to `MOCK`. No external API keys or credentials are required for demonstration or evaluation.
+This guide provides step-by-step instructions for deploying MerchIntell publicly on **Render** (recommended for full-stack blueprint deployment) or **Vercel** + **Render**.
 
 ---
 
-## 2. Docker & Container Deployment
+## 1. Prerequisites
 
-Build and launch the complete stack via Docker Compose:
-
-```bash
-docker-compose up --build -d
-```
-
-### Services Started:
-- **Backend Service** (`FastAPI`): Exposed on port `8000`
-- **Frontend Service** (`Vite / Nginx`): Exposed on port `3000`
+- A GitHub account with access to the repository (`Sanjay34598/merchent-revenue-automation`).
+- A Render account ([render.com](https://render.com)).
+- Optional: A Vercel account ([vercel.com](https://vercel.com)) if hosting the frontend on Vercel.
 
 ---
 
-## 3. Production CORS Configuration
+## 2. Option A: Render Blueprint Deployment (Recommended)
 
-In `backend/app/main.py`, CORS middleware is configured to support frontend communication:
+MerchIntell includes a pre-configured `render.yaml` blueprint at the repository root.
 
-```python
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Restrict to production frontend domain in live setup
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-```
+### Steps:
+1. Log in to your [Render Dashboard](https://dashboard.render.com).
+2. Click **New +** → **Blueprint**.
+3. Connect your GitHub repository (`merchent-revenue-automation`).
+4. Render will automatically detect `render.yaml` and configure two services:
+   - **`merchintell-backend`**: Python Web Service running Uvicorn on FastAPI with persistent disk `/var/data`.
+   - **`merchintell-frontend`**: React/Vite Static Site with SPA rewrite rules (`/* → /index.html`).
+5. Click **Apply**.
+6. Once deployed, Render will provide public URLs for both the backend and frontend.
 
 ---
 
-## 4. Health & Diagnostic Endpoints
+## 3. Option B: Manual Render Web Service Deployment (Backend Only)
 
-Verify backend deployment health:
-```bash
-curl http://localhost:8000/health
-```
+### Backend Configuration (Render Web Service)
+- **Name**: `merchintell-backend`
+- **Region**: Oregon (or nearest)
+- **Branch**: `main`
+- **Root Directory**: `backend`
+- **Runtime**: `Python 3`
+- **Build Command**: `pip install -r requirements.txt`
+- **Start Command**: `python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- **Health Check Path**: `/health`
 
-Expected Response:
+#### Environment Variables (Backend):
+| Variable | Value | Description |
+|---|---|---|
+| `PORT` | `10000` | Port bound by Uvicorn server |
+| `CORS_ORIGINS` | `https://merchintell.onrender.com,https://merchintell.vercel.app` | Allowed frontend origins |
+| `DATA_DIR` | `/var/data` | Path for persistent POS JSON & database |
+
+#### Persistent Disk (Recommended for Demo POS State):
+- **Mount Path**: `/var/data`
+- **Size**: 1 GB
+
+---
+
+## 4. Option C: Frontend Deployment on Vercel / Render Static Site
+
+### Frontend Configuration (Vercel or Render Static Site)
+- **Root Directory**: `frontend`
+- **Framework Preset**: `Vite`
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist`
+
+#### Environment Variables (Frontend):
+| Variable | Value | Description |
+|---|---|---|
+| `VITE_API_BASE_URL` | `https://merchintell-backend.onrender.com` | Deployed backend API base URL |
+
+#### SPA Rewrites Setup (Vercel `vercel.json`):
 ```json
 {
-  "status": "ok"
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
 ```
 
-System status diagnostic endpoint:
-```bash
-curl http://localhost:8000/api/autopilot/outcomes
-```
+---
+
+## 5. Security & Pre-Deployment Verification
+
+1. **Health Check Verification**:
+   ```bash
+   curl https://merchintell-backend.onrender.com/health
+   # Expected response: {"status": "ok"}
+   ```
+2. **CORS Security**: Verify that `CORS_ORIGINS` restricts access to your frontend domain in production.
+3. **No Hardcoded Secrets**: Ensure `.env` is listed in `.gitignore` and no API keys are committed to Git.

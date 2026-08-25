@@ -3,7 +3,14 @@ import json
 from typing import List, Dict, Any, Optional
 from app.services.pos_dataset import pos_engine
 
-DB_FILE_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data", "pos_database.json")
+env_pos_path = os.getenv("POS_DATABASE_PATH") or os.getenv("DATA_DIR")
+if env_pos_path:
+    if env_pos_path.endswith(".json"):
+        DB_FILE_PATH = env_pos_path
+    else:
+        DB_FILE_PATH = os.path.join(env_pos_path, "pos_database.json")
+else:
+    DB_FILE_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data", "pos_database.json")
 
 class PosRepository:
     """File-backed persistent database repository for MerchIntell POS transactions & inventory"""

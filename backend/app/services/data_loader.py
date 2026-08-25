@@ -4,8 +4,23 @@ import numpy as np
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
 
-RAW_SALES_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "raw", "retail_sales_ml_apl.csv"))
-RAW_INV_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "raw", "retail_inventory_ml_apl.csv"))
+def _resolve_csv_path(filename: str) -> str:
+    env_dir = os.getenv("DATA_DIR")
+    candidates = []
+    if env_dir:
+        candidates.append(os.path.join(env_dir, filename))
+        candidates.append(os.path.join(env_dir, "raw", filename))
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+    candidates.append(os.path.join(base_dir, "data", "raw", filename))
+    candidates.append(os.path.join(base_dir, "data", filename))
+
+    for p in candidates:
+        if os.path.exists(p):
+            return p
+    return candidates[0]
+
+RAW_SALES_PATH = _resolve_csv_path("retail_sales_ml_apl.csv")
+RAW_INV_PATH = _resolve_csv_path("retail_inventory_ml_apl.csv")
 
 class RealDataLoader:
     """

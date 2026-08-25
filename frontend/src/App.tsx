@@ -18,6 +18,7 @@ import { Simulator } from './components/Simulator';
 import { RecoveryView } from './components/RecoveryView';
 import { RightIntelligencePanel } from './components/RightIntelligencePanel';
 import { SalesInputWorkspace } from './components/SalesInputWorkspace';
+import { getApiUrl } from './services/apiConfig';
 
 /** Safe API fetcher helper */
 async function safeApi<T>(fetcher: () => Promise<T>, fallback: T): Promise<{ data: T; ok: boolean }> {
@@ -98,7 +99,7 @@ export default function App() {
     let anyOk = false;
 
     const resSummary = await safeApi(
-      () => fetch(`/api/analytics/summary?store_id=${selectedStore}`).then(r => r.json()),
+      () => fetch(getApiUrl(`/api/analytics/summary?store_id=${selectedStore}`)).then(r => r.json()),
       null
     );
 
@@ -108,7 +109,7 @@ export default function App() {
     }
 
     const resDecision = await safeApi(
-      () => fetch('/api/autopilot/analyze', {
+      () => fetch(getApiUrl('/api/autopilot/analyze'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ store_id: 1 }),
@@ -125,9 +126,9 @@ export default function App() {
     }
 
     const [resOpps, resActs, resProds] = await Promise.all([
-      safeApi(() => fetch(`/api/autopilot/opportunities?store_id=1`).then(r => r.json()), []),
-      safeApi(() => fetch(`/api/actions?store_id=1`).then(r => r.json()), []),
-      safeApi(() => fetch(`/api/products?limit=150`).then(r => r.json()), null),
+      safeApi(() => fetch(getApiUrl('/api/autopilot/opportunities?store_id=1')).then(r => r.json()), []),
+      safeApi(() => fetch(getApiUrl('/api/actions?store_id=1')).then(r => r.json()), []),
+      safeApi(() => fetch(getApiUrl('/api/products?limit=150')).then(r => r.json()), null),
     ]);
 
     setOpportunities(Array.isArray(resOpps.data) ? resOpps.data : []);
@@ -174,7 +175,7 @@ export default function App() {
 
   // Actions Lifecycle
   const handleApproveAction = (id: number) => {
-    fetch(`/api/actions/${id}/approve`, { method: 'POST' })
+    fetch(getApiUrl(`/api/actions/${id}/approve`), { method: 'POST' })
       .then(r => r.json())
       .then(() => {
         triggerToast(`Action #${id} approved. Scheduled for execution.`);
@@ -218,7 +219,7 @@ export default function App() {
     });
 
     // 2. Post to backend live transaction stream API
-    fetch('/api/transactions', {
+    fetch(getApiUrl('/api/transactions'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -243,7 +244,7 @@ export default function App() {
 
   // CSV Import Sales Handler
   const handleImportCsv = (count: number) => {
-    fetch(`/api/transactions/import?count=${count}`, { method: 'POST' })
+    fetch(getApiUrl(`/api/transactions/import?count=${count}`), { method: 'POST' })
       .catch(err => console.warn('CSV Import sync notice:', err));
 
     triggerToast(`Imported ${count} POS sales records. Product intelligence updated.`);

@@ -101,6 +101,23 @@ Frontend application will run at `http://localhost:5173`.
 
 ---
 
+## Live Demo
+
+Live Demo: [DEPLOY AFTER DEPLOYMENT]
+
+---
+
+## Deployment
+
+MerchIntell is configured for zero-downtime deployment on Render and Vercel using `render.yaml` blueprint specifications:
+
+- **Backend**: Python/FastAPI Web Service running Uvicorn on Render (`0.0.0.0:$PORT`), with configurable `CORS_ORIGINS` and `/var/data` persistent disk mount.
+- **Frontend**: React/Vite Static Site on Render/Vercel with SPA rewrite rules (`/* → /index.html`) and `VITE_API_BASE_URL` environment resolution.
+
+For detailed step-by-step instructions, view the [Deployment Guide](docs/DEPLOYMENT.md).
+
+---
+
 ## Running Verification Tests
 
 ```bash
@@ -128,6 +145,7 @@ Explore complete technical specifications in the [`docs/`](./docs) directory:
 - [API Documentation](docs/API_DOCUMENTATION.md) — Full REST API specifications and payloads.
 - [Project Structure](docs/PROJECT_STRUCTURE.md) — Repository layout and module descriptions.
 - [Testing & Validation](docs/TESTING_AND_VALIDATION.md) — 82 backend pytest suites and frontend build validation.
+- [Deployment Guide](docs/DEPLOYMENT.md) — Step-by-step Render and Vercel production deployment.
 - [Demo Guide](docs/DEMO_GUIDE.md) — Recruiter & judge 10-second walkthrough script.
 - [Design Decisions](docs/DESIGN_DECISIONS.md) — Rationale for minimal visual design, vanilla CSS, and data honesty.
 - [Known Limitations](docs/KNOWN_LIMITATIONS.md) — Operational boundaries and dataset assumptions.
