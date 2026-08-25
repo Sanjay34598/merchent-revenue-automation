@@ -325,14 +325,14 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
             Processed Today: <strong style={{ color: 'var(--accent-purple)' }}>{12 + transactionsLedger.length} sales</strong>
           </div>
 
-          {/* SIMULATE POS SALE DEMO ADAPTER BUTTON */}
+          {/* PRIMARY + NEW SALE CTA BUTTON */}
           <button
             className="btn-copilot btn-copilot-primary"
-            onClick={handleSimulatePosSale}
+            onClick={() => setActiveSubTab('bill')}
             disabled={isProcessing}
-            style={{ padding: '8px 16px', fontSize: 12, fontWeight: 700 }}
+            style={{ padding: '8px 18px', fontSize: 13, fontWeight: 700 }}
           >
-            <Zap size={14} /> Simulate POS Sale
+            <Plus size={15} /> + New Sale
           </button>
         </div>
       </div>
@@ -483,11 +483,14 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
                               color: 'var(--text-main)', fontSize: 13, outline: 'none'
                             }}
                           >
-                            {catalog.map(p => (
-                              <option key={p.id} value={p.id}>
-                                {p.name} ({p.brand}) — ₹{p.sellingPrice}/{p.sellingUnit}
-                              </option>
-                            ))}
+                            {catalog.map(p => {
+                              const cleanTitle = p.name.replace(/^PROD-\d+\s*/i, '').replace(/^SEG-\d+\s*/i, '').trim();
+                              return (
+                                <option key={p.id} value={p.id}>
+                                  {cleanTitle} — ₹{p.sellingPrice}/{p.sellingUnit || 'piece'}
+                                </option>
+                              );
+                            })}
                           </select>
                         </td>
 
@@ -583,7 +586,7 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
                 onClick={() => runPipelineExecution(lineItems, paymentMethod)}
                 disabled={isProcessing}
               >
-                <CheckCircle2 size={16} /> Process Sale & Pipeline
+                <CheckCircle2 size={16} /> Complete Sale
               </button>
             </div>
           </div>
