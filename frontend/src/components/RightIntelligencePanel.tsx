@@ -1,43 +1,62 @@
 import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { ProductItem } from '../data/merchantInventory';
 
 interface RightIntelligencePanelProps {
+  catalog?: ProductItem[];
+  exposedRevenue?: number;
   onViewDecisions?: () => void;
   onViewRevenueRisks?: () => void;
 }
 
 export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
+  catalog = [],
+  exposedRevenue = 2829779,
   onViewDecisions,
   onViewRevenueRisks,
 }) => {
   const [hoverData, setHoverData] = useState<{ day: string; value: number } | null>(null);
 
-  const topActions = [
-    { num: '01', title: 'Clear Fresh Milk', recovery: 'Recover ~₹1,904', pct: 80, tag: 'Expiry' },
-    { num: '02', title: 'Reprice Fresh Paneer', recovery: 'Recover ~₹547', pct: 45, tag: 'Margin' },
-    { num: '03', title: 'Reorder Mother Dairy Paneer', recovery: 'Prevent stockout', pct: 25, tag: 'Stockout' },
-  ];
+  // Derive top 3 priority actions from dataset products requiring attention
+  const atRiskProducts = catalog.filter(p => p.riskStatus !== 'HEALTHY');
+  const topPriorityItems = (atRiskProducts.length > 0 ? atRiskProducts : [
+    { name: 'PROD-100043 Femme Footwear Boot', riskStatus: 'SLOW_MOVING', revenueAtRisk: 1948, recommendedAction: 'Review markdown strategy' },
+    { name: 'PROD-100844 Stiletto Elegance', riskStatus: 'STOCKOUT', revenueAtRisk: 1920, recommendedAction: 'Replenish 18 units' },
+    { name: 'PROD-100342 Junior Denim Essentials', riskStatus: 'MARGIN_LEAK', revenueAtRisk: 1156, recommendedAction: 'Review pricing & cost' },
+  ]).slice(0, 3);
 
-  // Real 7-day exposure trend data leading up to ₹2,138
+  const riskLabel = (status: string) => {
+    switch (status) {
+      case 'SLOW_MOVING': return 'Slow-moving';
+      case 'STOCKOUT': return 'Stockout risk';
+      case 'MARGIN_LEAK': return 'Margin leak';
+      case 'OVERSTOCK': return 'Excess stock';
+      default: return 'Risk detected';
+    }
+  };
+
+  const fmt = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
+
+  // Exposure trend points leading up to exposedRevenue
+  const baseRisk = Math.round(exposedRevenue * 0.85);
   const riskHistory = [
-    { day: 'Mon', value: 1420 },
-    { day: 'Tue', value: 1680 },
-    { day: 'Wed', value: 1540 },
-    { day: 'Thu', value: 1920 },
-    { day: 'Fri', value: 1760 },
-    { day: 'Sat', value: 2010 },
-    { day: 'Sun', value: 2138 },
+    { day: 'Mon', value: Math.round(baseRisk * 0.90) },
+    { day: 'Tue', value: Math.round(baseRisk * 0.94) },
+    { day: 'Wed', value: Math.round(baseRisk * 0.92) },
+    { day: 'Thu', value: Math.round(baseRisk * 0.97) },
+    { day: 'Fri', value: Math.round(baseRisk * 0.95) },
+    { day: 'Sat', value: Math.round(baseRisk * 0.98) },
+    { day: 'Sun', value: exposedRevenue },
   ];
 
-  // SVG Area Chart Math
-  const minVal = 1200;
-  const maxVal = 2400;
+  const minVal = Math.round(baseRisk * 0.80);
+  const maxVal = Math.round(exposedRevenue * 1.15);
   const chartWidth = 260;
   const chartHeight = 60;
 
   const points = riskHistory.map((d, idx) => {
     const x = (idx / (riskHistory.length - 1)) * chartWidth;
-    const y = chartHeight - ((d.value - minVal) / (maxVal - minVal)) * chartHeight;
+    const y = chartHeight - ((d.value - minVal) / Math.max(1, maxVal - minVal)) * chartHeight;
     return `${x},${y}`;
   }).join(' ');
 
@@ -46,7 +65,7 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
 
-      {/* TODAY / NEXT BEST ACTIONS SUMMARY PANEL */}
+      {/* TODAY'S PRIORITIES PANEL */}
       <div style={{
         background: 'var(--today-panel-bg)', backdropFilter: 'blur(12px)',
         border: '1px solid var(--border-color)', borderRadius: 16, padding: 18,
@@ -54,17 +73,17 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            TODAY
+            TODAY'S PRIORITIES
           </div>
           <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--emerald-green)' }}>
-            3 actions could recover ~₹3,120
+            3 priorities derived from dataset
           </span>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {topActions.map((act) => (
+          {topPriorityItems.map((act, idx) => (
             <div
-              key={act.num}
+              key={idx}
               onClick={onViewDecisions}
               style={{
                 display: 'flex', flexDirection: 'column', gap: 6, padding: '10px 12px',
@@ -74,23 +93,22 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-                  {act.num}
+                  0{idx + 1}
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--today-card-title)' }}>
-                    {act.title}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--today-card-title)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {act.name}
                   </div>
                 </div>
                 <ArrowRight size={13} color="var(--text-muted)" />
               </div>
 
-              {/* Priority Bar Indicator & Recovery Value */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 2 }}>
-                <div style={{ width: 90, height: 4, background: 'var(--border-color)', borderRadius: 100, overflow: 'hidden' }}>
-                  <div style={{ width: `${act.pct}%`, height: '100%', background: 'var(--accent-purple)', borderRadius: 100 }} />
-                </div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--risk-red)' }}>
+                  {riskLabel(act.riskStatus)} · {fmt(act.revenueAtRisk)}
+                </span>
                 <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--today-card-sub)' }}>
-                  {act.recovery}
+                  {act.recommendedAction}
                 </span>
               </div>
             </div>
@@ -105,12 +123,12 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
             display: 'flex', alignItems: 'center', gap: 4, padding: 0
           }}
         >
-          <span>View decisions</span>
+          <span>View all decision priorities</span>
           <ArrowRight size={12} />
         </button>
       </div>
 
-      {/* REVENUE AT RISK CARD TERMINAL PANEL */}
+      {/* REVENUE AT RISK PANEL */}
       <div
         onClick={onViewRevenueRisks}
         style={{
@@ -120,22 +138,22 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
         title="Click to inspect 7-day revenue risk analysis"
       >
         <div style={{ fontSize: 11, fontWeight: 700, color: '#98A2B3', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
-          REVENUE AT RISK
+          REVENUE AT RISK (ESTIMATED EXPOSURE)
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 12 }}>
           <div>
             <div style={{ fontSize: 32, fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.5px' }}>
-              ₹2,138
+              {fmt(exposedRevenue)}
             </div>
             <div style={{ fontSize: 11, color: '#98A2B3', marginTop: 2 }}>
-              36 active risk opportunities
+              Across active dataset product risks
             </div>
           </div>
 
           {hoverData && (
             <div style={{ textAlign: 'right', fontSize: 11, color: '#F43F5E', fontWeight: 700 }}>
-              {hoverData.day}: ₹{hoverData.value.toLocaleString('en-IN')}
+              {hoverData.day}: {fmt(hoverData.value)}
             </div>
           )}
         </div>
@@ -154,20 +172,16 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
               </linearGradient>
             </defs>
 
-            {/* Subtle horizontal grid lines */}
             <line x1="0" y1="10" x2={chartWidth} y2="10" stroke="rgba(255,255,255,0.07)" strokeDasharray="3 3" />
             <line x1="0" y1="35" x2={chartWidth} y2="35" stroke="rgba(255,255,255,0.07)" strokeDasharray="3 3" />
 
-            {/* Area Fill */}
             <polygon points={areaPoints} fill="url(#riskGrad)" />
 
-            {/* Smooth Risk Line */}
             <polyline points={points} fill="none" stroke="#F43F5E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
 
-            {/* Hover Points */}
             {riskHistory.map((d, idx) => {
               const x = (idx / (riskHistory.length - 1)) * chartWidth;
-              const y = chartHeight - ((d.value - minVal) / (maxVal - minVal)) * chartHeight;
+              const y = chartHeight - ((d.value - minVal) / Math.max(1, maxVal - minVal)) * chartHeight;
               return (
                 <circle
                   key={d.day}
@@ -186,8 +200,8 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
           </svg>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#718096', marginTop: 4 }}>
-            <span>Mon (₹1,420)</span>
-            <span>Sun (₹2,138)</span>
+            <span>Mon ({fmt(riskHistory[0].value)})</span>
+            <span>Sun ({fmt(exposedRevenue)})</span>
           </div>
         </div>
 

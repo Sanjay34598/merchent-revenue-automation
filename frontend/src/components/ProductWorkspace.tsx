@@ -28,15 +28,14 @@ export const ProductWorkspace: React.FC<ProductWorkspaceProps> = ({
   if (!product) return null;
 
   const fmt = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
-  const pct = (n: number) => `${Math.round(n * 100)}%`;
 
   const riskBadgeStyle = (status: ProductItem['riskStatus']) => {
     switch (status) {
-      case 'EXPIRY':     return { label: 'EXPIRY RISK',   bg: 'var(--risk-red-bg)', color: 'var(--risk-red)', border: 'var(--risk-red-border)' };
-      case 'STOCKOUT':   return { label: 'STOCKOUT RISK', bg: '#fff7ed', color: '#c2410c', border: '#fed7aa' };
-      case 'MARGIN_LEAK':return { label: 'MARGIN LEAK',   bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' };
-      case 'OVERSTOCK':  return { label: 'OVERSTOCK',     bg: '#f5f3ff', color: '#6d28d9', border: '#ddd6fe' };
-      default:           return { label: 'HEALTHY',       bg: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: 'var(--emerald-green-border)' };
+      case 'SLOW_MOVING': return { label: 'SLOW MOVING', bg: '#fff7ed', color: '#c2410c', border: '#fed7aa' };
+      case 'STOCKOUT':    return { label: 'STOCKOUT RISK', bg: 'var(--risk-red-bg)', color: 'var(--risk-red)', border: 'var(--risk-red-border)' };
+      case 'MARGIN_LEAK': return { label: 'MARGIN LEAK',   bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' };
+      case 'OVERSTOCK':   return { label: 'EXCESS INVENTORY', bg: '#f5f3ff', color: '#6d28d9', border: '#ddd6fe' };
+      default:            return { label: 'HEALTHY',       bg: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: 'var(--emerald-green-border)' };
     }
   };
 
@@ -53,13 +52,13 @@ export const ProductWorkspace: React.FC<ProductWorkspaceProps> = ({
               <span className="badge-pill" style={{ background: badge.bg, color: badge.color, border: `1px solid ${badge.border}`, fontWeight: 700 }}>
                 {badge.label}
               </span>
-              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{product.category}</span>
+              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{product.division || product.category}</span>
             </div>
-            <h2 style={{ fontSize: 24, fontWeight: 800, margin: '8px 0 2px', color: 'var(--text-main)', letterSpacing: '-0.3px' }}>
+            <h2 style={{ fontSize: 20, fontWeight: 800, margin: '8px 0 2px', color: 'var(--text-main)', letterSpacing: '-0.3px' }}>
               {product.name}
             </h2>
             <div style={{ fontSize: 12, color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-              SKU: {product.sku} · Brand: {product.brand}
+              SKU: {product.sku} · Supplier: {product.supplier}
             </div>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
@@ -67,10 +66,10 @@ export const ProductWorkspace: React.FC<ProductWorkspaceProps> = ({
           </button>
         </div>
 
-        {/* Exposed Header Metric */}
+        {/* Exposed & Recoverable Revenue Header Metric */}
         <div style={{ background: 'var(--risk-red-bg)', border: '1px solid var(--risk-red-border)', padding: 14, borderRadius: 10, marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--risk-red)', textTransform: 'uppercase' }}>REVENUE EXPOSED</div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--risk-red)', textTransform: 'uppercase' }}>ESTIMATED EXPOSURE</div>
             <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--risk-red)', marginTop: 2 }}>{fmt(product.revenueAtRisk)}</div>
           </div>
           <div style={{ textAlign: 'right' }}>
@@ -79,127 +78,99 @@ export const ProductWorkspace: React.FC<ProductWorkspaceProps> = ({
           </div>
         </div>
 
-        {/* WHY THIS MATTERS */}
+        {/* CURRENT STATE & WHY THIS MATTERS */}
         <div style={{ marginBottom: 24 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            WHY THIS MATTERS
+            CURRENT STATE & METRICS
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, textAlign: 'center', marginBottom: 10 }}>
             <div style={{ background: 'var(--bg-subtle)', padding: 10, borderRadius: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>DEMAND</div>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>DEMAND VELOCITY</div>
               <div style={{ fontSize: 15, fontWeight: 800, color: product.trend3d < 0 ? 'var(--risk-red)' : 'var(--emerald-green)' }}>
-                {product.trend3d}%
+                {product.dailyVelocity} units/day
               </div>
             </div>
             <div style={{ background: 'var(--bg-subtle)', padding: 10, borderRadius: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>STOCK</div>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>STOCK ON HAND</div>
               <div style={{ fontSize: 15, fontWeight: 800 }}>{product.currentStock} units</div>
             </div>
             <div style={{ background: 'var(--bg-subtle)', padding: 10, borderRadius: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>EXPIRY</div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: product.expiryDays && product.expiryDays <= 3 ? 'var(--risk-red)' : 'var(--text-main)' }}>
-                {product.expiryDays !== null ? `${product.expiryDays} days` : 'N/A'}
+              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>GROSS MARGIN</div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: product.marginPct < 30 ? 'var(--risk-red)' : 'var(--emerald-green)' }}>
+                {product.marginPct}%
               </div>
             </div>
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: 8 }}>
-            <span>Velocity: {product.dailyVelocity}/day</span>
-            <span>Supplier lead time: {product.supplierLeadTimeDays} days</span>
-            <span>Historical waste: {fmt(product.costPrice * 16)}</span>
-          </div>
-        </div>
 
-        {/* REVENUE IMPACT */}
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            REVENUE IMPACT
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, textAlign: 'center' }}>
-            <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700 }}>EXPOSED</div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--risk-red)', marginTop: 2 }}>{fmt(product.revenueAtRisk)}</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, textAlign: 'center' }}>
+            <div style={{ background: 'var(--bg-subtle)', padding: 10, borderRadius: 8 }}>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>STOCK COVER</div>
+              <div style={{ fontSize: 14, fontWeight: 800 }}>
+                {Math.round(product.currentStock / Math.max(0.1, product.dailyVelocity))} days
+              </div>
             </div>
-            <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700 }}>RECOVERY</div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--emerald-green)', marginTop: 2 }}>{fmt(product.recoverableRevenue)}</div>
+            <div style={{ background: 'var(--bg-subtle)', padding: 10, borderRadius: 8 }}>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>UNIT PRICE</div>
+              <div style={{ fontSize: 14, fontWeight: 800 }}>{fmt(product.sellingPrice)}</div>
             </div>
-            <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700 }}>WASTE RISK</div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--emerald-green)', marginTop: 2 }}>↓ 42%</div>
-            </div>
-            <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8 }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700 }}>CONFIDENCE</div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--accent-purple)', marginTop: 2 }}>88%</div>
+            <div style={{ background: 'var(--bg-subtle)', padding: 10, borderRadius: 8 }}>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>UNIT COST</div>
+              <div style={{ fontSize: 14, fontWeight: 800 }}>{fmt(product.costPrice)}</div>
             </div>
           </div>
         </div>
 
-        {/* MERCHINTELL RECOMMENDS */}
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-purple)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            MERCHINTELL RECOMMENDS
-          </div>
-          <div style={{ background: 'var(--accent-purple-bg)', border: '1.5px solid var(--accent-purple-border)', borderRadius: 12, padding: 18 }}>
-            <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--accent-purple)', marginBottom: 8 }}>
-              {product.recommendedAction}
-            </div>
-            <div style={{ display: 'flex', gap: 24, fontSize: 13, color: 'var(--accent-purple)' }}>
-              <span>Expected sell-through: <strong>+31%</strong></span>
-              <span>Expected recovery: <strong>{fmt(product.recoverableRevenue)}</strong></span>
-            </div>
-          </div>
-        </div>
-
-        {/* WHY THIS DECISION? */}
+        {/* WHY THIS MATTERS EXPLANATION */}
         <div style={{ marginBottom: 24 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            WHY THIS DECISION?
+            WHY THIS MATTERS
           </div>
-          <div style={{ background: 'var(--bg-subtle)', borderRadius: 10, padding: 16, fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>
-            "Demand has fallen {Math.abs(product.trend3d)}% over the last 3 days while {product.currentStock} units remain and the product expires in {product.expiryDays ?? 2} days. The model compared historical demand patterns and simulated alternative discount strategies."
+          <div style={{ fontSize: 13, color: 'var(--text-main)', lineHeight: 1.5, background: 'var(--bg-subtle)', padding: 12, borderRadius: 8 }}>
+            Current stock count is {product.currentStock} units with a sales velocity of {product.dailyVelocity} units/day.
+            {product.riskStatus === 'SLOW_MOVING' && ` Demand velocity dropped while ${product.currentStock} units remain in inventory, locking up ${fmt(product.currentStock * product.costPrice)} in capital.`}
+            {product.riskStatus === 'STOCKOUT' && ` Demand velocity is high and stock cover is low (${Math.round(product.currentStock / Math.max(0.1, product.dailyVelocity))} days remaining), leading to potential lost revenue.`}
+            {product.riskStatus === 'MARGIN_LEAK' && ` Gross margin of ${product.marginPct}% is below the target category benchmark, causing margin leakage.`}
+            {product.riskStatus === 'OVERSTOCK' && ` Inventory cover exceeds target days of supply with ${product.currentStock} units held.`}
+            {product.riskStatus === 'HEALTHY' && ` Stock levels and demand velocity are balanced.`}
           </div>
         </div>
 
-        {/* STRATEGY COMPARISON */}
-        <div style={{ marginBottom: 28 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            STRATEGY COMPARISON
+        {/* AI RECOMMENDED ACTION */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            RECOMMENDED MERCHANT ACTION
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-            <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8, textAlign: 'center' }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>DO NOTHING</div>
-              <div style={{ fontSize: 14, fontWeight: 700, marginTop: 4 }}>₹0</div>
+          <div style={{ border: '1px solid var(--accent-purple)', background: 'rgba(109, 40, 217, 0.04)', padding: 14, borderRadius: 10 }}>
+            <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--accent-purple)', marginBottom: 4 }}>
+              {product.recommendedAction}
             </div>
-            <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8, textAlign: 'center' }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>10% DISCOUNT</div>
-              <div style={{ fontSize: 14, fontWeight: 700, marginTop: 4 }}>₹271</div>
-            </div>
-            <div style={{ background: 'var(--accent-purple-bg)', border: '1.5px solid var(--accent-purple)', padding: 12, borderRadius: 8, textAlign: 'center' }}>
-              <div style={{ fontSize: 10, color: 'var(--accent-purple)', fontWeight: 800 }}>15% DISCOUNT ★</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--accent-purple)', marginTop: 4 }}>₹354</div>
-            </div>
-            <div style={{ background: 'var(--bg-subtle)', padding: 12, borderRadius: 8, textAlign: 'center' }}>
-              <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>20% DISCOUNT</div>
-              <div style={{ fontSize: 14, fontWeight: 700, marginTop: 4 }}>₹321</div>
+            <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.4 }}>
+              Reason: Recent velocity is {product.dailyVelocity} units/day and current stock covers approximately {Math.round(product.currentStock / Math.max(0.1, product.dailyVelocity))} days.
             </div>
           </div>
         </div>
 
-        {/* Drawer Action Buttons */}
-        <div style={{ display: 'flex', gap: 12 }}>
+        {/* ACTION BUTTONS */}
+        <div style={{ display: 'flex', gap: 12, marginTop: 30 }}>
           <button
-            className="btn-copilot btn-copilot-secondary"
-            style={{ flex: 1 }}
-            onClick={() => { onClose(); onSimulate(product); }}
+            onClick={() => onSimulate(product)}
+            style={{
+              flex: 1, padding: '12px 16px', background: 'var(--bg-subtle)', border: '1px solid var(--border-color)',
+              borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
+            }}
           >
-            <Sliders size={14} /> Simulate strategy
+            <Sliders size={16} />
+            <span>Simulate What-If</span>
           </button>
           <button
-            className="btn-copilot btn-copilot-success"
-            style={{ flex: 1 }}
-            onClick={() => { onApproveAction(product.id); onClose(); }}
+            onClick={() => onApproveAction(product.id)}
+            style={{
+              flex: 1, padding: '12px 16px', background: 'var(--accent-purple)', color: '#FFFFFF',
+              border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
+            }}
           >
-            <CheckCircle2 size={14} /> Approve action
+            <CheckCircle2 size={16} />
+            <span>Approve Action</span>
           </button>
         </div>
 
