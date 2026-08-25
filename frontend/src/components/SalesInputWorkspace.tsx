@@ -68,8 +68,8 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
     discount: number;
     lineTotal: number;
   }>>([
-    { productId: catalog[0]?.id || 1, quantity: 2.5, unit: 'kg', unitPrice: catalog[0]?.sellingPrice || 120, discount: 0, lineTotal: (2.5 * (catalog[0]?.sellingPrice || 120)) },
-    { productId: catalog[1]?.id || 2, quantity: 1.5, unit: 'L', unitPrice: catalog[1]?.sellingPrice || 168, discount: 10, lineTotal: (1.5 * (catalog[1]?.sellingPrice || 168)) - 10 },
+    { productId: catalog[0]?.id || 1, quantity: 2, unit: 'piece', unitPrice: catalog[0]?.sellingPrice || 120, discount: 0, lineTotal: (2 * (catalog[0]?.sellingPrice || 120)) },
+    { productId: catalog[1]?.id || 2, quantity: 1, unit: 'piece', unitPrice: catalog[1]?.sellingPrice || 168, discount: 10, lineTotal: (1 * (catalog[1]?.sellingPrice || 168)) - 10 },
   ]);
 
   const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'Cash' | 'Card'>('UPI');
