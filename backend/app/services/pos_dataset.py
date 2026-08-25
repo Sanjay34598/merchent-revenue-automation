@@ -81,8 +81,9 @@ def generate_catalog_from_real_data() -> List[ProductCatalogItem]:
             base_daily_demand=pdata["daily_velocity"],
             risk_type=pdata["risk_status"]
         )
-        item.current_stock = round(stock_on_hand, 1)
+        item.opening_stock = op_stock
         item.sold_stock = round(qty_sold, 1)
+        item.current_stock = max(0.0, round(op_stock - item.sold_stock, 1))
         item.days_of_cover = pdata["days_of_cover"]
         item.revenue_at_risk = pdata["revenue_at_risk"]
         item.recoverable_revenue = pdata["recoverable_revenue"]
