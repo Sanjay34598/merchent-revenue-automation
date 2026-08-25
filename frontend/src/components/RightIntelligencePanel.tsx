@@ -62,9 +62,16 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
 
   const areaPoints = `0,${chartHeight} ${points} ${chartWidth},${chartHeight}`;
 
-  const getDisplayName = (rawName: string) => {
-    let name = rawName.replace(/^PROD-\d+\s*/i, '').replace(/^SEG-\d+\s*/i, '').trim();
-    return name || rawName;
+  const parseProductTitle = (rawName: string) => {
+    let clean = rawName.replace(/^PROD-\d+\s*/i, '').replace(/^SEG-\d+\s*/i, '').trim();
+    const knownDivisions = ['Femme Footwear', 'Scholar Footwear', 'Junior Apparel', 'Apparel', 'Footwear'];
+    for (const div of knownDivisions) {
+      if (clean.toLowerCase().startsWith(div.toLowerCase())) {
+        clean = clean.substring(div.length).trim();
+        break;
+      }
+    }
+    return clean || rawName;
   };
 
   return (
@@ -102,7 +109,7 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--today-card-title)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {getDisplayName(act.name)}
+                    {parseProductTitle(act.name)}
                   </div>
                 </div>
                 <ArrowRight size={13} color="var(--text-muted)" />

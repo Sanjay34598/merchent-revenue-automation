@@ -35,10 +35,27 @@ export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }
     return `Stock: ${item.currentStock} units · Velocity: ${item.dailyVelocity}/day`;
   };
 
-  const getDisplayName = (rawName: string) => {
-    let name = rawName.replace(/^PROD-\d+\s*/i, '').replace(/^SEG-\d+\s*/i, '').trim();
-    return name || rawName;
+  const parseProductAndStore = (rawName: string, categoryName?: string) => {
+    let clean = rawName.replace(/^PROD-\d+\s*/i, '').replace(/^SEG-\d+\s*/i, '').trim();
+    let storeContext = categoryName || 'Femme Footwear';
+    let productTitle = clean;
+
+    const knownDivisions = ['Femme Footwear', 'Scholar Footwear', 'Junior Apparel', 'Apparel', 'Footwear'];
+    for (const div of knownDivisions) {
+      if (clean.toLowerCase().startsWith(div.toLowerCase())) {
+        storeContext = div;
+        productTitle = clean.substring(div.length).trim();
+        break;
+      }
+    }
+
+    return {
+      title: productTitle || clean,
+      store: storeContext,
+    };
   };
+
+  const parsed = parseProductAndStore(item.name, item.category);
 
   return (
     <div
@@ -49,15 +66,15 @@ export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }
       {/* Product Name & Context Signal */}
       <div style={{ flex: 1, minWidth: 0, paddingRight: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'nowrap' }}>
-          <span style={{ fontWeight: 700, fontSize: 15, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 380 }}>
-            {getDisplayName(item.name)}
+          <span style={{ fontWeight: 600, fontSize: 16, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 360 }}>
+            {parsed.title}
           </span>
           <span style={{ fontSize: 11, fontWeight: 700, color: badge.color, flexShrink: 0 }}>
             {badge.label}
           </span>
         </div>
         <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 3 }}>
-          Store STR-1001 · {getReasonText()}
+          {parsed.store} · STR-1001 · {getReasonText()}
         </div>
       </div>
 
