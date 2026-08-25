@@ -62,6 +62,11 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
 
   const areaPoints = `0,${chartHeight} ${points} ${chartWidth},${chartHeight}`;
 
+  const getDisplayName = (rawName: string) => {
+    let name = rawName.replace(/^PROD-\d+\s*/i, '').replace(/^SEG-\d+\s*/i, '').trim();
+    return name || rawName;
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
 
@@ -97,7 +102,7 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--today-card-title)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {act.name}
+                    {getDisplayName(act.name)}
                   </div>
                 </div>
                 <ArrowRight size={13} color="var(--text-muted)" />

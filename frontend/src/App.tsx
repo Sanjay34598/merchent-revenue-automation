@@ -331,24 +331,44 @@ export default function App() {
                 {/* PRIMARY MERCHANT COMMAND CENTER (HOME VIEW) */}
                 {activeTab === 'home' && (
                   <ErrorBoundary fallbackTitle="Command Center View Error">
-                    <div style={{ maxWidth: 960, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
-                      <FinancialHero
-                        merchantName="Sanjay"
-                        protectedRevenue={protectedRevenueVal}
+                    <div className="content-grid-3col">
+                      {/* Main Column */}
+                      <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                        <FinancialHero
+                          merchantName="Sanjay"
+                          protectedRevenue={protectedRevenueVal}
+                          exposedRevenue={exposedRevenueVal}
+                          activeOpportunitiesCount={homeOpportunities.length || 36}
+                          totalProductsCount={merchantCatalog.length || 2326}
+                          onViewRevenue={() => setActiveTab('leaks')}
+                        />
+
+                        <MerchantActionStrip
+                          onActionClick={(tabKey) => setActiveTab(tabKey)}
+                          atRiskAmount={exposedRevenueVal}
+                          itemsAtRiskCount={homeOpportunities.length || 7}
+                          totalProductsCount={merchantCatalog.length || 2326}
+                        />
+
+                        <BusinessPulse />
+
+                        <OpportunityList
+                          opportunities={homeOpportunities as any}
+                          onSelectProduct={setSelectedProductWorkspace}
+                          onViewAllInventory={() => setActiveTab('inventory')}
+                        />
+
+                        <RecentSales
+                          onViewAllTransactions={() => setActiveTab('sales')}
+                        />
+                      </div>
+
+                      {/* Right Column: Today's Priorities & Revenue at Risk Card */}
+                      <RightIntelligencePanel
+                        catalog={merchantCatalog}
                         exposedRevenue={exposedRevenueVal}
-                        activeOpportunitiesCount={homeOpportunities.length || 36}
-                        totalProductsCount={merchantCatalog.length || 2326}
-                        onViewRevenue={() => setActiveTab('leaks')}
-                      />
-
-                      <OpportunityList
-                        opportunities={homeOpportunities as any}
-                        onSelectProduct={setSelectedProductWorkspace}
-                        onViewAllInventory={() => setActiveTab('inventory')}
-                      />
-
-                      <RecentSales
-                        onViewAllTransactions={() => setActiveTab('sales')}
+                        onViewDecisions={() => setActiveTab('decisions')}
+                        onViewRevenueRisks={() => setActiveTab('leaks')}
                       />
                     </div>
                   </ErrorBoundary>
