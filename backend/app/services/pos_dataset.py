@@ -60,6 +60,10 @@ def generate_catalog_from_real_data() -> List[ProductCatalogItem]:
     # Sample top 150 products from dataset catalog to satisfy 150-SKU test contracts while serving real dataset products
     sample_skus = list(data_loader.catalog_map.items())[:150]
     for sku, pdata in sample_skus:
+        stock_on_hand = float(pdata["current_stock"])
+        qty_sold = float(pdata["sold_stock"])
+        op_stock = round(stock_on_hand + qty_sold, 1)
+
         item = ProductCatalogItem(
             product_id=pdata["product_id"],
             sku=pdata["sku"],
@@ -72,13 +76,13 @@ def generate_catalog_from_real_data() -> List[ProductCatalogItem]:
             supplier=pdata["supplier"],
             supplier_lead_time=3,
             shelf_life=365,
-            opening_stock=pdata["opening_stock"],
+            opening_stock=op_stock,
             reorder_point=max(5.0, round(pdata["daily_velocity"] * 3, 1)),
             base_daily_demand=pdata["daily_velocity"],
             risk_type=pdata["risk_status"]
         )
-        item.current_stock = pdata["current_stock"]
-        item.sold_stock = pdata["sold_stock"]
+        item.current_stock = round(stock_on_hand, 1)
+        item.sold_stock = round(qty_sold, 1)
         item.days_of_cover = pdata["days_of_cover"]
         item.revenue_at_risk = pdata["revenue_at_risk"]
         item.recoverable_revenue = pdata["recoverable_revenue"]
