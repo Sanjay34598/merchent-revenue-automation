@@ -34,6 +34,7 @@ export interface TransactionDetail {
 
 interface SalesInputWorkspaceProps {
   catalog: ProductItem[];
+  selectedStore?: string;
   onRecordSale: (saleData: {
     items: Array<{
       product: ProductItem;
@@ -53,6 +54,7 @@ interface SalesInputWorkspaceProps {
 
 export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
   catalog,
+  selectedStore = 'STR-1001',
   onRecordSale,
   onImportCsv,
 }) => {
@@ -68,61 +70,69 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
     discount: number;
     lineTotal: number;
   }>>([
-    { productId: catalog[0]?.id || 1, quantity: 2, unit: 'piece', unitPrice: catalog[0]?.sellingPrice || 120, discount: 0, lineTotal: (2 * (catalog[0]?.sellingPrice || 120)) },
-    { productId: catalog[1]?.id || 2, quantity: 1, unit: 'piece', unitPrice: catalog[1]?.sellingPrice || 168, discount: 10, lineTotal: (1 * (catalog[1]?.sellingPrice || 168)) - 10 },
+    { productId: catalog[0]?.id || 1, quantity: 2, unit: catalog[0]?.sellingUnit || 'piece', unitPrice: catalog[0]?.sellingPrice || 120, discount: 0, lineTotal: (2 * (catalog[0]?.sellingPrice || 120)) },
+    { productId: catalog[1]?.id || 2, quantity: 1, unit: catalog[1]?.sellingUnit || 'piece', unitPrice: catalog[1]?.sellingPrice || 168, discount: 10, lineTotal: (1 * (catalog[1]?.sellingPrice || 168)) - 10 },
   ]);
 
   const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'Cash' | 'Card'>('UPI');
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeStageIndex, setActiveStageIndex] = useState(-1);
+  const [autoBillingActive, setAutoBillingActive] = useState(true);
 
-  // In-Memory Transaction Ledger History State
-  const [transactionsLedger, setTransactionsLedger] = useState<TransactionDetail[]>([
-    {
-      id: 'TXN-20260824-00128',
-      timestamp: '2 mins ago',
-      terminal: 'POS Terminal #01',
-      source: 'Retail POS',
-      cashier: 'Sanjay M.',
-      paymentMethod: 'UPI',
-      items: [
-        { product: catalog[0] || { id: 1, name: 'PROD-100043 Femme Footwear Boot', sku: 'PROD-100043', sellingPrice: 151.58, unit: 'piece' }, quantity: 2, unit: 'piece', unitPrice: catalog[0]?.sellingPrice || 151.58, discount: 0, lineTotal: (2 * (catalog[0]?.sellingPrice || 151.58)) },
-        { product: catalog[1] || { id: 2, name: 'PROD-100128 Scholar Footwear Derby', sku: 'PROD-100128', sellingPrice: 120.00, unit: 'piece' }, quantity: 1, unit: 'piece', unitPrice: catalog[1]?.sellingPrice || 120.00, discount: 10, lineTotal: (1 * (catalog[1]?.sellingPrice || 120.00)) - 10 },
-      ],
-      subtotal: 423.16,
-      discount: 10,
-      grandTotal: 413.16,
-      status: 'Processed',
-      systemImpact: {
-        inventoryUpdated: 2,
-        demandModelsUpdated: 2,
-        revenueExposureDelta: '₹360 exposed revenue cleared',
-        decisionEngineSignal: 'Footwear stock cover updated to 4.8 days'
-      }
-    },
-    {
-      id: 'TXN-20260824-00127',
-      timestamp: '14 mins ago',
-      terminal: 'POS Terminal #01',
-      source: 'Pine Labs Terminal',
-      cashier: 'Sanjay M.',
-      paymentMethod: 'Card',
-      items: [
-        { product: catalog[2] || { id: 3, name: 'PROD-100342 Junior Apparel Denim', sku: 'PROD-100342', sellingPrice: 85.00, unit: 'piece' }, quantity: 3, unit: 'piece', unitPrice: catalog[2]?.sellingPrice || 85.00, discount: 0, lineTotal: 255 },
-        { product: catalog[3] || { id: 4, name: 'PROD-100512 Femme Footwear Sandal', sku: 'PROD-100512', sellingPrice: 195.00, unit: 'piece' }, quantity: 1, unit: 'piece', unitPrice: catalog[3]?.sellingPrice || 195.00, discount: 15, lineTotal: 180 },
-      ],
-      subtotal: 450,
-      discount: 15,
-      grandTotal: 435,
-      status: 'Processed',
-      systemImpact: {
-        inventoryUpdated: 2,
-        demandModelsUpdated: 2,
-        revenueExposureDelta: '₹435 revenue logged',
-        decisionEngineSignal: 'Stock on hand decremented by 4 units'
+  // Clean Product Display Name Helper
+  const getCleanTitle = (rawName: string) => {
+    let name = rawName.replace(/^PROD-\d+\s*/i, '').replace(/^SEG-\d+\s*/i, '').trim();
+    const knownDivisions = ['Femme Footwear', 'Scholar Footwear', 'Junior Apparel', 'Apparel', 'Footwear'];
+    for (const div of knownDivisions) {
+      if (name.toLowerCase().startsWith(div.toLowerCase())) {
+        name = name.substring(div.length).trim();
+        break;
       }
     }
-  ]);
+    return name || rawName;
+  };
+
+  // Seed 10 recent legitimate transactions derived from catalog products
+  const [transactionsLedger, setTransactionsLedger] = useState<TransactionDetail[]>(() => {
+    const initialTimes = ['1 min ago', '4 mins ago', '9 mins ago', '16 mins ago', '24 mins ago', '38 mins ago', '52 mins ago', '1 hr ago', '1 hr 15 mins ago', '2 hrs ago'];
+    const payMethods: Array<'UPI' | 'Card' | 'Cash'> = ['UPI', 'Card', 'Cash', 'UPI', 'Card', 'UPI', 'Cash', 'Card', 'UPI', 'Card'];
+
+    return initialTimes.map((tStr, idx) => {
+      const p1 = catalog[idx % catalog.length] || { id: 1, name: 'Boot Collection Plushfoot', sku: 'PROD-100043', sellingPrice: 151.58, sellingUnit: 'piece' };
+      const p2 = catalog[(idx + 2) % catalog.length] || { id: 2, name: 'Scholar Footwear Derby', sku: 'PROD-100128', sellingPrice: 120.00, sellingUnit: 'piece' };
+      const q1 = (idx % 3) + 1;
+      const q2 = (idx % 2) + 1;
+
+      const items = [
+        { product: p1, quantity: q1, unit: p1.sellingUnit || 'piece', unitPrice: p1.sellingPrice, discount: 0, lineTotal: q1 * p1.sellingPrice },
+        { product: p2, quantity: q2, unit: p2.sellingUnit || 'piece', unitPrice: p2.sellingPrice, discount: 0, lineTotal: q2 * p2.sellingPrice }
+      ];
+
+      const sub = items.reduce((s, i) => s + i.lineTotal, 0);
+      const grand = Math.round(sub);
+      const txNum = 128 - idx;
+
+      return {
+        id: `TXN-20260825-${txNum > 0 ? String(txNum).padStart(5, '0') : '00001'}`,
+        timestamp: tStr,
+        terminal: 'POS Terminal #01',
+        source: `${selectedStore} POS`,
+        cashier: 'Sanjay M.',
+        paymentMethod: payMethods[idx % payMethods.length],
+        items: items,
+        subtotal: sub,
+        discount: 0,
+        grandTotal: grand,
+        status: 'Processed',
+        systemImpact: {
+          inventoryUpdated: items.length,
+          demandModelsUpdated: items.length,
+          revenueExposureDelta: `₹${grand} revenue logged`,
+          decisionEngineSignal: `${getCleanTitle(p1.name)} velocity recalculated`
+        }
+      };
+    });
+  });
 
   const [importCount, setImportCount] = useState(35);
   const [csvSuccessMsg, setCsvSuccessMsg] = useState<string | null>(null);
@@ -249,18 +259,57 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
     }, 220);
   };
 
+  // Controlled Generator: Generate 1 genuine inventory-aware POS transaction
+  const handleGenerateSingleSale = () => {
+    const available = catalog.filter(p => p.currentStock > 0);
+    if (available.length === 0) return;
+
+    const numItems = Math.min(available.length, Math.random() > 0.6 ? 2 : 1);
+    const selectedProds: ProductItem[] = [];
+    
+    for (let i = 0; i < numItems; i++) {
+      const idx = Math.floor(Math.random() * available.length);
+      const chosen = available[idx];
+      if (chosen && !selectedProds.includes(chosen)) {
+        selectedProds.push(chosen);
+      }
+    }
+
+    if (selectedProds.length === 0) selectedProds.push(available[0]);
+
+    const generatedItems = selectedProds.map(prod => {
+      const qty = Math.min(prod.currentStock, Math.floor(Math.random() * 3) + 1);
+      return {
+        productId: prod.id,
+        quantity: qty,
+        unit: prod.sellingUnit || 'piece',
+        unitPrice: prod.sellingPrice,
+        discount: 0,
+        lineTotal: qty * prod.sellingPrice,
+      };
+    });
+
+    const payMethods: Array<'UPI' | 'Card' | 'Cash'> = ['UPI', 'Card', 'Cash'];
+    const chosenPayMethod = payMethods[Math.floor(Math.random() * payMethods.length)];
+
+    runPipelineExecution(generatedItems, chosenPayMethod);
+  };
+
+  // Controlled Background Auto-Billing Generator (30-90 second interval)
+  React.useEffect(() => {
+    if (!autoBillingActive) return;
+
+    const delayMs = (30 + Math.floor(Math.random() * 40)) * 1000;
+    const timer = setTimeout(() => {
+      handleGenerateSingleSale();
+    }, delayMs);
+
+    return () => clearTimeout(timer);
+  }, [autoBillingActive, transactionsLedger.length]);
+
   // Demo Adapter Action: Simulate POS Sale
   const handleSimulatePosSale = () => {
-    const boot = catalog.find(p => p.name.includes('Boot')) || catalog[0];
-    const derby = catalog.find(p => p.name.includes('Derby')) || catalog[1];
-
-    const presetItems = [
-      { productId: boot.id, quantity: 2, unit: boot.sellingUnit || 'piece', unitPrice: boot.sellingPrice, discount: 0, lineTotal: boot.sellingPrice * 2 },
-      { productId: derby.id, quantity: 1, unit: derby.sellingUnit || 'piece', unitPrice: derby.sellingPrice, discount: 0, lineTotal: derby.sellingPrice * 1 }
-    ];
-
-    setLineItems(presetItems);
-    runPipelineExecution(presetItems, 'UPI');
+    handleGenerateSingleSale();
   };
 
   return (
@@ -301,29 +350,61 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
         </div>
       </div>
 
-      {/* TOP STATUS BAR: LIVE TRANSACTION STREAM (Matching Prompt Specification) */}
+      {/* TOP STATUS BAR: LIVE TRANSACTION STREAM & STORE ACTIVITY CONTROLS */}
       <div style={{
         background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
         borderRadius: 12, padding: '16px 20px', display: 'flex', alignItems: 'center',
         justify: 'space-between', flexWrap: 'wrap', gap: 16
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--emerald-green)', animation: 'pulse-monitoring 2s infinite' }} />
+          <div style={{
+            width: 10, height: 10, borderRadius: '50%',
+            background: autoBillingActive ? 'var(--emerald-green)' : '#f59e0b',
+            animation: autoBillingActive ? 'pulse-monitoring 2s infinite' : 'none'
+          }} />
           <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>LIVE TRANSACTION STREAM</div>
-            <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>
-              Status: <strong style={{ color: 'var(--emerald-green)' }}>● Connected</strong> · Source: GreenBasket Market · POS Terminal #01
+            <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>
+              LIVE STORE ACTIVITY STREAM
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span>Store: <strong>{selectedStore}</strong></span>
+              <span>·</span>
+              <span style={{
+                color: autoBillingActive ? 'var(--emerald-green)' : '#f59e0b',
+                fontWeight: 700
+              }}>
+                ● Auto-billing {autoBillingActive ? 'ON (30-90s)' : 'PAUSED'}
+              </span>
             </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24, fontSize: 12, color: 'var(--text-sub)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: 'var(--text-sub)', flexWrap: 'wrap' }}>
           <div>
-            Last Transaction: <strong style={{ color: 'var(--text-main)', fontFamily: 'monospace' }}>TXN-20260824-00128</strong> (2s ago)
+            Last Transaction: <strong style={{ color: 'var(--text-main)', fontFamily: 'monospace' }}>{transactionsLedger[0]?.id || 'TXN-00128'}</strong> ({transactionsLedger[0]?.timestamp || 'Just now'})
           </div>
           <div>
-            Processed Today: <strong style={{ color: 'var(--accent-purple)' }}>{12 + transactionsLedger.length} sales</strong>
+            Today: <strong style={{ color: 'var(--accent-purple)' }}>{transactionsLedger.length} sales</strong>
           </div>
+
+          {/* PAUSE / RESUME TOGGLE BUTTON */}
+          <button
+            className="btn-copilot btn-copilot-secondary"
+            onClick={() => setAutoBillingActive(!autoBillingActive)}
+            style={{ padding: '6px 12px', fontSize: 12, fontWeight: 700 }}
+          >
+            {autoBillingActive ? 'Pause' : 'Resume'}
+          </button>
+
+          {/* INSTANT GENERATE SALE BUTTON */}
+          <button
+            className="btn-copilot btn-copilot-secondary"
+            onClick={handleGenerateSingleSale}
+            disabled={isProcessing}
+            style={{ padding: '6px 12px', fontSize: 12, fontWeight: 700 }}
+          >
+            <Zap size={13} /> Generate Sale
+          </button>
 
           {/* PRIMARY + NEW SALE CTA BUTTON */}
           <button
@@ -399,10 +480,10 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
               </thead>
               <tbody>
                 {transactionsLedger.map((tx) => (
-                  <tr key={tx.id} onClick={() => setSelectedTransactionDetail(tx)}>
+                  <tr key={tx.id} onClick={() => setSelectedTransactionDetail(tx)} style={{ cursor: 'pointer' }}>
                     <td style={{ fontFamily: 'monospace', fontWeight: 700, color: 'var(--accent-purple)' }}>{tx.id}</td>
                     <td>{tx.timestamp}</td>
-                    <td>{tx.items.map(i => i.product.name).join(', ')}</td>
+                    <td>{tx.items.map(i => getCleanTitle(i.product.name)).join(', ')}</td>
                     <td>{tx.items.reduce((sum, i) => sum + i.quantity, 0)} units</td>
                     <td><strong style={{ color: 'var(--text-main)' }}>₹{Math.round(tx.grandTotal)}</strong></td>
                     <td>{tx.paymentMethod}</td>

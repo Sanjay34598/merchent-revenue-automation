@@ -378,6 +378,7 @@ export default function App() {
                 {activeTab === 'sales' && (
                   <SalesInputWorkspace
                     catalog={merchantCatalog}
+                    selectedStore={selectedStore}
                     onRecordSale={handleRecordSale}
                     onImportCsv={handleImportCsv}
                   />
