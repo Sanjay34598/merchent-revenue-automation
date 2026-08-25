@@ -95,11 +95,24 @@ def generate_catalog_from_real_data() -> List[ProductCatalogItem]:
     return items
 
 class RealPOSEngine:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(RealPOSEngine, cls).__new__(cls)
+            cls._instance.catalog = []
+            cls._instance.transactions = []
+            cls._instance._initialized = False
+        return cls._instance
+
     def __init__(self):
-        self.catalog: List[ProductCatalogItem] = generate_catalog_from_real_data()
-        self.transactions: List[Dict[str, Any]] = []
+        if self._initialized:
+            return
+        self.catalog = generate_catalog_from_real_data()
+        self.transactions.clear()
         self._seed_transactions()
         self.recalculate_analytics()
+        self._initialized = True
 
     def _seed_transactions(self):
         # Generate initial recent live transaction ledger (8000 items to pass test bounds 7000<=tx_count<=9500)

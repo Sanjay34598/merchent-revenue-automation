@@ -109,7 +109,10 @@ def record_transaction(payload: TransactionCreate):
         status="Processed"
     )
 
-    pos_engine.transactions.insert(0, record.dict())
+    record_dict = record.dict()
+    pos_engine.transactions.insert(0, record_dict)
+    if TRANSACTIONS_DB is not pos_engine.transactions and record_dict not in TRANSACTIONS_DB:
+        TRANSACTIONS_DB.insert(0, record_dict)
     DATA_QUALITY_STATS["transactions_processed"] += 1
     pos_engine.recalculate_analytics()
     pos_db.save() # Persist to JSON file
