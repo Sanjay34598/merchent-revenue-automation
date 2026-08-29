@@ -25,6 +25,8 @@ Without closed-loop revenue intelligence, merchants suffer silent profit leaks: 
 
 ## 2. Solution: The Closed-Loop Revenue Recovery Loop
 
+MerchIntell is the revenue intelligence layer between merchant transactions and operational decisions.
+
 MerchIntell answers four core business questions:
 1. **What revenue is at risk?** (Quantifies exposed monetary risk across active catalog SKUs)
 2. **Why is it at risk?** (Diagnoses root causes: slow-moving, stockout risk, margin erosion, excess stock)
@@ -32,24 +34,24 @@ MerchIntell answers four core business questions:
 4. **Did the intervention actually recover revenue?** (Tracks realized recovery via POS sales & executed actions)
 
 ```
-SALES + INVENTORY DATA
+POS / PAYMENTS (Razorpay & In-Store Billing)
+        ↓
+TRANSACTION INTELLIGENCE
+        ↓
+INVENTORY + DEMAND SIGNALS
         ↓
 REVENUE RISK DETECTION
         ↓
-ROOT-CAUSE / EXPLANATION
+AI DECISION ENGINE
         ↓
-AI-ASSISTED DECISION
+POLICY GUARDRAILS (Margin Floor & Cap)
         ↓
-BOUNDED RECOVERY ACTION
+MERCHANT APPROVAL
         ↓
-ACTION EXECUTION
-        ↓
-POS / INVENTORY / REVENUE STATE UPDATE
-        ↓
-MEASURE ACTUAL OUTCOME
-        ↓
-RECOVERY METRICS & AUDIT TRAIL
+RAZORPAY ORDER / PAYMENT LINK (INR Paise Payload & Execution)
 ```
+
+*Note on Razorpay Integration*: When deployed without live Razorpay production API credentials, MerchIntell operates in explicit `RAZORPAY_TEST_MODE`, generating standard INR paise order payloads (`amount`, `currency: "INR"`, `receipt`, `notes`) and returning mock execution references. When valid `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` credentials are provided in `.env`, the backend executes live Razorpay Order API creation (`POST https://api.razorpay.com/v1/orders`).
 
 ---
 

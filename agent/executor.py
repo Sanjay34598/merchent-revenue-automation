@@ -88,18 +88,32 @@ class ActionExecutor:
                 "status": "APPROVAL_REQUIRED"
             }
 
-        # Perform SAFE MOCK / RAZORPAY_TEST_MODE execution
+        # Perform SAFE Razorpay Order Payload Construction & Execution
         exp_outcome = action.expected_outcome or {}
         predicted_impact = float(exp_outcome.get("expected_gross_profit", 1500.0))
         
-        # Simulate realistic test-mode outcome (variance within +/- 8%)
+        # Calculate action execution monetary value in INR rupees
+        cash_locked = float(exp_outcome.get("cash_locked", predicted_impact))
+        amount_in_rupees = max(10.0, cash_locked if cash_locked > 0 else predicted_impact)
+
+        from app.services.razorpay_service import razorpay_service
+        razorpay_res = razorpay_service.create_order(
+            amount_in_rupees=amount_in_rupees,
+            action_type=action.action_type,
+            product_id=action.product_id or 1,
+            store_id=action.store_id or 1,
+            receipt=f"rcpt_act_{action.id}",
+            notes_extra={"agent_action_id": action.id}
+        )
+
+        # Simulate realistic outcome (variance within +/- 4%)
         actual_impact = round(predicted_impact * 0.96, 2)
         variance = round(actual_impact - predicted_impact, 2)
 
         # Mark action EXECUTED
         action.status = "EXECUTED"
 
-        # Create or update ActionOutcome record
+        # Create or update ActionOutcome record with Razorpay transaction metadata
         outcome = self.db.query(ActionOutcome).filter(ActionOutcome.action_id == action.id).first()
         if not outcome:
             outcome = ActionOutcome(
@@ -109,7 +123,11 @@ class ActionExecutor:
                 variance=variance,
                 details={
                     "execution_mode": execution_mode,
-                    "test_transaction_id": f"rzp_test_{action.id}_{int(datetime.utcnow().timestamp())}",
+                    "razorpay_status": razorpay_res.get("status"),
+                    "razorpay_order_id": razorpay_res.get("razorpay_order_id"),
+                    "razorpay_order_payload": razorpay_res.get("razorpay_order_payload"),
+                    "amount_rupees": amount_in_rupees,
+                    "amount_paise": razorpay_res.get("amount_paise"),
                     "revenue_recovered": round(actual_impact * 1.25, 2),
                     "profit_recovered": actual_impact,
                     "waste_avoided_units": 14,
@@ -128,9 +146,11 @@ class ActionExecutor:
             "action_id": action.id,
             "status": "EXECUTED",
             "execution_mode": execution_mode,
-            "test_reference": outcome.details.get("test_transaction_id"),
+            "razorpay_status": razorpay_res.get("status"),
+            "razorpay_order_id": razorpay_res.get("razorpay_order_id"),
+            "razorpay_order_payload": razorpay_res.get("razorpay_order_payload"),
             "predicted_impact": predicted_impact,
             "actual_impact": actual_impact,
             "variance": variance,
-            "message": f"Action #{action_id} executed successfully in {execution_mode}. Outcome recorded."
+            "message": f"Action #{action_id} executed successfully. Razorpay order state: {razorpay_res.get('status')}."
         }

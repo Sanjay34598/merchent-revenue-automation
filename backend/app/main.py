@@ -20,6 +20,7 @@ from app.api.transactions import router as transactions_router
 from app.api.analytics import router as analytics_router
 from app.api.products import router as products_router
 from app.api.stores import router as stores_router
+from app.api.payments import router as payments_router
 from app.schemas.health import HealthResponse
 
 # Create database tables automatically
@@ -59,6 +60,7 @@ app.include_router(transactions_router, prefix="/api", tags=["Transactions"])
 app.include_router(analytics_router, prefix="/api", tags=["Analytics"])
 app.include_router(products_router, prefix="/api", tags=["Products"])
 app.include_router(stores_router, prefix="/api", tags=["Stores"])
+app.include_router(payments_router, prefix="/api", tags=["Payments"])
 
 if __name__ == "__main__":
     import uvicorn
