@@ -121,6 +121,7 @@ def test_action_execution_integration_with_razorpay(db):
         recommendation="Order 150 units of Plushfoot Boot.",
         agent_reasoning="High demand velocity forecast.",
         evidence={"product_id": 1},
+        confidence=0.88,
         status="APPROVED",
         expected_outcome={"expected_gross_profit": 2000.0, "cash_locked": 3000.0}
     )
