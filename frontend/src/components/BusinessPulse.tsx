@@ -17,16 +17,16 @@ export const BusinessPulse: React.FC<BusinessPulseProps> = ({
       background: 'transparent',
       borderTop: '1px solid var(--border-color)',
       borderBottom: '1px solid var(--border-color)',
-      padding: '10px 0',
+      padding: '6px 0',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      fontSize: 13,
+      fontSize: 12,
       fontWeight: 500,
       color: 'var(--text-sub)',
       flexWrap: 'wrap',
-      gap: 16,
-      margin: '8px 0 24px'
+      gap: 14,
+      margin: '4px 0 10px'
     }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
         BUSINESS PULSE

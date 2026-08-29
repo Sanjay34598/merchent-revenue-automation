@@ -22,7 +22,7 @@ export const MerchantActionStrip: React.FC<MerchantActionStripProps> = ({
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, margin: '10px 0 16px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, margin: '6px 0 10px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         {/* Primary Action Button */}
         <button

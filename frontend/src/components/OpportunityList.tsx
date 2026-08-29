@@ -14,7 +14,7 @@ export const OpportunityList: React.FC<OpportunityListProps> = ({
   onViewAllInventory,
 }) => {
   return (
-    <div style={{ marginTop: 24 }}>
+    <div style={{ marginTop: 8 }}>
       <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>

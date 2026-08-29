@@ -92,7 +92,7 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
               {fmtCurrency(protectedRevenue)}
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>
-              Dataset baseline
+              40-Store Multi-Year Baseline
             </div>
           </div>
 
@@ -108,7 +108,7 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
               {fmtCurrency(exposedRevenue)}
             </div>
             <div style={{ fontSize: 11, color: 'var(--risk-red)', fontWeight: 600, marginTop: 2 }}>
-              {activeOpportunitiesCount} priority risks detected
+              Detected exposure ({activeOpportunitiesCount} risks)
             </div>
           </div>
 
@@ -123,7 +123,7 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
               {fmtCurrency(expectedRecovery)}
             </div>
             <div style={{ fontSize: 11, color: 'var(--emerald-green)', opacity: 0.9, marginTop: 2 }}>
-              Via recommended action
+              Recoverable via actions
             </div>
           </div>
 
