@@ -33,51 +33,29 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
   return (
     <div style={{ padding: '0 0 4px' }}>
       
-      {/* Above-the-fold Ultra-Compact Introduction */}
+      {/* Above-the-fold Clean Hero */}
       <div style={{ marginBottom: 12 }}>
         <h1 className="statement-main-serif hero-headline" style={{ margin: '0 0 4px', fontSize: 24, fontWeight: 800, letterSpacing: '-0.3px', lineHeight: 1.25 }}>
           Know where retail revenue is at risk — before it is lost.
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--text-sub)', margin: '0 0 8px', maxWidth: 680, lineHeight: 1.4 }}>
+        <p style={{ fontSize: 13, color: 'var(--text-sub)', margin: '0 0 10px', maxWidth: 680, lineHeight: 1.4 }}>
           Connect sales and inventory signals to detect risks and recommend the next action.
         </p>
 
-        {/* 4-Step Process Flow & Continuous Differentiation Note */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 8 }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--text-sub)',
-            textTransform: 'uppercase', background: 'var(--bg-subtle)', border: '1px solid var(--border-color)',
-            padding: '4px 12px', borderRadius: 100
-          }}>
-            <span>SALES</span>
-            <span style={{ opacity: 0.4, color: 'var(--text-muted)' }}>→</span>
-            <span>INVENTORY</span>
-            <span style={{ opacity: 0.4, color: 'var(--text-muted)' }}>→</span>
-            <span>RISK</span>
-            <span style={{ opacity: 0.4, color: 'var(--text-muted)' }}>→</span>
-            <span style={{ color: 'var(--accent-purple)' }}>ACTION</span>
-          </div>
-
-          <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500 }}>
-            MerchIntell continuously connects sales and inventory signals to find revenue leakage that ordinary dashboards don't explain.
-          </span>
-        </div>
-
-        {/* Ultra-Compact Decision Intelligence Comparison Pill */}
+        {/* 4-Step Process Flow Pill */}
         <div style={{
-          background: 'var(--bg-subtle)', border: '1px solid var(--border-color)', borderRadius: 8,
-          padding: '6px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          flexWrap: 'wrap', gap: 10, fontSize: 11, margin: '6px 0 0'
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--text-sub)',
+          textTransform: 'uppercase', background: 'var(--bg-subtle)', border: '1px solid var(--border-color)',
+          padding: '4px 12px', borderRadius: 100
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ORDINARY DASHBOARD:</span>
-            <span style={{ color: 'var(--text-sub)' }}>Sales (<em>"What sold?"</em>) · Inventory (<em>"What remains?"</em>)</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontWeight: 800, color: 'var(--accent-purple)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>MERCHINTELL:</span>
-            <span style={{ color: 'var(--text-main)', fontWeight: 600 }}>Risk (<em>"What could cost money?"</em>) · Reason (<em>"Why?"</em>) · Action (<em>"Next step"</em>)</span>
-          </div>
+          <span>SALES</span>
+          <span style={{ opacity: 0.4, color: 'var(--text-muted)' }}>→</span>
+          <span>INVENTORY</span>
+          <span style={{ opacity: 0.4, color: 'var(--text-muted)' }}>→</span>
+          <span>RISK</span>
+          <span style={{ opacity: 0.4, color: 'var(--text-muted)' }}>→</span>
+          <span style={{ color: 'var(--accent-purple)' }}>ACTION</span>
         </div>
       </div>
 
@@ -87,31 +65,22 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
           <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             YOUR REVENUE AT A GLANCE
           </div>
-          <div
-            onClick={onViewRevenue}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              fontSize: 11, fontWeight: 600, color: 'var(--accent-purple)', cursor: 'pointer'
-            }}
-          >
-            <Sparkline data={protectedTrend} isNegative={false} width={36} height={14} />
-            <span>Baseline verified (40 stores)</span>
-          </div>
         </div>
 
-        {/* 3 Metrics Grid — Primary Emphasis on Current Exposure, Potential Recovery & Gross Margin */}
+        {/* 3 Metrics Grid — Matching Screenshot UI */}
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10
         }}>
-          {/* Metric 1: Current Revenue Exposure */}
+          {/* Card 1: Current Revenue Exposure */}
           <div style={{
-            background: 'var(--risk-red-bg)', border: '2px solid var(--risk-red)',
-            borderRadius: 10, padding: '10px 14px', boxShadow: '0 2px 8px rgba(220, 38, 38, 0.1)'
+            background: 'var(--risk-red-bg)', border: '1.5px solid var(--risk-red-border)',
+            borderRadius: 10, padding: '12px 14px', boxShadow: '0 1px 3px rgba(220, 38, 38, 0.05)'
           }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--risk-red)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              ⚠️ CURRENT REVENUE EXPOSURE
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontWeight: 800, color: 'var(--risk-red)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <span>⚠️</span>
+              <span>CURRENT REVENUE EXPOSURE</span>
             </div>
-            <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--risk-red)', marginTop: 2 }}>
+            <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--risk-red)', marginTop: 4 }}>
               {fmtCurrency(exposedRevenue)}
             </div>
             <div style={{ fontSize: 11, color: 'var(--risk-red)', fontWeight: 600, marginTop: 2 }}>
@@ -119,15 +88,16 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
             </div>
           </div>
 
-          {/* Metric 2: Potential Recovery */}
+          {/* Card 2: Potential Recovery */}
           <div style={{
             background: 'var(--emerald-green-bg)', border: '1px solid var(--emerald-green-border)',
-            borderRadius: 10, padding: '10px 14px'
+            borderRadius: 10, padding: '12px 14px'
           }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--emerald-green)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              POTENTIAL RECOVERY
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontWeight: 800, color: 'var(--emerald-green)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <span>🎯</span>
+              <span>POTENTIAL RECOVERY</span>
             </div>
-            <div style={{ fontSize: 19, fontWeight: 900, color: 'var(--emerald-green)', marginTop: 2 }}>
+            <div style={{ fontSize: 21, fontWeight: 900, color: 'var(--emerald-green)', marginTop: 4 }}>
               {fmtCurrency(expectedRecovery)}
             </div>
             <div style={{ fontSize: 11, color: 'var(--emerald-green)', opacity: 0.9, marginTop: 2 }}>
@@ -135,15 +105,16 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
             </div>
           </div>
 
-          {/* Metric 3: Gross Margin */}
+          {/* Card 3: Gross Margin */}
           <div style={{
             background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
-            borderRadius: 10, padding: '10px 14px'
+            borderRadius: 10, padding: '12px 14px'
           }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              GROSS MARGIN
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <span>◔</span>
+              <span>GROSS MARGIN</span>
             </div>
-            <div style={{ fontSize: 19, fontWeight: 800, color: 'var(--text-main)', marginTop: 2 }}>
+            <div style={{ fontSize: 21, fontWeight: 800, color: 'var(--text-main)', marginTop: 4 }}>
               {grossMarginPct}
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>

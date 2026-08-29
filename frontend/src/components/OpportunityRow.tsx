@@ -64,6 +64,15 @@ export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }
 
   const cleanTitle = parseCleanTitle(item.name);
   const storeContext = 'STR-1001';
+  const skuText = item.sku || `SKU: ${cleanTitle.substring(0, 3).toUpperCase()}-${String(item.id).padStart(2, '0')}`;
+
+  const signalText = item.riskStatus === 'SLOW_MOVING'
+    ? '↓ Velocity · ↑ Stock · Low sell-through'
+    : item.riskStatus === 'STOCKOUT'
+    ? '↑ Demand · ↓ Stock · Stockout risk'
+    : item.riskStatus === 'MARGIN_LEAK'
+    ? '↓ Margin · Low benchmark · Leakage'
+    : '↓ Velocity · ↑ Stock · Aging inventory';
 
   return (
     <div
@@ -71,59 +80,65 @@ export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }
       onClick={() => onSelect(item)}
       style={{
         padding: '10px 12px',
-        display: 'flex',
+        display: 'grid',
+        gridTemplateColumns: '110px 1.5fr 80px 2fr 100px 150px',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        gap: 10,
         borderBottom: '1px solid var(--border-color)',
         cursor: 'pointer',
-        gap: 12,
         transition: 'background-color 0.15s ease'
       }}
     >
-      {/* Left: Risk Badge, Clean Product Title & Store */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+      {/* 1. Risk Badge */}
+      <div>
         <span style={{
           fontSize: 10, fontWeight: 700, color: badge.color, background: badge.bg,
-          border: `1px solid ${badge.border}`, padding: '2px 8px', borderRadius: 4, flexShrink: 0
+          border: `1px solid ${badge.border}`, padding: '2px 8px', borderRadius: 4, display: 'inline-block'
         }}>
           {badge.label}
         </span>
-
-        <span style={{
-          fontSize: 13, fontWeight: 600, color: 'var(--text-main)',
-          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
-        }}>
-          {cleanTitle}
-        </span>
-
-        <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0, fontFamily: 'monospace' }}>
-          {storeContext}
-        </span>
-
-        <span style={{ fontSize: 10, color: 'var(--text-muted)', opacity: 0.8, flexShrink: 0 }}>
-          • velocity + stock signal
-        </span>
       </div>
 
-      {/* Right: Exposure & Compact Action Arrow */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
-        <div style={{ textAlign: 'right' }}>
-          <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--risk-red)' }}>
-            {fmtK(item.revenueAtRisk)}
-          </span>
-          <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 4 }}>exposed</span>
+      {/* 2. Product Title & SKU */}
+      <div style={{ minWidth: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {cleanTitle}
         </div>
+        <div style={{ fontSize: 10, color: 'var(--text-sub)', fontFamily: 'monospace' }}>
+          {skuText.startsWith('SKU:') ? skuText : `SKU: ${skuText}`}
+        </div>
+      </div>
 
+      {/* 3. Store */}
+      <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+        {storeContext}
+      </div>
+
+      {/* 4. Signal Driving Risk */}
+      <div style={{ fontSize: 11, color: 'var(--text-sub)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {signalText}
+      </div>
+
+      {/* 5. Exposure */}
+      <div>
+        <div style={{ fontSize: 13, fontWeight: 900, color: 'var(--risk-red)' }}>
+          {fmtK(item.revenueAtRisk)}
+        </div>
+        <div style={{ fontSize: 10, color: 'var(--text-sub)' }}>exposed</div>
+      </div>
+
+      {/* 6. Recommended Action */}
+      <div style={{ textAlign: 'right' }}>
         <button
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            padding: '4px 10px', borderRadius: 6, border: '1px solid var(--border-color)',
+            padding: '5px 10px', borderRadius: 6, border: '1px solid var(--border-color)',
             background: 'var(--bg-surface)', color: 'var(--accent-purple)',
-            fontSize: 12, fontWeight: 700, cursor: 'pointer'
+            fontSize: 11, fontWeight: 700, cursor: 'pointer'
           }}
         >
-          <span>{item.recommendedAction.split(' ')[0]}</span>
-          <ArrowRight size={12} />
+          <span>{item.recommendedAction}</span>
+          <ArrowRight size={11} />
         </button>
       </div>
     </div>

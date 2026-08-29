@@ -47,34 +47,72 @@ export const OpportunityList: React.FC<OpportunityListProps> = ({
         </button>
       </div>
 
-      {/* Compact Business Value Summary Strip */}
+      {/* 4 Summary Cards Strip matching Reference UI */}
       <div style={{
-        background: 'var(--bg-subtle)', border: '1px solid var(--border-color)', borderRadius: 8,
-        padding: '6px 12px', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        flexWrap: 'wrap', gap: 12
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10,
+        marginBottom: 14
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 13, fontWeight: 900, color: 'var(--risk-red)' }}>{fmtCurrency(calculatedExposed)}</span>
-          <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>Currently exposed</span>
+        <div style={{
+          background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 10,
+          padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10
+        }}>
+          <span style={{ fontSize: 20 }}>🛍️</span>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 900, color: 'var(--risk-red)' }}>{fmtCurrency(calculatedExposed)}</div>
+            <div style={{ fontSize: 10, color: 'var(--text-sub)', fontWeight: 600 }}>Currently exposed</div>
+          </div>
         </div>
-        <span style={{ color: 'var(--border-color)' }}>│</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 13, fontWeight: 900, color: 'var(--emerald-green)' }}>{fmtCurrency(calculatedRecovery)}</span>
-          <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>Potentially recoverable</span>
+
+        <div style={{
+          background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 10,
+          padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10
+        }}>
+          <span style={{ fontSize: 20 }}>🎯</span>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 900, color: 'var(--emerald-green)' }}>{fmtCurrency(calculatedRecovery)}</div>
+            <div style={{ fontSize: 10, color: 'var(--text-sub)', fontWeight: 600 }}>Potentially recoverable</div>
+          </div>
         </div>
-        <span style={{ color: 'var(--border-color)' }}>│</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>40</span>
-          <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>Stores analyzed</span>
+
+        <div style={{
+          background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 10,
+          padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10
+        }}>
+          <span style={{ fontSize: 20 }}>🏪</span>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 900, color: '#2563eb' }}>40</div>
+            <div style={{ fontSize: 10, color: 'var(--text-sub)', fontWeight: 600 }}>Stores analyzed</div>
+          </div>
         </div>
-        <span style={{ color: 'var(--border-color)' }}>│</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--accent-purple)' }}>{opportunities.length}</span>
-          <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>Active risks</span>
+
+        <div style={{
+          background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 10,
+          padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10
+        }}>
+          <span style={{ fontSize: 20 }}>🛡️</span>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 900, color: 'var(--accent-purple)' }}>{opportunities.length}</div>
+            <div style={{ fontSize: 10, color: 'var(--text-sub)', fontWeight: 600 }}>Active risks</div>
+          </div>
         </div>
       </div>
 
-      <div style={{ borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}>
+      {/* Table Header Row (Desktop Only) */}
+      <div className="opportunity-table-header" style={{
+        display: 'grid', gridTemplateColumns: '110px 1.5fr 80px 2fr 100px 150px', gap: 10,
+        padding: '8px 12px', background: 'var(--bg-subtle)', borderTop: '1px solid var(--border-color)',
+        borderBottom: '1px solid var(--border-color)', fontSize: 10, fontWeight: 800,
+        color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em'
+      }}>
+        <div>RISK</div>
+        <div>PRODUCT</div>
+        <div>STORE</div>
+        <div>SIGNAL DRIVING RISK</div>
+        <div>EXPOSURE</div>
+        <div style={{ textAlign: 'right' }}>RECOMMENDED ACTION</div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         {opportunities.slice(0, 3).map((item) => (
           <OpportunityRow key={item.id} item={item} onSelect={onSelectProduct} />
         ))}
