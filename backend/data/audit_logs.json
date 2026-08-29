@@ -1,5 +1,38 @@
 [
   {
+    "id": "AUD-20260829232359-2984",
+    "timestamp": "2026-08-29T23:23:59.028946",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260829-18006",
+    "reason": "Recorded POS checkout: 1 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9227 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260829232356-2983",
+    "timestamp": "2026-08-29T23:23:56.099215",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260829-18005",
+    "reason": "Recorded POS checkout: 1 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9379 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260829232353-2982",
+    "timestamp": "2026-08-29T23:23:53.837399",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260829-18004",
+    "reason": "Recorded POS checkout: 2 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9542 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
     "id": "AUD-20260829232347-2981",
     "timestamp": "2026-08-29T23:23:47.953371",
     "action": "RECOVERY_ACTION_MARKDOWN",

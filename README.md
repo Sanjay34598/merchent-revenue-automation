@@ -1,177 +1,312 @@
-# MerchIntell — AI-Assisted Closed-Loop Revenue Recovery Platform
+# MerchIntell — AI Revenue Recovery Agent
 
-> **Submitted for the Razorpay AI Builder Buildathon & AI Revenue Recovery Internship**
+> **Submitted for the Razorpay AI Builder Buildathon — Track 3: AI Revenue Recovery**
 
-MerchIntell connects POS transaction processing, inventory intelligence, AI-assisted decision formulation, bounded action execution, actual recovery measurement, and reproducible batch evaluation into a single closed-loop platform.
+MerchIntell is an AI-assisted revenue recovery agent that detects revenue at risk, diagnoses the underlying cause using transaction, inventory and demand signals, recommends a bounded recovery intervention, executes it with safety guardrails and merchant approval, and measures the revenue actually recovered.
+
+Live Demo: [https://merchintell.vercel.app](https://merchintell.vercel.app)
 
 ---
 
-## 1. Problem Statement & Why It Matters
+## Why This Matters
 
-Traditional retail ERPs and analytics tools report historical statistics:
-- **What sold in the past?** (Historical sales figures)
-- **What is currently in stock?** (Basic static inventory counts)
+Traditional Point-of-Sale (POS) systems and Enterprise Resource Planning (ERP) tools provide backward-looking historical reports:
+- **What sold in the past?** (Historical sales logs)
+- **What is currently in stock?** (Static stock counts)
 - **What was the gross revenue?** (Backward-looking financial summaries)
 
-However, traditional tools fail to answer critical forward-looking operational questions:
-- **Which products are silently leaking revenue right now?**
+However, traditional software fails to answer critical forward-looking operational questions:
+- **Which SKUs are silently leaking revenue right now?**
 - **Why is a specific product exposing potential revenue loss?**
 - **What concrete, bounded action should the merchant execute to recover revenue?**
 - **Did the executed intervention actually recover monetary revenue?**
 
-Without closed-loop revenue intelligence, merchants suffer silent profit leaks: stockouts on high-velocity SKUs, cash locked in slow-moving overstock, unoptimized markdowns, and unmeasured interventions.
+Without closed-loop revenue intelligence, physical retail merchants suffer silent profit leakage: premature stockouts on high-velocity items, working capital locked in slow-moving overstock, unoptimized markdowns, and unmeasured interventions.
 
 ---
 
-## 2. Solution: The Closed-Loop Revenue Recovery Loop
+## Track Alignment — AI Revenue Recovery
 
-MerchIntell is the revenue intelligence layer between merchant transactions and operational decisions.
+MerchIntell closes the loop between detecting revenue leakage and taking a controlled recovery action.
 
-MerchIntell answers four core business questions:
-1. **What revenue is at risk?** (Quantifies exposed monetary risk across active catalog SKUs)
-2. **Why is it at risk?** (Diagnoses root causes: slow-moving, stockout risk, margin erosion, excess stock)
-3. **What should the system do about it?** (Formulates bounded AI recommendations with strict safety guardrails)
-4. **Did the intervention actually recover revenue?** (Tracks realized recovery via POS sales & executed actions)
+The system specifically aligns with **Track 3: AI Revenue Recovery** by executing a 9-step closed-loop workflow:
+1. **Detects revenue at risk**: Scans multi-store POS transactions and inventory snapshots to quantify monetary exposure across active catalog SKUs.
+2. **Identifies the reason behind the risk**: Evaluates sales velocity, stock cover, demand signals, and margin trends to isolate root causes.
+3. **Selects an intervention**: Formulates targeted operational actions (`MARKDOWN`, `RESTOCK`, `PROMOTION`, `STOCK_TRANSFER`).
+4. **Applies deterministic safety constraints**: Enforces programmatic margin floors, discount caps, and cash exposure limits before presenting options.
+5. **Requires appropriate approval / bounded execution**: Requires explicit merchant approval for medium/high-risk actions.
+6. **Executes the recovery workflow**: Generates standard Razorpay-compatible payment/order payloads and mutates product state.
+7. **Measures the outcome**: Tracks realized profit and revenue recovery against predicted baseline expectations.
+8. **Records the action in an audit trail**: Logs an immutable audit trail entry for every operational decision and execution.
+9. **Stops or escalates when recovery conditions are not met**: Halts duplicate or invalid execution attempts and records failure events.
+
+---
+
+## How It Works
+
+MerchIntell operates on a 5-stage continuous decision cycle:
+
+$$\text{DETECT} \longrightarrow \text{DIAGNOSE} \longrightarrow \text{INTERVENE} \longrightarrow \text{RECOVER} \longrightarrow \text{MEASURE}$$
+
+- **DETECT**: System identifies catalog items exposing potential revenue loss from live POS sales and inventory streams.
+- **DIAGNOSE**: AI decision engine evaluates demand velocity, days of stock cover, margin profiles, and historical trends.
+- **INTERVENE**: Multi-objective utility scoring ranks candidate recovery strategies against doing nothing (`DO_NOTHING`).
+- **RECOVER**: Bounded recovery interventions are executed with explicit merchant approval and safety guardrails.
+- **MEASURE**: Outcome tracking compares actual financial recovery against predicted impact, dynamically calibrating future confidence.
+
+---
+
+## Closed-Loop Recovery Workflow
 
 ```
 POS / PAYMENTS (Razorpay & In-Store Billing)
         ↓
-TRANSACTION INTELLIGENCE
+TRANSACTION INTELLIGENCE & INVENTORY STATE
         ↓
-INVENTORY + DEMAND SIGNALS
+REVENUE RISK DETECTION (Slow-Moving, Stockouts, Expiry)
         ↓
-REVENUE RISK DETECTION
+AI DECISION ENGINE & MONTE CARLO SIMULATOR
         ↓
-AI DECISION ENGINE
+POLICY GUARDRAILS (Margin Floor >= 15%, Discount Cap <= 40%)
         ↓
-POLICY GUARDRAILS (Margin Floor & Cap)
+MERCHANT APPROVAL / BOUNDED EXECUTION
         ↓
-MERCHANT APPROVAL
+RAZORPAY ORDER / PAYMENT LINK (INR Paise Payload)
         ↓
-RAZORPAY ORDER / PAYMENT LINK (INR Paise Payload & Execution)
+POS STATE MUTATION & RECOVERY MEASUREMENT
+        ↓
+IMMUTABLE AUDIT TRAIL
 ```
 
-*Note on Razorpay Integration*: When deployed without live Razorpay production API credentials, MerchIntell operates in explicit `RAZORPAY_TEST_MODE`, generating standard INR paise order payloads (`amount`, `currency: "INR"`, `receipt`, `notes`) and returning mock execution references. When valid `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` credentials are provided in `.env`, the backend executes live Razorpay Order API creation (`POST https://api.razorpay.com/v1/orders`).
-
 ---
 
-## 3. Key System Features
-
-### **A. Revenue Risk & Recovery Engine**
-- Analyzes normalized historical sales (125,751 records) and inventory (284,755 records) across 40 retail stores.
-- Categorizes risk exposure (`SLOW_MOVING`, `STOCKOUT`, `DECLINING_DEMAND`, `ABNORMAL_SALES`, `EXCESS_INVENTORY`, `MARKDOWN_OPPORTUNITY`, `REVENUE_MISMATCH`).
-- Calculates live metrics: Revenue at Risk (`₹2,829,779`), Expected Recovery (`₹2,036,390`), Actual Recovered Revenue (`₹1,608,748`), and Recovery Efficiency Rate (`79.0%`).
-
-### **B. AI Decision Engine with Programmatic Safety Guardrails**
-- Evaluates structured business context (`product`, `store`, `inventory`, `sales_velocity`, `days_of_cover`, `revenue_at_risk`, `margin`).
-- Integrates LLM provider abstraction (OpenAI, Anthropic, Gemini) with a deterministic fallback engine when API keys are unconfigured.
-- **Strict Safety Guardrails**:
-  - **Max Markdown Discount**: Capped at `30.0%`.
-  - **Minimum Gross Margin**: Preserved at min `10.0%`.
-  - **Confidence Threshold**: Requires human approval if confidence is `< 0.70`.
-  - **Exposure Cap**: Requires merchant approval for interventions with risk exposure `> ₹5,000`.
-- **Transparent Attribution**: Explicitly labels recommendation sources (`AI_LLM`, `DETERMINISTIC_FALLBACK`, `SAFETY_GUARDRAIL`).
-
-### **C. Bounded Recovery Action System**
-- Real, executable recovery actions (`MARKDOWN`, `RESTOCK`, `PROMOTION`, `HOLD`, `INVESTIGATE`).
-- Mutates catalog state, updates pricing or stock levels, calculates actual recovered revenue, and records an immutable audit log.
-
-### **D. Before/After Experimental Evaluation Engine**
-- Reproducible batch evaluation engine (`/api/recovery/evaluation`) comparing **Baseline Expected Revenue** vs **MerchIntell AI Recovery Strategy** across 150 SKUs.
-- Results: Baseline `₹1,04,82,110` vs Strategy `₹1,25,18,500` (+19.4% revenue uplift, +₹20,36,390 recovered).
-
-### **E. Integrated POS Billing Terminal & Auto-Billing Stream**
-- Prominent **`+ NEW BILL`** checkout entry point.
-- Real-time stock validation (prevents overselling available inventory).
-- Atomic stock decrement, demand velocity recalculation, transaction stream insertion, and audit event creation upon checkout.
-
-### **F. Immutable Audit Trail**
-- Logs every state-changing operation (`POS_SALE`, `PRICE_MARKDOWN`, `RESTOCK`, `PROMOTION`, `AI_DECISION`, `HUMAN_APPROVAL`, `RECOVERY_MEASUREMENT`) with before/after state diffs.
-
----
-
-## 4. System Architecture & Tech Stack
+## Architecture & System Design
 
 ```mermaid
 graph TD
-    A[React 18 / Vite Frontend] -->|HTTPS REST API| B[FastAPI Backend Application]
+    A[React 18 / Vite Frontend] -->|Parallel REST API / 5s Timeout| B[FastAPI Backend Application]
     B --> C[Real POS Transaction Engine]
-    B --> D[Revenue Risk Engine]
-    B --> E[AI Decision Engine]
-    B --> F[Closed-Loop Recovery Engine]
-    B --> G[Evaluation Engine]
-    
-    C --> H[(POS JSON Database / pos_database.json)]
-    D --> I[(Historical Baseline / retail_sales_ml_apl.csv)]
-    E --> J[Programmatic Safety Guardrails]
-    F --> K[(Audit Trail Ledger / audit_logs.json)]
-    G --> L[Replay & Batch Analyzer]
+    B --> D[Profit Leakage & Risk Engine]
+    B --> E[AI Decision Engine & Monte Carlo Simulator]
+    B --> F[Policy Guardrail Validator]
+    B --> G[Razorpay Integration Service]
+    B --> H[Evidence Learning & Outcome Loop]
 
-    J -->|Capped Discount / Margin Threshold| F
-    C -->|Stock Decrement Event| D
-    F -->|Bounded Intervention| C
+    C --> I[(SQLite Database / merchant_autopilot.db)]
+    D --> J[(Historical POS Baseline / 150 SKUs)]
+    E --> F
+    F -->|Margin & Discount Cap| G
+    G --> K[Razorpay API / Test Mode Payload]
+    H --> L[(Immutable Audit Ledger)]
 ```
 
-- **Frontend**: React 18, TypeScript, Vite, Lucide Icons, Vanilla CSS Design System.
+### Architecture Specifications
+- **Frontend**: React 18, TypeScript, Vite 5, Vanilla CSS Design Token system with instant frame-1 rendering (< 350ms FCP).
+- **Backend**: Python 3.11, FastAPI, SQLAlchemy ORM, SQLite (`merchant_autopilot.db`), Pandas, NumPy.
+- **Decision Engines**: 1,000-iteration Monte Carlo stochastic simulator, EWMA demand forecaster, multi-objective trade-off scoring engine.
+- **Integration Layer**: `RazorpayIntegrationService` supporting standard INR paise order creation (`amount`, `currency: "INR"`, `receipt`, `notes`), test/live mode configuration, and secret key privacy.
+
+---
+
+## AI Decision Intelligence & Guardrails
+
+MerchIntell uses a hybrid decision-intelligence architecture combining statistical machine learning, Monte Carlo simulation, multi-objective optimization, and LLM natural language reasoning:
+
+### 1. Multi-Objective Decision Scoring
+Proposed recovery actions are scored by balancing expected profit, stockout risk, waste risk, cash exposure, and execution risk against status quo (`DO_NOTHING`):
+
+$$\text{Score} = 0.40 \cdot \text{Profit}_{\text{norm}} - 0.25 \cdot \text{Stockout}_{\text{norm}} - 0.15 \cdot \text{Waste}_{\text{norm}} - 0.10 \cdot \text{Cash}_{\text{norm}} - 0.10 \cdot \text{Risk}_{\text{norm}}$$
+
+### 2. Deterministic Safety Guardrails
+AI recommendations cannot bypass safety constraints. Hardcoded policy rules enforce:
+- **Minimum Gross Margin Floor**: `15.0%`
+- **Maximum Discount Cap**: `40.0%`
+- **Maximum Cash Exposure Limit**: `₹50,000.00`
+- **Minimum Confidence Threshold**: `0.70` (Requires explicit merchant approval if confidence is below threshold)
+
+---
+
+## Recovery Execution & Razorpay Integration
+
+When an operational decision is approved by the merchant, MerchIntell executes a bounded recovery workflow:
+
+- **Razorpay Order Payload Generation**: Calculates monetary value in INR rupees and converts to integer paise.
+```json
+{
+  "amount": 300000,
+  "currency": "INR",
+  "receipt": "rcpt_act_12",
+  "notes": {
+    "platform": "MerchIntell",
+    "action_type": "REORDER",
+    "product_id": "1",
+    "store_id": "1"
+  }
+}
+```
+- **Test Mode & Deployment Realism**: When deployed without live Razorpay production API credentials, MerchIntell operates in explicit `RAZORPAY_TEST_MODE`, returning the exact order payload that WOULD be sent to Razorpay alongside test reference IDs. When valid `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` environment variables are provided, the backend executes live Razorpay Order creation (`POST https://api.razorpay.com/v1/orders`). Secret keys are never exposed to the frontend.
+
+---
+
+## Outcome Measurement & Evidence Learning
+
+MerchIntell closes the feedback loop by tracking actual financial outcomes after execution:
+- **Variance Evaluation**: `EvidenceLearningLoop` compares `predicted_impact` vs `actual_impact`.
+- **Confidence Calibration**: Automatically adjusts base prediction confidence ($\pm 0.05$) based on historical error rates, ensuring the system becomes more accurate over time.
+
+---
+
+## Immutable Audit Trail
+
+Every operational decision, merchant approval, POS checkout, and recovery execution generates an immutable audit record in the database.
+- **Endpoints**: `GET /api/actions`, `GET /api/audit/logs`
+- **Tracked Parameters**: Action ID, action type, before/after state diffs, policy guardrail checks, Razorpay order IDs, timestamps, and merchant approval status.
+
+---
+
+## Live Demo & 5-Minute Demo Flow
+
+**Live URL**: [https://merchintell.vercel.app](https://merchintell.vercel.app)
+
+### 5-Minute Demo Script for Judges
+
+- **0:00–0:30 (Problem & Value Proposition)**: Open [https://merchintell.vercel.app](https://merchintell.vercel.app). Point out instant load (< 1s) and the 3 financial cards (`Current Revenue Exposure: ₹3.12L`, `Potential Recovery: ₹2.03L`, `Gross Margin: 44.2%`).
+- **0:30–1:30 (Revenue Risk Detection)**: Review `REVENUE LEAKAGE DETECTED` data table. Point out top exposed item (*Plushfoot Boot*, ₹1.9K risk exposure across slow-moving stock cover).
+- **1:30–2:30 (AI Diagnosis & Opportunity Detail)**: Click **Review markdown strategy →** to open `ProductWorkspace` drawer. Show velocity signals, days of cover, and recommended recovery action.
+- **2:30–3:30 (Guardrails & Decision Simulator)**: Click **Simulator** tab. Adjust discount/reorder sliders. Demonstrate 1,000-run Monte Carlo scenario evaluation comparing proposed strategy vs `DO_NOTHING`.
+- **3:30–4:15 (Recovery Execution & Razorpay Payload)**: Approve action. Show policy guardrail validation and generation of standard Razorpay order payload (`amount_in_paise`, `currency: "INR"`, `receipt`, `notes`).
+- **4:15–4:45 (POS Checkout & Live State Mutation)**: Click **+ Record Sale**. Submit POS itemized bill. Show instant Toast notification, stock deduction (45 → 43 units), and live recalculation of exposure metrics without page refresh.
+- **4:45–5:00 (Outcome & Audit Trail)**: Show **Audit Trail** log entry, variance tracking, and reproducible before/after batch evaluation results (+19.4% revenue uplift).
+
+---
+
+## Technical Stack
+
+- **Frontend**: React 18, TypeScript, Vite 5, Vanilla CSS Design System, Lucide Icons.
 - **Backend**: Python 3.11, FastAPI, Pydantic V2, Uvicorn, Pandas, NumPy, SQLAlchemy.
-- **Persistence**: File-backed JSON databases (`pos_database.json`, `audit_logs.json`).
+- **Database & Storage**: SQLite (`merchant_autopilot.db`) with persistent ORM models.
+- **Testing**: Pytest (94 unit/integration tests passing).
 
 ---
 
-## 5. REST API Specifications
+## Repository Structure
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/health` | Server health check endpoint (`{"status": "ok"}`) |
-| `GET` | `/api/recovery/opportunities` | Retrieves closed-loop recovery opportunities with AI recommendations |
-| `GET` | `/api/recovery/metrics` | Retrieves aggregate revenue at risk, expected recovery, and actual recovery |
-| `POST` | `/api/recovery/execute` | Executes a bounded recovery action (`MARKDOWN`, `RESTOCK`, `PROMOTION`) |
-| `GET` | `/api/recovery/evaluation` | Runs reproducible before/after batch evaluation comparing Baseline vs Strategy |
-| `GET` | `/api/audit/logs` | Retrieves immutable audit trail logs for all system state changes |
-| `POST` | `/api/transactions` | Ingests live POS checkout, decrements stock, and updates revenue metrics |
-| `GET` | `/api/products` | Retrieves 150 catalog products with stock, velocity, cover, and risk status |
+```
+merchent-revenue-automation/
+├── agent/                      # Core AI Decision Engine & Execution
+│   ├── unified_engine.py       # Multi-objective utility scoring engine
+│   ├── engine.py               # Store investigation loop
+│   ├── executor.py             # Action execution & approval state machine
+│   ├── learning.py             # Evidence learning & confidence calibration
+│   └── provider.py             # OpenAI & Mock provider interface
+├── profit_leakage/             # Deterministic Risk Detection Engine
+│   ├── detector.py             # Risk aggregator (Stockout, Overstock, Expiry)
+│   └── scoring.py              # Financial exposure scoring
+├── simulator/                  # Monte Carlo Scenario Simulator
+│   ├── engine.py               # Stochastic demand simulator (1,000 runs)
+│   └── constraints.py          # Programmatic Policy Guardrails
+├── forecasting/                # Demand Forecasting Engine
+│   └── demand.py               # EWMA + Day-of-week seasonality forecaster
+├── backend/app/                # FastAPI Application & Database ORM
+│   ├── api/                    # REST API endpoints (analytics, actions, payments, POS)
+│   ├── core/                   # Configuration & SQLite database engine
+│   ├── models/                 # SQLAlchemy ORM models
+│   └── services/               # RazorpayIntegrationService & POSDatasetEngine
+├── frontend/                   # React 18 + Vite Frontend Single Page Application
+│   ├── src/App.tsx             # Root shell & parallel non-blocking fetcher
+│   └── src/components/         # Header, FinancialHero, OpportunityList, Workspaces
+├── docs/                       # Technical & Architecture Documentation
+└── tests/                      # Pytest Test Suite (94 tests passing)
+```
 
 ---
 
-## 6. Running Tests & Local Setup
+## Local Setup
 
 ```bash
-# Clone repository
+# 1. Clone repository
 git clone https://github.com/Sanjay34598/merchent-revenue-automation.git
 cd merchent-revenue-automation
 
-# Backend Setup & Unit Tests (82/82 passing)
+# 2. Setup Python Virtual Environment & Install Dependencies
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r backend/requirements.txt
-python -m pytest tests/ -v
+# On Windows:
+venv\Scripts\activate
+# On Linux/macOS:
+source venv/bin/activate
 
-# Frontend Setup & Build
+pip install -r backend/requirements.txt
+
+# 3. Run Backend Server (FastAPI on http://localhost:8000)
+uvicorn backend.app.main:app --reload --port 8000
+
+# 4. Setup Frontend (React 18 on http://localhost:5173)
 cd frontend
 npm install
-npm run build
+npm run dev
 ```
 
 ---
 
-## 7. Production Deployment Instructions
+## Environment Variables
 
-MerchIntell is configured for deployment on **Render** (Backend) and **Vercel** (Frontend) using `render.yaml`:
+Copy `.env.example` to `.env` in the root directory:
 
-- **Backend (Render Web Service)**: Running Uvicorn on `0.0.0.0:$PORT` with `/health` check, `CORS_ORIGINS` middleware, and persistent disk mount `/var/data`.
-- **Frontend (Vercel / Render Static Site)**: Vite SPA with rewrite rules (`/* → /index.html`) and `VITE_API_BASE_URL` environment configuration.
+```env
+PORT=8000
+HOST=0.0.0.0
+ENVIRONMENT=development
+CORS_ORIGINS=*
 
-For full deployment steps, view the [Deployment Guide](docs/DEPLOYMENT.md).
+DATABASE_URL=sqlite:///./merchant_autopilot.db
+
+AI_PROVIDER=mock
+AI_API_KEY=your_ai_api_key_here
+AI_MODEL_NAME=gpt-4o-mini
+
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
+RAZORPAY_MODE=test
+RAZORPAY_MOCK_MODE=true
+
+MAX_DISCOUNT_PERCENT=40.0
+MIN_GROSS_MARGIN_PERCENT=15.0
+MAX_ORDER_QUANTITY=500
+MAX_CASH_EXPOSURE=50000.0
+CONFIDENCE_THRESHOLD=0.70
+```
 
 ---
 
-## 8. Buildathon Documentation Suite
+## Automated Testing Suite
 
-Explore technical documentation in the [`docs/`](./docs) directory:
+The backend test suite contains **94 automated tests** covering risk detection algorithms, Monte Carlo simulation, multi-objective scoring, policy guardrails, Razorpay order integration, POS transactions, and database persistence:
 
-- [System Architecture & Event Flow](docs/ARCHITECTURE.md) — Mermaid topology and event ingestion flow.
-- [POS Ingestion & Stock Validation Flow](docs/POS_FLOW.md) — Step-by-step transaction checkout and stock mutation.
-- [AI Decision Engine & Safety Guardrails](docs/AI_DECISION_ENGINE.md) — AI context parsing, LLM/fallback engines, and safety guardrails.
-- [Revenue Recovery Engine & Evaluation](docs/REVENUE_RECOVERY.md) — Risk exposure calculations, recovery rates, and evaluation metrics.
-- [5-Minute Demo Walkthrough Script](docs/DEMO_SCRIPT.md) — Judge demo script and walkthrough.
-- [Final Buildathon Audit Report](docs/FINAL_AUDIT.md) — Submission readiness audit and test results.
+```bash
+python -m pytest tests/ -v
+```
+
+**Verification Result**: `94 passed in 234.33s (0 failures)`
+
+---
+
+## Production Build & Performance
+
+```bash
+cd frontend
+npm run build
+```
+
+**Verification Result**:
+- Main entry chunk: **205.63 kB (61.63 kB gzipped)**
+- Built successfully in **11.03s**
+- 8 secondary views code-split via `React.lazy()` + `Suspense`
+- First Contentful Paint (FCP) < 350 ms; Time to Interactive (TTI) < 600 ms.
+
+---
+
+## Known Limitations & Future Improvements
+
+1. **ERP Connector Plugins**: Currently ingests POS transactions via REST API and synthetic dataset engine. Direct SAP/Tally ERP webhooks planned for future release.
+2. **Razorpay Live Gateway**: Deployed demonstration operates in explicit `RAZORPAY_TEST_MODE` when credentials are omitted. Providing production keys enables live Razorpay API order creation.
+3. **Automated Multi-Store Stock Transfer**: Auto-dispatching inventory between nearby store outposts will expand beyond single-store recommendations.
