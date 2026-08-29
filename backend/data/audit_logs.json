@@ -1,5 +1,49 @@
 [
   {
+    "id": "AUD-20260829184959-1781",
+    "timestamp": "2026-08-29T18:49:59.929504",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260829-17961",
+    "reason": "Recorded POS checkout: 1 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9227 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260829184955-1780",
+    "timestamp": "2026-08-29T18:49:55.258753",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260829-17960",
+    "reason": "Recorded POS checkout: 1 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9379 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260829184951-1779",
+    "timestamp": "2026-08-29T18:49:51.811651",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260829-17959",
+    "reason": "Recorded POS checkout: 2 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9542 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260829184943-1778",
+    "timestamp": "2026-08-29T18:49:43.757695",
+    "action": "RECOVERY_ACTION_MARKDOWN",
+    "entity": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
+    "reason": "Executed bounded MARKDOWN intervention. Expected recovery realized.",
+    "before_state": "Price: \u20b9151.58 \u00b7 Stock: 30.0 units",
+    "after_state": "Price updated: \u20b9151.58 \u2192 \u20b9128.84 (15.0% off) \u00b7 Recovered: \u20b91412",
+    "source": "MERCHANT_EXECUTION",
+    "status": "SUCCESS"
+  },
+  {
     "id": "AUD-20260829184832-1777",
     "timestamp": "2026-08-29T18:48:32.280804",
     "action": "RECOVERY_ACTION_MARKDOWN",
