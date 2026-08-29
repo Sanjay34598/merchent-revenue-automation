@@ -364,6 +364,8 @@ export default function App() {
 
                         <OpportunityList
                           opportunities={homeOpportunities as any}
+                          exposedRevenue={exposedRevenueVal}
+                          expectedRecovery={expectedRecoveryVal}
                           onSelectProduct={setSelectedProductWorkspace}
                           onViewAllInventory={() => setActiveTab('inventory')}
                         />

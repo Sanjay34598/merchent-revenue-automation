@@ -99,6 +99,10 @@ export const OpportunityRow: React.FC<OpportunityRowProps> = ({ item, onSelect }
         <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0, fontFamily: 'monospace' }}>
           {storeContext}
         </span>
+
+        <span style={{ fontSize: 10, color: 'var(--text-muted)', opacity: 0.8, flexShrink: 0 }}>
+          • velocity + stock signal
+        </span>
       </div>
 
       {/* Right: Exposure & Compact Action Arrow */}

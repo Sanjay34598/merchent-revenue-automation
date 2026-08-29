@@ -48,13 +48,16 @@ export const RightIntelligencePanel: React.FC<RightIntelligencePanelProps> = ({
         border: '1px solid var(--border-color)', borderRadius: 12, padding: 14,
         boxShadow: 'var(--shadow-sm)'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
           <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             TODAY'S PRIORITIES
           </div>
           <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--emerald-green)' }}>
             Top {topPriorityItems.length} urgent
           </span>
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--text-sub)', marginBottom: 10 }}>
+          Highest-value decisions requiring immediate attention
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
