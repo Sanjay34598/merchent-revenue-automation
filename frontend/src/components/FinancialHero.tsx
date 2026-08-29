@@ -99,14 +99,14 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
           </div>
         </div>
 
-        {/* 4 Metrics Grid — Primary Emphasis on Current Exposure & Potential Recovery */}
+        {/* 3 Metrics Grid — Primary Emphasis on Current Exposure, Potential Recovery & Gross Margin */}
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 8
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10
         }}>
-          {/* Primary Metric 1: Current Revenue Exposure */}
+          {/* Metric 1: Current Revenue Exposure */}
           <div style={{
             background: 'var(--risk-red-bg)', border: '2px solid var(--risk-red)',
-            borderRadius: 10, padding: '10px 12px', boxShadow: '0 2px 8px rgba(220, 38, 38, 0.1)'
+            borderRadius: 10, padding: '10px 14px', boxShadow: '0 2px 8px rgba(220, 38, 38, 0.1)'
           }}>
             <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--risk-red)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               ⚠️ CURRENT REVENUE EXPOSURE
@@ -119,10 +119,10 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
             </div>
           </div>
 
-          {/* Primary Metric 2: Potential Recovery */}
+          {/* Metric 2: Potential Recovery */}
           <div style={{
             background: 'var(--emerald-green-bg)', border: '1px solid var(--emerald-green-border)',
-            borderRadius: 10, padding: '10px 12px'
+            borderRadius: 10, padding: '10px 14px'
           }}>
             <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--emerald-green)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               POTENTIAL RECOVERY
@@ -135,35 +135,19 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
             </div>
           </div>
 
-          {/* Supporting Metric 1: Historical Revenue Baseline */}
+          {/* Metric 3: Gross Margin */}
           <div style={{
             background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
-            borderRadius: 10, padding: '10px 12px'
-          }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              HISTORICAL REVENUE BASELINE
-            </div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-main)', marginTop: 2 }}>
-              {fmtCurrency(protectedRevenue)}
-            </div>
-            <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>
-              40-store multi-year baseline
-            </div>
-          </div>
-
-          {/* Supporting Metric 2: Gross Margin */}
-          <div style={{
-            background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
-            borderRadius: 10, padding: '10px 12px'
+            borderRadius: 10, padding: '10px 14px'
           }}>
             <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               GROSS MARGIN
             </div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-main)', marginTop: 2 }}>
+            <div style={{ fontSize: 19, fontWeight: 800, color: 'var(--text-main)', marginTop: 2 }}>
               {grossMarginPct}
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>
-              Category benchmark average
+              Current category benchmark
             </div>
           </div>
         </div>
