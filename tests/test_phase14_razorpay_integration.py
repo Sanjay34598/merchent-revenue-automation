@@ -105,7 +105,7 @@ def test_mocked_razorpay_client_response():
         assert res["status"] == "RAZORPAY_ORDER_CREATED"
         assert res["razorpay_order_id"] == "order_RzpReal12345"
 
-def test_action_execution_integration_with_razorpay(db_session):
+def test_action_execution_integration_with_razorpay(db):
     """Verify existing action approval & execution flow attaches Razorpay transaction metadata."""
     from app.models.models import AgentAction
     action = AgentAction(
@@ -117,11 +117,11 @@ def test_action_execution_integration_with_razorpay(db_session):
         status="APPROVED",
         expected_outcome={"expected_gross_profit": 2000.0, "cash_locked": 3000.0}
     )
-    db_session.add(action)
-    db_session.commit()
-    db_session.refresh(action)
+    db.add(action)
+    db.commit()
+    db.refresh(action)
 
-    executor = ActionExecutor(db_session)
+    executor = ActionExecutor(db)
     res = executor.execute_action(action.id)
 
     assert res["success"] is True

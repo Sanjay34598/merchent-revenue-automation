@@ -150,6 +150,7 @@ class ActionExecutor:
             "action_id": action.id,
             "status": "EXECUTED",
             "execution_mode": execution_mode,
+            "test_reference": razorpay_res.get("razorpay_order_id") or f"rzp_test_{action.id}",
             "razorpay_status": razorpay_res.get("status"),
             "razorpay_order_id": razorpay_res.get("razorpay_order_id"),
             "razorpay_order_payload": razorpay_res.get("razorpay_order_payload"),
