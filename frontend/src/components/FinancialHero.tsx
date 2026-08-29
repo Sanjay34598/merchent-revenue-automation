@@ -5,6 +5,7 @@ interface FinancialHeroProps {
   merchantName?: string;
   protectedRevenue?: number;
   exposedRevenue?: number;
+  expectedRecovery?: number;
   activeOpportunitiesCount?: number;
   totalProductsCount?: number;
   onViewRevenue?: () => void;
@@ -12,25 +13,32 @@ interface FinancialHeroProps {
 
 export const FinancialHero: React.FC<FinancialHeroProps> = ({
   protectedRevenue = 10482110,
-  exposedRevenue = 2829779,
+  exposedRevenue = 311937,
+  expectedRecovery = 203232,
   activeOpportunitiesCount = 7,
   onViewRevenue,
 }) => {
-  const fmtM = (n: number) => `₹${(n / 1000000).toFixed(2)}M`;
+  const fmtCurrency = (n?: number) => {
+    if (n === undefined || n === null || isNaN(n)) return 'Not calculated';
+    if (n === 0) return '₹0';
+    if (n >= 10000000) return `₹${(n / 10000000).toFixed(2)}Cr`;
+    if (n >= 100000) return `₹${(n / 100000).toFixed(2)}L`;
+    if (n >= 1000) return `₹${Math.round(n).toLocaleString('en-IN')}`;
+    return `₹${Math.round(n)}`;
+  };
 
-  const expectedRecovery = Math.round(exposedRevenue * 0.65);
   const grossMarginPct = '44.2%';
   const protectedTrend = [8400000, 8900000, 9200000, 9600000, 10000000, 10200000, protectedRevenue];
 
   return (
-    <div style={{ padding: '0 0 8px' }}>
+    <div style={{ padding: '0 0 4px' }}>
       
       {/* Above-the-fold Ultra-Compact Introduction */}
-      <div style={{ marginBottom: 20 }}>
-        <h1 className="statement-main-serif hero-headline" style={{ margin: '0 0 6px', fontSize: 26, fontWeight: 800, letterSpacing: '-0.3px', lineHeight: 1.2 }}>
+      <div style={{ marginBottom: 14 }}>
+        <h1 className="statement-main-serif hero-headline" style={{ margin: '0 0 4px', fontSize: 24, fontWeight: 800, letterSpacing: '-0.3px', lineHeight: 1.25 }}>
           Know where retail revenue is at risk — before it is lost.
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--text-sub)', margin: '0 0 12px', maxWidth: 620, lineHeight: 1.45 }}>
+        <p style={{ fontSize: 13, color: 'var(--text-sub)', margin: '0 0 10px', maxWidth: 640, lineHeight: 1.4 }}>
           Connect sales and inventory signals to detect risks and recommend the next action.
         </p>
 
@@ -39,7 +47,7 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
           display: 'inline-flex', alignItems: 'center', gap: 8,
           fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--text-sub)',
           textTransform: 'uppercase', background: 'var(--bg-subtle)', border: '1px solid var(--border-color)',
-          padding: '5px 12px', borderRadius: 100
+          padding: '4px 12px', borderRadius: 100
         }}>
           <span>SALES</span>
           <span style={{ opacity: 0.4, color: 'var(--text-muted)' }}>→</span>
@@ -52,8 +60,8 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
       </div>
 
       {/* Immediate Transition: YOUR REVENUE AT A GLANCE */}
-      <div style={{ marginTop: 20, marginBottom: 16 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+      <div style={{ marginTop: 14, marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             YOUR REVENUE AT A GLANCE
           </div>
@@ -69,49 +77,50 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
           </div>
         </div>
 
-        {/* 4 Metrics Grid */}
+        {/* 4 Metrics Grid — Strongest visual emphasis on Revenue at Risk */}
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10
         }}>
           <div style={{
             background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
-            borderRadius: 12, padding: '12px 16px'
+            borderRadius: 10, padding: '10px 14px'
           }}>
             <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               HISTORICAL REVENUE
             </div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-main)', marginTop: 4 }}>
-              {fmtM(protectedRevenue)}
+            <div style={{ fontSize: 19, fontWeight: 800, color: 'var(--text-main)', marginTop: 4 }}>
+              {fmtCurrency(protectedRevenue)}
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>
               Dataset baseline
             </div>
           </div>
 
+          {/* Primary Problem Metric: Revenue at Risk */}
           <div style={{
-            background: 'var(--risk-red-bg)', border: '1px solid var(--risk-red-border)',
-            borderRadius: 12, padding: '12px 16px'
+            background: 'var(--risk-red-bg)', border: '2px solid var(--risk-red)',
+            borderRadius: 10, padding: '10px 14px', boxShadow: '0 2px 8px rgba(220, 38, 38, 0.1)'
           }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--risk-red)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              REVENUE AT RISK
+            <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--risk-red)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              ⚠️ REVENUE AT RISK
             </div>
             <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--risk-red)', marginTop: 4 }}>
-              {fmtM(exposedRevenue)}
+              {fmtCurrency(exposedRevenue)}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--risk-red)', opacity: 0.9, marginTop: 2 }}>
-              {activeOpportunitiesCount} priority risks
+            <div style={{ fontSize: 11, color: 'var(--risk-red)', fontWeight: 600, marginTop: 2 }}>
+              {activeOpportunitiesCount} priority risks detected
             </div>
           </div>
 
           <div style={{
             background: 'var(--emerald-green-bg)', border: '1px solid var(--emerald-green-border)',
-            borderRadius: 12, padding: '12px 16px'
+            borderRadius: 10, padding: '10px 14px'
           }}>
             <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--emerald-green)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               EXPECTED RECOVERY
             </div>
-            <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--emerald-green)', marginTop: 4 }}>
-              {fmtM(expectedRecovery)}
+            <div style={{ fontSize: 19, fontWeight: 900, color: 'var(--emerald-green)', marginTop: 4 }}>
+              {fmtCurrency(expectedRecovery)}
             </div>
             <div style={{ fontSize: 11, color: 'var(--emerald-green)', opacity: 0.9, marginTop: 2 }}>
               Via recommended action
@@ -120,12 +129,12 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
 
           <div style={{
             background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
-            borderRadius: 12, padding: '12px 16px'
+            borderRadius: 10, padding: '10px 14px'
           }}>
             <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               GROSS MARGIN
             </div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-main)', marginTop: 4 }}>
+            <div style={{ fontSize: 19, fontWeight: 800, color: 'var(--text-main)', marginTop: 4 }}>
               {grossMarginPct}
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>

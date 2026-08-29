@@ -26,7 +26,7 @@ export const CalendarContext: React.FC<CalendarContextProps> = ({ selectedStore 
         title="Click to view today's regional calendar & retail context"
       >
         <Calendar size={12} color="var(--accent-purple)" />
-        <span>TODAY · {todayDateStr} · {contextLabel}</span>
+        <span>DATA SNAPSHOT · {todayDateStr} · {contextLabel}</span>
         <Info size={11} color="var(--text-muted)" />
       </div>
 
@@ -50,7 +50,7 @@ export const CalendarContext: React.FC<CalendarContextProps> = ({ selectedStore 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
               <div>
                 <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--accent-purple)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                  TODAY'S OPERATIONAL CONTEXT
+                  BASELINE DATASET CONTEXT
                 </div>
                 <div style={{ fontSize: 18, fontWeight: 800, marginTop: 2 }}>
                   {todayDateStr} · {weekdayStr}

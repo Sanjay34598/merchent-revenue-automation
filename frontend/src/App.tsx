@@ -258,7 +258,8 @@ export default function App() {
   }, [merchantCatalog]);
 
   const protectedRevenueVal = analyticsSummary?.protected_revenue || 10482110;
-  const exposedRevenueVal = analyticsSummary?.exposed_revenue || inventoryStats.totalRevenueAtRisk || 2829779;
+  const exposedRevenueVal = analyticsSummary?.exposed_revenue || inventoryStats.totalRevenueAtRisk || 311937;
+  const expectedRecoveryVal = analyticsSummary?.expected_recovery_today || inventoryStats.totalRecoverable || 203232;
 
   return (
     <ErrorBoundary fallbackTitle="MerchIntell Command Center Encountered an Error">
@@ -341,7 +342,8 @@ export default function App() {
                           merchantName="Sanjay"
                           protectedRevenue={protectedRevenueVal}
                           exposedRevenue={exposedRevenueVal}
-                          activeOpportunitiesCount={homeOpportunities.length || 36}
+                          expectedRecovery={expectedRecoveryVal}
+                          activeOpportunitiesCount={homeOpportunities.length || 7}
                           totalProductsCount={merchantCatalog.length || 2326}
                           onViewRevenue={() => setActiveTab('leaks')}
                         />
@@ -349,17 +351,13 @@ export default function App() {
                         <div className="mobile-priorities-slot">
                           <RightIntelligencePanel
                             catalog={merchantCatalog}
-                            exposedRevenue={exposedRevenueVal}
+                            onSelectProduct={setSelectedProductWorkspace}
                             onViewDecisions={() => setActiveTab('decisions')}
-                            onViewRevenueRisks={() => setActiveTab('leaks')}
                           />
                         </div>
 
                         <MerchantActionStrip
                           onActionClick={(tabKey) => setActiveTab(tabKey)}
-                          atRiskAmount={exposedRevenueVal}
-                          itemsAtRiskCount={homeOpportunities.length || 7}
-                          totalProductsCount={merchantCatalog.length || 2326}
                         />
 
                         <BusinessPulse />
@@ -375,13 +373,12 @@ export default function App() {
                         />
                       </div>
 
-                      {/* Right Column (Desktop Only): Today's Priorities & Revenue at Risk Card */}
+                      {/* Right Column (Desktop Only): Today's Priorities */}
                       <div className="dashboard-side-col">
                         <RightIntelligencePanel
                           catalog={merchantCatalog}
-                          exposedRevenue={exposedRevenueVal}
+                          onSelectProduct={setSelectedProductWorkspace}
                           onViewDecisions={() => setActiveTab('decisions')}
-                          onViewRevenueRisks={() => setActiveTab('leaks')}
                         />
                       </div>
                     </div>
