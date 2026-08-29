@@ -2,10 +2,17 @@ import pytest
 from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
 from app.main import app
+from app.core.database import SessionLocal
 from app.services.razorpay_service import RazorpayIntegrationService, razorpay_service
 from agent.executor import ActionExecutor
 
 client = TestClient(app)
+
+@pytest.fixture(scope="module")
+def db():
+    session = SessionLocal()
+    yield session
+    session.close()
 
 def test_paise_conversion_and_receipt():
     """Verify INR to paise conversion and receipt generation."""
