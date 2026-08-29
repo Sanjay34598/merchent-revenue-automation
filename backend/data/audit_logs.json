@@ -1,5 +1,60 @@
 [
   {
+    "id": "AUD-20260829215719-2083",
+    "timestamp": "2026-08-29T21:57:19.418751",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260829-17973",
+    "reason": "Recorded POS checkout: 1 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9227 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260829215716-2082",
+    "timestamp": "2026-08-29T21:57:16.300824",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260829-17972",
+    "reason": "Recorded POS checkout: 1 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9379 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260829215714-2081",
+    "timestamp": "2026-08-29T21:57:14.025709",
+    "action": "POS_SALE_COMPLETED",
+    "entity": "TXN-20260829-17971",
+    "reason": "Recorded POS checkout: 2 line items via UPI",
+    "before_state": "Cart Checkout",
+    "after_state": "\u20b9542 Paid \u00b7 Stock Deducted",
+    "source": "POS_TERMINAL",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260829215707-2080",
+    "timestamp": "2026-08-29T21:57:07.729590",
+    "action": "RECOVERY_ACTION_MARKDOWN",
+    "entity": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
+    "reason": "Executed bounded MARKDOWN intervention. Expected recovery realized.",
+    "before_state": "Price: \u20b9151.58 \u00b7 Stock: 30.0 units",
+    "after_state": "Price updated: \u20b9151.58 \u2192 \u20b9128.84 (15.0% off) \u00b7 Recovered: \u20b91412",
+    "source": "MERCHANT_EXECUTION",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260829215615-2079",
+    "timestamp": "2026-08-29T21:56:15.092923",
+    "action": "RECOVERY_ACTION_MARKDOWN",
+    "entity": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
+    "reason": "Executed bounded MARKDOWN intervention. Expected recovery realized.",
+    "before_state": "Price: \u20b9151.58 \u00b7 Stock: 30.0 units",
+    "after_state": "Price updated: \u20b9151.58 \u2192 \u20b9128.84 (15.0% off) \u00b7 Recovered: \u20b91412",
+    "source": "MERCHANT_EXECUTION",
+    "status": "SUCCESS"
+  },
+  {
     "id": "AUD-20260829215433-2078",
     "timestamp": "2026-08-29T21:54:33.910064",
     "action": "TEST_ACTION",
