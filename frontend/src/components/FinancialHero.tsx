@@ -11,98 +11,126 @@ interface FinancialHeroProps {
 }
 
 export const FinancialHero: React.FC<FinancialHeroProps> = ({
-  merchantName = 'Sanjay',
   protectedRevenue = 10482110,
   exposedRevenue = 2829779,
-  activeOpportunitiesCount = 36,
-  totalProductsCount = 2326,
+  activeOpportunitiesCount = 7,
   onViewRevenue,
 }) => {
-  const fmt = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
+  const fmtM = (n: number) => `₹${(n / 1000000).toFixed(2)}M`;
+
+  const expectedRecovery = Math.round(exposedRevenue * 0.65);
+  const grossMarginPct = '44.2%';
   const protectedTrend = [8400000, 8900000, 9200000, 9600000, 10000000, 10200000, protectedRevenue];
 
   return (
-    <div style={{ padding: '0 0 12px' }}>
+    <div style={{ padding: '0 0 8px' }}>
       
-      {/* Secondary Context Pill */}
-      <div style={{
-        display: 'inline-flex', alignItems: 'center', gap: 8,
-        fontSize: 11, fontWeight: 700, color: 'var(--text-sub)',
-        letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10
-      }}>
-        <span className="monitoring-dot" />
-        <span>REVENUE INTELLIGENCE BASELINE · 40 stores · Jun 2025 – Apr 2026</span>
+      {/* Above-the-fold Ultra-Compact Introduction */}
+      <div style={{ marginBottom: 20 }}>
+        <h1 className="statement-main-serif hero-headline" style={{ margin: '0 0 6px', fontSize: 26, fontWeight: 800, letterSpacing: '-0.3px', lineHeight: 1.2 }}>
+          Know where retail revenue is at risk — before it is lost.
+        </h1>
+        <p style={{ fontSize: 13, color: 'var(--text-sub)', margin: '0 0 12px', maxWidth: 620, lineHeight: 1.45 }}>
+          Connect sales and inventory signals to detect risks and recommend the next action.
+        </p>
+
+        {/* Minimal 4-Step Process Flow */}
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--text-sub)',
+          textTransform: 'uppercase', background: 'var(--bg-subtle)', border: '1px solid var(--border-color)',
+          padding: '5px 12px', borderRadius: 100
+        }}>
+          <span>SALES</span>
+          <span style={{ opacity: 0.4, color: 'var(--text-muted)' }}>→</span>
+          <span>INVENTORY</span>
+          <span style={{ opacity: 0.4, color: 'var(--text-muted)' }}>→</span>
+          <span>RISK</span>
+          <span style={{ opacity: 0.4, color: 'var(--text-muted)' }}>→</span>
+          <span style={{ color: 'var(--accent-purple)' }}>ACTION</span>
+        </div>
       </div>
 
-      {/* Hero Headline & Subtitle */}
-      <h1 className="statement-main-serif hero-headline" style={{ margin: '4px 0 8px' }}>
-        Find revenue leaks before they become losses.
-      </h1>
-      <p style={{ fontSize: 14, color: 'var(--text-sub)', margin: '0 0 20px', maxWidth: 640, lineHeight: 1.5 }}>
-        MerchIntell analyzes sales and inventory data to detect revenue risks, explain why they matter, and recommend the next best action.
-      </p>
-
-      {/* Primary Financial Metric Banner */}
-      <div className="hero-revenue-risk-card" style={{
-        background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
-        borderRadius: 14, padding: '18px 22px', marginBottom: 20,
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16
-      }}>
-        <div>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--risk-red)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            REVENUE AT RISK
+      {/* Immediate Transition: YOUR REVENUE AT A GLANCE */}
+      <div style={{ marginTop: 20, marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            YOUR REVENUE AT A GLANCE
           </div>
-          <div style={{ fontSize: 32, fontWeight: 900, color: 'var(--risk-red)', marginTop: 2, letterSpacing: '-0.5px' }}>
-            {fmt(exposedRevenue)}
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 4 }}>
-            7 opportunities requiring immediate attention · 40 stores analyzed
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>HISTORICAL BASELINE</div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-main)', marginTop: 2 }}>{fmt(protectedRevenue)}</div>
-          </div>
-
           <div
             onClick={onViewRevenue}
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '6px 12px', background: 'var(--trend-pill-bg)',
-              border: '1px solid var(--trend-pill-border)', borderRadius: 100,
-              cursor: 'pointer'
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              fontSize: 11, fontWeight: 600, color: 'var(--accent-purple)', cursor: 'pointer'
             }}
-            title="Historical revenue trend — click to view analysis"
           >
-            <Sparkline data={protectedTrend} isNegative={false} width={50} height={16} />
-            <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--trend-pill-text)' }}>Baseline Verified</span>
+            <Sparkline data={protectedTrend} isNegative={false} width={40} height={14} />
+            <span>Baseline verified (40 stores)</span>
           </div>
         </div>
-      </div>
 
-      {/* 3-Step Product Workflow Banner */}
-      <div className="hero-workflow-strip">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--accent-purple-bg)', color: 'var(--accent-purple)', fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>1</span>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-main)', textTransform: 'uppercase' }}>DETECT</div>
-            <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>Find revenue risks</div>
+        {/* 4 Metrics Grid */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12
+        }}>
+          <div style={{
+            background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
+            borderRadius: 12, padding: '12px 16px'
+          }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              HISTORICAL REVENUE
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-main)', marginTop: 4 }}>
+              {fmtM(protectedRevenue)}
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>
+              Dataset baseline
+            </div>
           </div>
-        </div>
-        <div className="workflow-step-middle" style={{ display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 12 }}>
-          <span style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--accent-purple-bg)', color: 'var(--accent-purple)', fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-main)', textTransform: 'uppercase' }}>EXPLAIN</div>
-            <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>Understand why they happen</div>
+
+          <div style={{
+            background: 'var(--risk-red-bg)', border: '1px solid var(--risk-red-border)',
+            borderRadius: 12, padding: '12px 16px'
+          }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--risk-red)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              REVENUE AT RISK
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--risk-red)', marginTop: 4 }}>
+              {fmtM(exposedRevenue)}
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--risk-red)', opacity: 0.9, marginTop: 2 }}>
+              {activeOpportunitiesCount} priority risks
+            </div>
           </div>
-        </div>
-        <div className="workflow-step-last" style={{ display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 12 }}>
-          <span style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>3</span>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--text-main)', textTransform: 'uppercase' }}>ACT</div>
-            <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>Get recommended action</div>
+
+          <div style={{
+            background: 'var(--emerald-green-bg)', border: '1px solid var(--emerald-green-border)',
+            borderRadius: 12, padding: '12px 16px'
+          }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--emerald-green)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              EXPECTED RECOVERY
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--emerald-green)', marginTop: 4 }}>
+              {fmtM(expectedRecovery)}
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--emerald-green)', opacity: 0.9, marginTop: 2 }}>
+              Via recommended action
+            </div>
+          </div>
+
+          <div style={{
+            background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
+            borderRadius: 12, padding: '12px 16px'
+          }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              GROSS MARGIN
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-main)', marginTop: 4 }}>
+              {grossMarginPct}
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>
+              Category average
+            </div>
           </div>
         </div>
       </div>

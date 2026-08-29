@@ -76,9 +76,9 @@ class PosRepository:
                 "sellingPrice": p.selling_price,
                 "currentStock": p.current_stock,
                 "dailyVelocity": p.daily_velocity,
-                "riskStatus": p.risk_status,
-                "revenueAtRisk": p.revenue_at_risk,
-                "recoverableRevenue": p.recoverable_revenue,
+                "riskStatus": getattr(p, "risk_status", "HEALTHY"),
+                "revenueAtRisk": getattr(p, "revenue_at_risk", 0.0),
+                "recoverableRevenue": getattr(p, "recoverable_revenue", 0.0),
                 "supplier": getattr(p, "supplier", "General Supplier"),
                 "marginPct": getattr(p, "margin_pct", 35.0),
             })

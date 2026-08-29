@@ -15,11 +15,13 @@ export const OpportunityList: React.FC<OpportunityListProps> = ({
 }) => {
   return (
     <div style={{ marginTop: 24 }}>
-      <div style={{ marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 className="section-head">What needs your attention</h2>
-          <div className="section-sub">
-            MerchIntell found {opportunities.length} situations where intervention could improve your outcome.
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            WHAT NEEDS ATTENTION
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>
+            Top priority revenue risks derived from real dataset calculations
           </div>
         </div>
         <button
@@ -38,3 +40,4 @@ export const OpportunityList: React.FC<OpportunityListProps> = ({
     </div>
   );
 };
+
