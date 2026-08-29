@@ -110,9 +110,10 @@ def test_action_execution_integration_with_razorpay(db_session):
     from app.models.models import AgentAction
     action = AgentAction(
         store_id=1,
-        product_id=1,
         action_type="REORDER",
         recommendation="Order 150 units of Plushfoot Boot.",
+        agent_reasoning="High demand velocity forecast.",
+        evidence={"product_id": 1},
         status="APPROVED",
         expected_outcome={"expected_gross_profit": 2000.0, "cash_locked": 3000.0}
     )

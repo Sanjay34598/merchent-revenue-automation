@@ -96,12 +96,16 @@ class ActionExecutor:
         cash_locked = float(exp_outcome.get("cash_locked", predicted_impact))
         amount_in_rupees = max(10.0, cash_locked if cash_locked > 0 else predicted_impact)
 
+        evidence_dict = action.evidence or {}
+        prod_id = getattr(action, "product_id", None) or evidence_dict.get("product_id", 1)
+        st_id = getattr(action, "store_id", 1)
+
         from app.services.razorpay_service import razorpay_service
         razorpay_res = razorpay_service.create_order(
             amount_in_rupees=amount_in_rupees,
             action_type=action.action_type,
-            product_id=action.product_id or 1,
-            store_id=action.store_id or 1,
+            product_id=prod_id,
+            store_id=st_id,
             receipt=f"rcpt_act_{action.id}",
             notes_extra={"agent_action_id": action.id}
         )
