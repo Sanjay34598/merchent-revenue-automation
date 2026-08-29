@@ -37,6 +37,10 @@ class RecoveryEngine:
                 else:
                     continue
 
+            price = prod.get("sellingPrice", 100.0)
+            at_risk = prod.get("revenueAtRisk", round(14 * velocity * price))
+            margin = prod.get("marginPct", 35.0)
+
             # Build structured business context for AI Decision Engine
             context = {
                 "product_id": prod.get("id"),
