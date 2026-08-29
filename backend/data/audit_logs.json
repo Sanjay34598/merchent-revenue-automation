@@ -1,5 +1,27 @@
 [
   {
+    "id": "AUD-20260829232347-2981",
+    "timestamp": "2026-08-29T23:23:47.953371",
+    "action": "RECOVERY_ACTION_MARKDOWN",
+    "entity": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
+    "reason": "Executed bounded MARKDOWN intervention. Expected recovery realized.",
+    "before_state": "Price: \u20b9151.58 \u00b7 Stock: 30.0 units",
+    "after_state": "Price updated: \u20b9151.58 \u2192 \u20b9128.84 (15.0% off) \u00b7 Recovered: \u20b91412",
+    "source": "MERCHANT_EXECUTION",
+    "status": "SUCCESS"
+  },
+  {
+    "id": "AUD-20260829232253-2980",
+    "timestamp": "2026-08-29T23:22:53.440965",
+    "action": "RECOVERY_ACTION_MARKDOWN",
+    "entity": "PROD-189472 SEG-520541 Femme Footwear Boot Collection Plushfoot",
+    "reason": "Executed bounded MARKDOWN intervention. Expected recovery realized.",
+    "before_state": "Price: \u20b9151.58 \u00b7 Stock: 30.0 units",
+    "after_state": "Price updated: \u20b9151.58 \u2192 \u20b9128.84 (15.0% off) \u00b7 Recovered: \u20b91412",
+    "source": "MERCHANT_EXECUTION",
+    "status": "SUCCESS"
+  },
+  {
     "id": "AUD-20260829232102-2979",
     "timestamp": "2026-08-29T23:21:02.968262",
     "action": "TEST_ACTION",
