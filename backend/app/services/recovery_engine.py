@@ -23,15 +23,19 @@ class RecoveryEngine:
 
         for prod in raw_catalog:
             risk_status = prod.get("riskStatus", "HEALTHY")
-            if risk_status == "HEALTHY":
-                continue
-
             stock = prod.get("currentStock", 0)
             velocity = max(0.1, prod.get("dailyVelocity", 1.0))
-            price = prod.get("sellingPrice", 100.0)
-            at_risk = prod.get("revenueAtRisk", round(14 * velocity * price))
-            margin = prod.get("marginPct", 35.0)
             days_cover = round(stock / velocity)
+
+            if risk_status in ("HEALTHY", "NORMAL"):
+                if stock <= 12 or days_cover < 5:
+                    risk_status = "STOCKOUT"
+                elif days_cover > 45:
+                    risk_status = "SLOW_MOVING"
+                elif prod.get("marginPct", 35.0) < 30.0:
+                    risk_status = "MARGIN_LEAK"
+                else:
+                    continue
 
             # Build structured business context for AI Decision Engine
             context = {

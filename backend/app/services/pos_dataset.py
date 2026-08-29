@@ -39,6 +39,7 @@ class ProductCatalogItem:
         self.reorder_point = reorder_point
         self.base_daily_demand = base_daily_demand
         self.risk_type = risk_type
+        self.risk_status = risk_type
         
         # Computed live state variables
         self.purchases_stock = 0.0
