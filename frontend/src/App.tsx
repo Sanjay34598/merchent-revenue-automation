@@ -351,8 +351,11 @@ export default function App() {
                         <div className="mobile-priorities-slot">
                           <RightIntelligencePanel
                             catalog={merchantCatalog}
+                            analyticsSummary={analyticsSummary}
+                            exposedRevenue={exposedRevenueVal}
                             onSelectProduct={setSelectedProductWorkspace}
                             onViewDecisions={() => setActiveTab('decisions')}
+                            onViewRevenueRisks={() => setActiveTab('leaks')}
                           />
                         </div>
 
@@ -375,12 +378,15 @@ export default function App() {
                         />
                       </div>
 
-                      {/* Right Column (Desktop Only): Today's Priorities */}
+                      {/* Right Column (Desktop Only): Today's Priorities & Analytics Evidence */}
                       <div className="dashboard-side-col">
                         <RightIntelligencePanel
                           catalog={merchantCatalog}
+                          analyticsSummary={analyticsSummary}
+                          exposedRevenue={exposedRevenueVal}
                           onSelectProduct={setSelectedProductWorkspace}
                           onViewDecisions={() => setActiveTab('decisions')}
+                          onViewRevenueRisks={() => setActiveTab('leaks')}
                         />
                       </div>
                     </div>
