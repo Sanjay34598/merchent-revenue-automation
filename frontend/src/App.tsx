@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useMemo, Suspense, lazy } from 'react';
 import { CheckCircle2, X, RefreshCw, Terminal, Shield, ArrowLeft } from 'lucide-react';
 import { UnifiedDecision, RevenueOpportunity, AgentActionItem } from './types';
 import { generateMerchantInventory, getInventoryStats, ProductItem } from './data/merchantInventory';
 
-// Modular Components
+// Core Eagerly Loaded Components for Instant Overview Dashboard Render
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Header } from './components/Header';
 import { FinancialHero } from './components/FinancialHero';
@@ -11,30 +11,47 @@ import { MerchantActionStrip } from './components/MerchantActionStrip';
 import { BusinessPulse } from './components/BusinessPulse';
 import { OpportunityList } from './components/OpportunityList';
 import { RecentSales } from './components/RecentSales';
-import { ProductWorkspace } from './components/ProductWorkspace';
-import { InventoryTable } from './components/InventoryTable';
-import { DecisionPipeline } from './components/DecisionPipeline';
-import { Simulator } from './components/Simulator';
-import { RecoveryView } from './components/RecoveryView';
-import { RecoveryEvaluationView } from './components/RecoveryEvaluationView';
-import { AuditTrailView } from './components/AuditTrailView';
 import { RightIntelligencePanel } from './components/RightIntelligencePanel';
-import { SalesInputWorkspace } from './components/SalesInputWorkspace';
 import { getApiUrl } from './services/apiConfig';
 
-/** Safe API fetcher helper */
+// Code-Split Secondary Workspaces for Fast Initial Bundle Loading
+const ProductWorkspace = lazy(() => import('./components/ProductWorkspace').then(m => ({ default: m.ProductWorkspace })));
+const InventoryTable = lazy(() => import('./components/InventoryTable').then(m => ({ default: m.InventoryTable })));
+const DecisionPipeline = lazy(() => import('./components/DecisionPipeline').then(m => ({ default: m.DecisionPipeline })));
+const Simulator = lazy(() => import('./components/Simulator').then(m => ({ default: m.Simulator })));
+const RecoveryView = lazy(() => import('./components/RecoveryView').then(m => ({ default: m.RecoveryView })));
+const RecoveryEvaluationView = lazy(() => import('./components/RecoveryEvaluationView').then(m => ({ default: m.RecoveryEvaluationView })));
+const AuditTrailView = lazy(() => import('./components/AuditTrailView').then(m => ({ default: m.AuditTrailView })));
+const SalesInputWorkspace = lazy(() => import('./components/SalesInputWorkspace').then(m => ({ default: m.SalesInputWorkspace })));
+
+/** Helper for fetch requests with an AbortController timeout (5 seconds max) */
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 5000): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(id);
+    return response;
+  } catch (err) {
+    clearTimeout(id);
+    throw err;
+  }
+}
+
+/** Safe API fetcher helper with timeout and fallback */
 async function safeApi<T>(fetcher: () => Promise<T>, fallback: T): Promise<{ data: T; ok: boolean }> {
   try {
     const data = await fetcher();
     return { data: data ?? fallback, ok: true };
   } catch (err) {
-    console.warn('API fetch warning, using local model:', err);
+    console.warn('API fetch notice (using dataset model fallback):', err);
     return { data: fallback, ok: false };
   }
 }
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
+  // Non-blocking loading state (instant frame 1 rendering)
+  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'recovery'>('home');
 
   // Theme state with localStorage initialization & system fallback
@@ -51,7 +68,7 @@ export default function App() {
   const [selectedStore, setSelectedStore] = useState<string>('STR-1001');
   const [backendAvailable, setBackendAvailable] = useState(true);
 
-  // Real Dataset Product Catalog Seed & Live State Layer
+  // Real Dataset Product Catalog Seed & Live State Layer (Seeded instantly)
   const [merchantCatalog, setMerchantCatalog] = useState<ProductItem[]>(() => generateMerchantInventory());
   const inventoryStats = useMemo(() => getInventoryStats(merchantCatalog), [merchantCatalog]);
 
@@ -95,46 +112,36 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', effectiveTheme);
   }, [theme]);
 
-  // Data Fetching from Backend API
+  // High-Performance Parallel Data Fetching with 5s AbortController Timeouts
   const fetchData = async () => {
-    setLoading(true);
-    let anyOk = false;
+    const summaryUrl = getApiUrl(`/api/analytics/summary?store_id=${selectedStore}`);
+    const oppsUrl = getApiUrl('/api/autopilot/opportunities?store_id=1');
+    const actionsUrl = getApiUrl('/api/actions?store_id=1');
+    const prodsUrl = getApiUrl('/api/products?limit=150');
 
-    const resSummary = await safeApi(
-      () => fetch(getApiUrl(`/api/analytics/summary?store_id=${selectedStore}`)).then(r => r.json()),
-      null
+    // Fire non-blocking parallel requests
+    const results = await Promise.allSettled([
+      safeApi(() => fetchWithTimeout(summaryUrl).then(r => r.json()), null),
+      safeApi(() => fetchWithTimeout(oppsUrl).then(r => r.json()), []),
+      safeApi(() => fetchWithTimeout(actionsUrl).then(r => r.json()), []),
+      safeApi(() => fetchWithTimeout(prodsUrl).then(r => r.json()), null),
+    ]);
+
+    const [resSummary, resOpps, resActs, resProds] = results.map(r =>
+      r.status === 'fulfilled' ? r.value : { data: null, ok: false }
     );
 
     if (resSummary.ok && resSummary.data) {
       setAnalyticsSummary(resSummary.data);
-      anyOk = true;
     }
 
-    const resDecision = await safeApi(
-      () => fetch(getApiUrl('/api/autopilot/analyze'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ store_id: 1 }),
-      }).then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      }),
-      null
-    );
-
-    if (resDecision.ok && resDecision.data) {
-      setDecision(resDecision.data);
-      anyOk = true;
+    if (resOpps.ok && Array.isArray(resOpps.data) && resOpps.data.length > 0) {
+      setOpportunities(resOpps.data);
     }
 
-    const [resOpps, resActs, resProds] = await Promise.all([
-      safeApi(() => fetch(getApiUrl('/api/autopilot/opportunities?store_id=1')).then(r => r.json()), []),
-      safeApi(() => fetch(getApiUrl('/api/actions?store_id=1')).then(r => r.json()), []),
-      safeApi(() => fetch(getApiUrl('/api/products?limit=150')).then(r => r.json()), null),
-    ]);
-
-    setOpportunities(Array.isArray(resOpps.data) ? resOpps.data : []);
-    setActions(Array.isArray(resActs.data) ? resActs.data : []);
+    if (resActs.ok && Array.isArray(resActs.data) && resActs.data.length > 0) {
+      setActions(resActs.data);
+    }
 
     if (resProds.ok && resProds.data && Array.isArray(resProds.data.products)) {
       const apiProducts: ProductItem[] = resProds.data.products.map((p: any) => ({
@@ -169,11 +176,38 @@ export default function App() {
       }
     }
 
-    setBackendAvailable(anyOk || resOpps.ok || resActs.ok);
-    setLoading(false);
+    setBackendAvailable(resSummary.ok || resOpps.ok || resActs.ok);
   };
 
-  useEffect(() => { fetchData(); }, [selectedStore]);
+  // Fetch Decision Pipeline asynchronously when user accesses decisions tab or after mount
+  const fetchDecisionAsync = async () => {
+    if (decision) return;
+    const resDecision = await safeApi(
+      () => fetchWithTimeout(getApiUrl('/api/autopilot/analyze'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ store_id: 1 }),
+      }, 6000).then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      }),
+      null
+    );
+
+    if (resDecision.ok && resDecision.data) {
+      setDecision(resDecision.data);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [selectedStore]);
+
+  useEffect(() => {
+    if (activeTab === 'decisions') {
+      fetchDecisionAsync();
+    }
+  }, [activeTab]);
 
   // Actions Lifecycle
   const handleApproveAction = (id: number) => {
@@ -393,65 +427,75 @@ export default function App() {
                   </ErrorBoundary>
                 )}
 
-                {/* POS EVENT INGESTION WORKSPACE */}
-                {activeTab === 'sales' && (
-                  <SalesInputWorkspace
-                    catalog={merchantCatalog}
-                    selectedStore={selectedStore}
-                    onRecordSale={handleRecordSale}
-                    onImportCsv={handleImportCsv}
-                  />
-                )}
+                {/* CODE-SPLIT SECONDARY WORKSPACES */}
+                <Suspense fallback={
+                  <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--text-sub)', fontSize: 13 }}>
+                    <RefreshCw size={20} color="var(--accent-purple)" style={{ animation: 'spin 1s linear infinite', marginBottom: 8 }} />
+                    <div>Loading workspace...</div>
+                  </div>
+                }>
+                  {/* POS EVENT INGESTION WORKSPACE */}
+                  {activeTab === 'sales' && (
+                    <SalesInputWorkspace
+                      catalog={merchantCatalog}
+                      selectedStore={selectedStore}
+                      onRecordSale={handleRecordSale}
+                      onImportCsv={handleImportCsv}
+                    />
+                  )}
 
-                {/* INVENTORY OPERATING SYSTEM WORKSPACE */}
-                {activeTab === 'inventory' && (
-                  <InventoryTable
-                    catalog={merchantCatalog}
-                    totalValue={inventoryStats.totalStockValue}
-                    itemsAtRiskCount={homeOpportunities.length}
-                    onSelectProduct={setSelectedProductWorkspace}
-                  />
-                )}
+                  {/* INVENTORY OPERATING SYSTEM WORKSPACE */}
+                  {activeTab === 'inventory' && (
+                    <InventoryTable
+                      catalog={merchantCatalog}
+                      totalValue={inventoryStats.totalStockValue}
+                      itemsAtRiskCount={homeOpportunities.length}
+                      onSelectProduct={setSelectedProductWorkspace}
+                    />
+                  )}
 
-                {/* REVENUE & RECOVERY WORKSPACE */}
-                {(activeTab === 'leaks' || activeTab === 'recovery') && (
-                  <RecoveryView />
-                )}
+                  {/* REVENUE & RECOVERY WORKSPACE */}
+                  {(activeTab === 'leaks' || activeTab === 'recovery') && (
+                    <RecoveryView />
+                  )}
 
-                {/* RECOVERY EVALUATION WORKSPACE */}
-                {activeTab === 'evaluation' && (
-                  <RecoveryEvaluationView />
-                )}
+                  {/* RECOVERY EVALUATION WORKSPACE */}
+                  {activeTab === 'evaluation' && (
+                    <RecoveryEvaluationView />
+                  )}
 
-                {/* AUDIT TRAIL WORKSPACE */}
-                {activeTab === 'audit' && (
-                  <AuditTrailView />
-                )}
+                  {/* AUDIT TRAIL WORKSPACE */}
+                  {activeTab === 'audit' && (
+                    <AuditTrailView />
+                  )}
 
-                {/* DECISION PIPELINE WORKSPACE */}
-                {activeTab === 'decisions' && (
-                  <DecisionPipeline
-                    decision={decision}
-                    actions={actions}
-                    opportunities={opportunities}
-                    onApproveAction={handleApproveAction}
-                  />
-                )}
+                  {/* DECISION PIPELINE WORKSPACE */}
+                  {activeTab === 'decisions' && (
+                    <DecisionPipeline
+                      decision={decision}
+                      actions={actions}
+                      opportunities={opportunities}
+                      onApproveAction={handleApproveAction}
+                    />
+                  )}
 
-                {/* WHAT-IF SIMULATOR WORKSPACE */}
-                {activeTab === 'whatif' && (
-                  <Simulator />
-                )}
+                  {/* WHAT-IF SIMULATOR WORKSPACE */}
+                  {activeTab === 'whatif' && (
+                    <Simulator />
+                  )}
+
+                  {/* PRODUCT WORKSPACE SLIDE-OVER DRAWER */}
+                  {selectedProductWorkspace && (
+                    <ProductWorkspace
+                      product={selectedProductWorkspace}
+                      onClose={() => setSelectedProductWorkspace(null)}
+                      onSimulate={() => setActiveTab('whatif')}
+                      onApproveAction={handleApproveAction}
+                    />
+                  )}
+                </Suspense>
               </>
             )}
-
-            {/* PRODUCT WORKSPACE SLIDE-OVER DRAWER */}
-            <ProductWorkspace
-              product={selectedProductWorkspace}
-              onClose={() => setSelectedProductWorkspace(null)}
-              onSimulate={() => setActiveTab('whatif')}
-              onApproveAction={handleApproveAction}
-            />
 
           </div>
         </div>
