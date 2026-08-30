@@ -51,7 +51,7 @@ async function safeApi<T>(fetcher: () => Promise<T>, fallback: T): Promise<{ dat
 
 export default function App() {
   // Non-blocking loading state (instant frame 1 rendering)
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [activeTab, setActiveTab] = useState<'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'recovery' | 'evaluation' | 'audit'>('home');
 
   // Theme state with localStorage initialization & system fallback
@@ -527,7 +527,7 @@ export default function App() {
                   <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>
                     <div><strong>Store ID:</strong> {selectedStore}</div>
                     <div><strong>Merchant Account:</strong> Retail Partner Outpost</div>
-                    <div><strong>Monitored SKUs:</strong> {inventoryStats.totalProducts} Catalog Items</div>
+                    <div><strong>Monitored SKUs:</strong> {inventoryStats.totalItems} Catalog Items</div>
                     <div><strong>Environment:</strong> Production POS Transaction Engine</div>
                   </div>
                 </div>

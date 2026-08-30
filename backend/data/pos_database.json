@@ -2,8 +2,74 @@
   "store_id": 1,
   "store_name": "GreenBasket Market",
   "last_updated": "",
-  "transactions_count": 8012,
+  "transactions_count": 8015,
   "transactions": [
+    {
+      "transaction_id": "TXN-20260830-18015",
+      "timestamp": "2026-08-30 11:37",
+      "store_id": 1,
+      "terminal_id": "Terminal-#01",
+      "cashier_id": "Cashier-101",
+      "payment_method": "UPI",
+      "items": [
+        {
+          "product_name": "PROD-189474 SEG-520541 Femme Footwear Boot Collection Plushfoot",
+          "quantity": 3.0,
+          "unit": "piece",
+          "unit_price": 150.0,
+          "discount": 0.0,
+          "line_total": 450.0
+        }
+      ],
+      "subtotal": 450.0,
+      "discount": 0.0,
+      "grand_total": 450.0,
+      "status": "Processed"
+    },
+    {
+      "transaction_id": "TXN-20260830-18014",
+      "timestamp": "2026-08-30 11:37",
+      "store_id": 1,
+      "terminal_id": "Terminal-#01",
+      "cashier_id": "Cashier-101",
+      "payment_method": "UPI",
+      "items": [
+        {
+          "product_name": "PROD-189473 SEG-520541 Femme Footwear Boot Collection Plushfoot",
+          "quantity": 5.0,
+          "unit": "piece",
+          "unit_price": 140.0,
+          "discount": 0.0,
+          "line_total": 700.0
+        }
+      ],
+      "subtotal": 700.0,
+      "discount": 0.0,
+      "grand_total": 700.0,
+      "status": "Processed"
+    },
+    {
+      "transaction_id": "TXN-20260830-18013",
+      "timestamp": "2026-08-30 11:37",
+      "store_id": 1,
+      "terminal_id": "Terminal-#01",
+      "cashier_id": "Cashier-101",
+      "payment_method": "UPI",
+      "items": [
+        {
+          "product_name": "Tata Salt Iodized",
+          "quantity": 2.0,
+          "unit": "pack",
+          "unit_price": 28.0,
+          "discount": 0.0,
+          "line_total": 56.0
+        }
+      ],
+      "subtotal": 56.0,
+      "discount": 0.0,
+      "grand_total": 56.0,
+      "status": "Processed"
+    },
     {
       "transaction_id": "TXN-20260830-18012",
       "timestamp": "2026-08-30 11:07",
@@ -349163,603 +349229,603 @@
     }
   ],
   "catalog_stock": {
-    "571811": {
-      "sold_stock": 20.0,
-      "current_stock": 26.0
+    "445375": {
+      "sold_stock": 16.0,
+      "current_stock": 30.0
     },
-    "921205": {
+    "354978": {
       "sold_stock": 29.0,
       "current_stock": 24.0
     },
-    "637649": {
+    "458154": {
       "sold_stock": 17.0,
       "current_stock": 19.0
     },
-    "631966": {
+    "916449": {
       "sold_stock": 10.0,
       "current_stock": 11.0
     },
-    "112329": {
+    "119438": {
       "sold_stock": 11.0,
       "current_stock": 28.0
     },
-    "212565": {
+    "949306": {
       "sold_stock": 66.0,
       "current_stock": 42.0
     },
-    "711416": {
+    "324858": {
       "sold_stock": 89.0,
       "current_stock": 44.0
     },
-    "421008": {
+    "577005": {
       "sold_stock": 110.0,
       "current_stock": 65.0
     },
-    "547226": {
+    "349912": {
       "sold_stock": 188.0,
       "current_stock": 65.0
     },
-    "690213": {
+    "898396": {
       "sold_stock": 213.0,
       "current_stock": 73.0
     },
-    "976833": {
+    "412189": {
       "sold_stock": 263.0,
       "current_stock": 41.0
     },
-    "446416": {
+    "336872": {
       "sold_stock": 132.0,
       "current_stock": 13.0
     },
-    "845072": {
+    "377154": {
       "sold_stock": 59.0,
       "current_stock": 0.0
     },
-    "188013": {
+    "440515": {
       "sold_stock": 51.0,
       "current_stock": 46.0
     },
-    "264006": {
+    "528719": {
       "sold_stock": 38.0,
       "current_stock": 46.0
     },
-    "877034": {
+    "548220": {
       "sold_stock": 218.0,
       "current_stock": 39.0
     },
-    "505797": {
+    "838900": {
       "sold_stock": 216.0,
       "current_stock": 66.0
     },
-    "168001": {
+    "224994": {
       "sold_stock": 271.0,
       "current_stock": 42.0
     },
-    "613316": {
+    "550186": {
       "sold_stock": 292.0,
       "current_stock": 63.0
     },
-    "842090": {
+    "318409": {
       "sold_stock": 354.0,
       "current_stock": 93.0
     },
-    "456811": {
+    "356336": {
       "sold_stock": 312.0,
       "current_stock": 94.0
     },
-    "30570": {
+    "466545": {
       "sold_stock": 499.0,
       "current_stock": 145.0
     },
-    "905750": {
+    "853293": {
       "sold_stock": 61.0,
       "current_stock": 56.0
     },
-    "559910": {
+    "31324": {
       "sold_stock": 127.0,
       "current_stock": 113.0
     },
-    "810944": {
+    "509043": {
       "sold_stock": 270.0,
       "current_stock": 86.0
     },
-    "17552": {
+    "311235": {
       "sold_stock": 217.0,
       "current_stock": 87.0
     },
-    "280903": {
+    "879504": {
       "sold_stock": 328.0,
       "current_stock": 98.0
     },
-    "76870": {
+    "227": {
       "sold_stock": 293.0,
       "current_stock": 78.0
     },
-    "14778": {
+    "306834": {
       "sold_stock": 264.0,
       "current_stock": 107.0
     },
-    "87763": {
+    "373714": {
       "sold_stock": 120.0,
       "current_stock": 98.0
     },
-    "463178": {
+    "967634": {
       "sold_stock": 74.0,
       "current_stock": 144.0
     },
-    "841084": {
+    "100080": {
       "sold_stock": 120.0,
       "current_stock": 72.0
     },
-    "527167": {
+    "62451": {
       "sold_stock": 199.0,
       "current_stock": 224.0
     },
-    "970414": {
+    "597627": {
       "sold_stock": 405.0,
       "current_stock": 97.0
     },
-    "433091": {
+    "558693": {
       "sold_stock": 427.0,
       "current_stock": 105.0
     },
-    "696715": {
+    "434102": {
       "sold_stock": 514.0,
       "current_stock": 43.0
     },
-    "156453": {
+    "831826": {
       "sold_stock": 640.0,
       "current_stock": 16.0
     },
-    "851776": {
+    "924090": {
       "sold_stock": 816.0,
       "current_stock": 201.0
     },
-    "668798": {
+    "762239": {
       "sold_stock": 834.0,
       "current_stock": 212.0
     },
-    "856491": {
+    "880324": {
       "sold_stock": 1170.0,
       "current_stock": 179.0
     },
-    "362727": {
+    "165472": {
       "sold_stock": 55.0,
       "current_stock": 199.0
     },
-    "399549": {
+    "240145": {
       "sold_stock": 129.0,
       "current_stock": 158.0
     },
-    "826083": {
+    "165551": {
       "sold_stock": 107.0,
       "current_stock": 187.0
     },
-    "838038": {
+    "74677": {
       "sold_stock": 128.0,
       "current_stock": 167.0
     },
-    "348961": {
+    "476551": {
       "sold_stock": 155.0,
       "current_stock": 203.0
     },
-    "847453": {
+    "983260": {
       "sold_stock": 191.0,
       "current_stock": 304.0
     },
-    "301103": {
+    "746508": {
       "sold_stock": 219.0,
       "current_stock": 282.0
     },
-    "808655": {
+    "124172": {
       "sold_stock": 368.0,
       "current_stock": 339.0
     },
-    "67717": {
+    "158501": {
       "sold_stock": 35.0,
       "current_stock": 112.0
     },
-    "201658": {
+    "269038": {
       "sold_stock": 13.0,
       "current_stock": 33.0
     },
-    "15240": {
+    "75453": {
       "sold_stock": 19.0,
       "current_stock": 35.0
     },
-    "375958": {
+    "762499": {
       "sold_stock": 16.0,
       "current_stock": 38.0
     },
-    "10797": {
+    "277281": {
       "sold_stock": 29.0,
       "current_stock": 35.0
     },
-    "627436": {
+    "942771": {
       "sold_stock": 23.0,
       "current_stock": 40.0
     },
-    "539153": {
+    "348093": {
       "sold_stock": 25.0,
       "current_stock": 39.0
     },
-    "517419": {
+    "789066": {
       "sold_stock": 18.0,
       "current_stock": 32.0
     },
-    "144784": {
+    "222127": {
       "sold_stock": 22.0,
       "current_stock": 33.0
     },
-    "26991": {
+    "763981": {
       "sold_stock": 44.0,
       "current_stock": 43.0
     },
-    "424969": {
+    "330139": {
       "sold_stock": 44.0,
       "current_stock": 41.0
     },
-    "938569": {
+    "546742": {
       "sold_stock": 62.0,
       "current_stock": 40.0
     },
-    "983909": {
+    "48377": {
       "sold_stock": 59.0,
       "current_stock": 44.0
     },
-    "355550": {
+    "803573": {
       "sold_stock": 91.0,
       "current_stock": 49.0
     },
-    "471051": {
+    "966632": {
       "sold_stock": 89.0,
       "current_stock": 47.0
     },
-    "190342": {
+    "96216": {
       "sold_stock": 139.0,
       "current_stock": 51.0
     },
-    "611811": {
+    "778773": {
       "sold_stock": 24.0,
       "current_stock": 52.0
     },
-    "182353": {
+    "131301": {
       "sold_stock": 40.0,
       "current_stock": 100.0
     },
-    "495748": {
+    "163491": {
       "sold_stock": 35.0,
       "current_stock": 100.0
     },
-    "358621": {
+    "296589": {
       "sold_stock": 9.0,
       "current_stock": 10.0
     },
-    "588956": {
+    "274167": {
       "sold_stock": 17.0,
       "current_stock": 12.0
     },
-    "153176": {
+    "919957": {
       "sold_stock": 7.0,
       "current_stock": 2.0
     },
-    "269141": {
+    "701956": {
       "sold_stock": 42.0,
       "current_stock": 86.0
     },
-    "54009": {
+    "210253": {
       "sold_stock": 13.0,
       "current_stock": 17.0
     },
-    "994166": {
+    "376233": {
       "sold_stock": 21.0,
       "current_stock": 31.0
     },
-    "425687": {
+    "574836": {
       "sold_stock": 23.0,
       "current_stock": 21.0
     },
-    "861071": {
+    "398267": {
       "sold_stock": 11.0,
       "current_stock": 9.0
     },
-    "751448": {
+    "114189": {
       "sold_stock": 59.0,
       "current_stock": 34.0
     },
-    "777614": {
+    "365262": {
       "sold_stock": 37.0,
       "current_stock": 23.0
     },
-    "846616": {
+    "470131": {
       "sold_stock": 28.0,
       "current_stock": 34.0
     },
-    "774868": {
+    "576761": {
       "sold_stock": 30.0,
       "current_stock": 24.0
     },
-    "762494": {
+    "824237": {
       "sold_stock": 42.0,
       "current_stock": 67.0
     },
-    "36179": {
+    "39643": {
       "sold_stock": 10.0,
       "current_stock": 26.0
     },
-    "706536": {
+    "309691": {
       "sold_stock": 18.0,
       "current_stock": 2.0
     },
-    "965848": {
+    "624208": {
       "sold_stock": 20.0,
       "current_stock": 4.0
     },
-    "538960": {
+    "766473": {
       "sold_stock": 38.0,
       "current_stock": 15.0
     },
-    "178530": {
+    "820708": {
       "sold_stock": 11.0,
       "current_stock": 11.0
     },
-    "165026": {
+    "760459": {
       "sold_stock": 36.0,
       "current_stock": 10.0
     },
-    "317129": {
+    "596261": {
       "sold_stock": 27.0,
       "current_stock": 14.0
     },
-    "130155": {
+    "231396": {
       "sold_stock": 9.0,
       "current_stock": 11.0
     },
-    "814911": {
+    "87135": {
       "sold_stock": 47.0,
       "current_stock": 9.0
     },
-    "727465": {
+    "840228": {
       "sold_stock": 60.0,
       "current_stock": 10.0
     },
-    "27036": {
+    "798457": {
       "sold_stock": 97.0,
       "current_stock": 12.0
     },
-    "893642": {
+    "664014": {
       "sold_stock": 56.0,
       "current_stock": 8.0
     },
-    "145467": {
+    "751535": {
       "sold_stock": 58.0,
       "current_stock": 8.0
     },
-    "923733": {
+    "537272": {
       "sold_stock": 95.0,
       "current_stock": 15.0
     },
-    "771933": {
+    "272643": {
       "sold_stock": 14.0,
       "current_stock": 40.0
     },
-    "791893": {
+    "68126": {
       "sold_stock": 15.0,
       "current_stock": 42.0
     },
-    "272074": {
+    "90366": {
       "sold_stock": 37.0,
       "current_stock": 61.0
     },
-    "964079": {
+    "835196": {
       "sold_stock": 26.0,
       "current_stock": 67.0
     },
-    "755986": {
+    "24142": {
       "sold_stock": 42.0,
       "current_stock": 57.0
     },
-    "717061": {
+    "923742": {
       "sold_stock": 39.0,
       "current_stock": 59.0
     },
-    "892764": {
+    "496099": {
       "sold_stock": 34.0,
       "current_stock": 62.0
     },
-    "218857": {
+    "828754": {
       "sold_stock": 17.0,
       "current_stock": 40.0
     },
-    "921636": {
+    "477272": {
       "sold_stock": 24.0,
       "current_stock": 62.0
     },
-    "337100": {
+    "860002": {
       "sold_stock": 69.0,
       "current_stock": 44.0
     },
-    "689263": {
+    "60197": {
       "sold_stock": 93.0,
       "current_stock": 24.0
     },
-    "801278": {
+    "334703": {
       "sold_stock": 73.0,
       "current_stock": 12.0
     },
-    "865425": {
+    "665626": {
       "sold_stock": 32.0,
       "current_stock": 4.0
     },
-    "261419": {
+    "960735": {
       "sold_stock": 19.0,
       "current_stock": 12.0
     },
-    "594847": {
+    "906292": {
       "sold_stock": 39.0,
       "current_stock": 8.0
     },
-    "110837": {
+    "334025": {
       "sold_stock": 42.0,
       "current_stock": 55.0
     },
-    "619232": {
+    "330782": {
       "sold_stock": 32.0,
       "current_stock": 54.0
     },
-    "779707": {
+    "207788": {
       "sold_stock": 84.0,
       "current_stock": 118.0
     },
-    "106111": {
+    "911659": {
       "sold_stock": 58.0,
       "current_stock": 46.0
     },
-    "30384": {
+    "867484": {
       "sold_stock": 96.0,
       "current_stock": 84.0
     },
-    "746610": {
+    "706353": {
       "sold_stock": 107.0,
       "current_stock": 60.0
     },
-    "306999": {
+    "24814": {
       "sold_stock": 150.0,
       "current_stock": 38.0
     },
-    "31670": {
+    "539118": {
       "sold_stock": 15.0,
       "current_stock": 29.0
     },
-    "304015": {
+    "960462": {
       "sold_stock": 21.0,
       "current_stock": 17.0
     },
-    "641944": {
+    "844464": {
       "sold_stock": 17.0,
       "current_stock": 17.0
     },
-    "326124": {
+    "138197": {
       "sold_stock": 16.0,
       "current_stock": 12.0
     },
-    "53214": {
+    "436854": {
       "sold_stock": 14.0,
       "current_stock": 12.0
     },
-    "678181": {
+    "158743": {
       "sold_stock": 23.0,
       "current_stock": 23.0
     },
-    "877051": {
+    "66382": {
       "sold_stock": 28.0,
       "current_stock": 13.0
     },
-    "449964": {
+    "722423": {
       "sold_stock": 16.0,
       "current_stock": 14.0
     },
-    "390403": {
+    "595870": {
       "sold_stock": 15.0,
       "current_stock": 13.0
     },
-    "127005": {
+    "478504": {
       "sold_stock": 114.0,
       "current_stock": 37.0
     },
-    "973434": {
+    "984310": {
       "sold_stock": 153.0,
       "current_stock": 33.0
     },
-    "295836": {
+    "430181": {
       "sold_stock": 193.0,
       "current_stock": 64.0
     },
-    "994652": {
+    "167703": {
       "sold_stock": 141.0,
       "current_stock": 14.0
     },
-    "32507": {
+    "122896": {
       "sold_stock": 201.0,
       "current_stock": 58.0
     },
-    "603156": {
+    "848711": {
       "sold_stock": 196.0,
       "current_stock": 75.0
     },
-    "337721": {
+    "174165": {
       "sold_stock": 207.0,
       "current_stock": 82.0
     },
-    "583260": {
+    "898736": {
       "sold_stock": 45.0,
       "current_stock": 26.0
     },
-    "464384": {
+    "905298": {
       "sold_stock": 78.0,
       "current_stock": 11.0
     },
-    "625399": {
+    "270197": {
       "sold_stock": 48.0,
       "current_stock": 9.0
     },
-    "104307": {
+    "642033": {
       "sold_stock": 87.0,
       "current_stock": 11.0
     },
-    "103946": {
+    "464414": {
       "sold_stock": 125.0,
       "current_stock": 21.0
     },
-    "385814": {
+    "748858": {
       "sold_stock": 138.0,
       "current_stock": 19.0
     },
-    "76013": {
+    "513389": {
       "sold_stock": 152.0,
       "current_stock": 21.0
     },
-    "329575": {
+    "849436": {
       "sold_stock": 174.0,
       "current_stock": 14.0
     },
-    "435574": {
+    "322222": {
       "sold_stock": 37.0,
       "current_stock": 16.0
     },
-    "861562": {
+    "634132": {
       "sold_stock": 10.0,
       "current_stock": 34.0
     },
-    "84869": {
+    "405229": {
       "sold_stock": 22.0,
       "current_stock": 31.0
     },
-    "85631": {
+    "657726": {
       "sold_stock": 9.0,
       "current_stock": 18.0
     },
-    "119017": {
+    "814127": {
       "sold_stock": 20.0,
       "current_stock": 13.0
     },
-    "194223": {
+    "396631": {
       "sold_stock": 23.0,
       "current_stock": 8.0
     },
-    "66512": {
+    "624207": {
       "sold_stock": 17.0,
       "current_stock": 6.0
     },
-    "403167": {
+    "424395": {
       "sold_stock": 17.0,
       "current_stock": 5.0
     },
-    "81032": {
+    "360519": {
       "sold_stock": 34.0,
       "current_stock": 0.0
     },
-    "127579": {
+    "874706": {
       "sold_stock": 27.0,
       "current_stock": 5.0
     }
