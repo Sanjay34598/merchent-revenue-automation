@@ -191,12 +191,17 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        <div style={{
-          width: 36, height: 36, borderRadius: '50%', background: 'var(--text-main)', color: 'var(--bg-page)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700,
-        }}>
+        <button
+          onClick={() => setShowStoreProfile(true)}
+          title="View Merchant Profile"
+          style={{
+            width: 36, height: 36, borderRadius: '50%', background: 'var(--text-main)', color: 'var(--bg-page)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700,
+            border: 'none', cursor: 'pointer'
+          }}
+        >
           PK
-        </div>
+        </button>
       </div>
 
       {/* Mobile Header Toggle Button */}

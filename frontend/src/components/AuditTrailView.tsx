@@ -134,7 +134,13 @@ export const AuditTrailView: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredLogs.length === 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan={8} style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>
+                  Loading audit log stream...
+                </td>
+              </tr>
+            ) : filteredLogs.length === 0 ? (
               <tr>
                 <td colSpan={8} style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>
                   No audit log entries matched your filter criteria.

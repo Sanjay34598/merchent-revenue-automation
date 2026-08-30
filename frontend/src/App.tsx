@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo, Suspense, lazy } from 'react';
+import { useEffect, useState, useRef, useMemo, Suspense, lazy } from 'react';
 import { CheckCircle2, X, RefreshCw, ArrowLeft } from 'lucide-react';
 import { UnifiedDecision, RevenueOpportunity, AgentActionItem } from './types';
 import { generateMerchantInventory, getInventoryStats, ProductItem } from './data/merchantInventory';
@@ -495,6 +495,43 @@ export default function App() {
                   )}
                 </Suspense>
               </>
+            )}
+
+            {/* STATUS MODAL */}
+            {showStatusModal && (
+              <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ background: 'var(--bg-surface-elevated)', padding: 24, borderRadius: 16, maxWidth: 460, width: '90%', border: '1px solid var(--border-color)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <h3 style={{ margin: 0, fontSize: 18, color: 'var(--text-main)' }}>Autopilot System Status</h3>
+                    <button onClick={() => setShowStatusModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-sub)' }}><X size={18} /></button>
+                  </div>
+                  <p style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5 }}>
+                    MerchIntell Autopilot Engine is active and monitoring store POS transaction feeds, inventory velocity, and policy guardrails.
+                  </p>
+                  <div style={{ marginTop: 16, display: 'flex', gap: 8, fontSize: 12 }}>
+                    <span className="badge-pill" style={{ background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: '1px solid var(--emerald-green-border)' }}>API Connected</span>
+                    <span className="badge-pill" style={{ background: 'var(--emerald-green-bg)', color: 'var(--emerald-green)', border: '1px solid var(--emerald-green-border)' }}>Guardrails Enforced</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* STORE PROFILE MODAL */}
+            {showStoreProfile && (
+              <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ background: 'var(--bg-surface-elevated)', padding: 24, borderRadius: 16, maxWidth: 460, width: '90%', border: '1px solid var(--border-color)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <h3 style={{ margin: 0, fontSize: 18, color: 'var(--text-main)' }}>Merchant Store Profile</h3>
+                    <button onClick={() => setShowStoreProfile(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-sub)' }}><X size={18} /></button>
+                  </div>
+                  <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>
+                    <div><strong>Store ID:</strong> {selectedStore}</div>
+                    <div><strong>Merchant Account:</strong> Retail Partner Outpost</div>
+                    <div><strong>Monitored SKUs:</strong> {inventoryStats.totalProducts} Catalog Items</div>
+                    <div><strong>Environment:</strong> Production POS Transaction Engine</div>
+                  </div>
+                </div>
+              </div>
             )}
 
           </div>
