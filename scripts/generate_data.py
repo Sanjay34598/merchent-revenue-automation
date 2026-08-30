@@ -31,14 +31,18 @@ class SyntheticDataGenerator:
         self.start_date = start_date
         self.num_days = num_days
         self.dates = [self.start_date + timedelta(days=i) for i in range(self.num_days)]
-        self.clear_database()
         self.db = SessionLocal(expire_on_commit=False)
+        self.clear_database()
+
 
     def clear_database(self):
         print("Cleaning database tables...")
+        self.db.close()
         Base.metadata.drop_all(bind=engine)
         Base.metadata.create_all(bind=engine)
+        self.db = SessionLocal(expire_on_commit=False)
         print("Database schema recreated successfully.")
+
         merchant = Merchant(
             id=1,
             name="Apex Retail Group",
@@ -386,9 +390,9 @@ class SyntheticDataGenerator:
 
     def generate(self):
         print("=== STARTING SYNTHETIC DATA GENERATION ===")
-        self.clear_database()
-        merchant = self.seed_merchants()
+        merchant = self.clear_database()
         stores = self.seed_stores(merchant.id)
+
         suppliers = self.seed_suppliers()
         products = self.seed_products(merchant.id)
         calendar_events = self.seed_business_events(stores)
