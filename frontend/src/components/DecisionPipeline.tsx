@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { ChevronRight, CheckCircle2, Sliders } from 'lucide-react';
+import { UnifiedDecision, RevenueOpportunity, AgentActionItem } from '../types';
 
 interface DecisionPipelineProps {
-  onOpenSimulator: () => void;
-  onApproveAction: (actionId: number) => void;
+  decision?: UnifiedDecision | null;
+  actions?: AgentActionItem[];
+  opportunities?: RevenueOpportunity[];
+  onOpenSimulator?: () => void;
+  onApproveAction?: (actionId: number) => void;
 }
 
 export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({

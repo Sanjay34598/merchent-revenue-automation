@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo, Suspense, lazy } from 'react';
-import { CheckCircle2, X, RefreshCw, Terminal, Shield, ArrowLeft } from 'lucide-react';
+import { CheckCircle2, X, RefreshCw, ArrowLeft } from 'lucide-react';
 import { UnifiedDecision, RevenueOpportunity, AgentActionItem } from './types';
 import { generateMerchantInventory, getInventoryStats, ProductItem } from './data/merchantInventory';
 
@@ -51,8 +51,8 @@ async function safeApi<T>(fetcher: () => Promise<T>, fallback: T): Promise<{ dat
 
 export default function App() {
   // Non-blocking loading state (instant frame 1 rendering)
-  const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'recovery'>('home');
+  const [, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'recovery' | 'evaluation' | 'audit'>('home');
 
   // Theme state with localStorage initialization & system fallback
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(() => {

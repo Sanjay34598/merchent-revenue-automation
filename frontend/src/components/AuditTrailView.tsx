@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Filter, ShieldCheck, RefreshCw } from 'lucide-react';
+import { Search, RefreshCw } from 'lucide-react';
 import { getApiUrl } from '../services/apiConfig';
 
 interface AuditLogEntry {
   id: string;
   timestamp: string;
-  action: str;
-  entity: str;
-  reason: str;
-  before_state: str;
-  after_state: str;
-  source: str;
-  status: str;
+  action: string;
+  entity: string;
+  reason: string;
+  before_state: string;
+  after_state: string;
+  source: string;
+  status: string;
 }
 
 export const AuditTrailView: React.FC = () => {
