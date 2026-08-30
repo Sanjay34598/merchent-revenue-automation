@@ -174,10 +174,10 @@ export const DecisionPipeline: React.FC<DecisionPipelineProps> = ({
 
         {/* Action Controls */}
         <div style={{ display: 'flex', gap: 12 }}>
-          <button className="btn-copilot btn-copilot-primary" onClick={onOpenSimulator}>
+          <button className="btn-copilot btn-copilot-primary" onClick={() => onOpenSimulator?.()}>
             <Sliders size={14} /> Open What-If Simulator →
           </button>
-          <button className="btn-copilot btn-copilot-success" onClick={() => onApproveAction(1)}>
+          <button className="btn-copilot btn-copilot-success" onClick={() => onApproveAction?.(1)}>
             <CheckCircle2 size={14} /> Approve 15% Clearance Action
           </button>
         </div>

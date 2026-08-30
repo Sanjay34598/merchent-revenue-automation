@@ -51,7 +51,7 @@ async function safeApi<T>(fetcher: () => Promise<T>, fallback: T): Promise<{ dat
 
 export default function App() {
   // Non-blocking loading state (instant frame 1 rendering)
-  const [, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'home' | 'sales' | 'inventory' | 'leaks' | 'decisions' | 'whatif' | 'recovery' | 'evaluation' | 'audit'>('home');
 
   // Theme state with localStorage initialization & system fallback
