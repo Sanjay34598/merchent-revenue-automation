@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ShieldCheck, TrendingUp, RefreshCw, BarChart2, CheckCircle2, ArrowRight } from 'lucide-react';
+import { RefreshCw, CheckCircle2 } from 'lucide-react';
 import { getApiUrl } from '../services/apiConfig';
 
 interface EvaluationData {

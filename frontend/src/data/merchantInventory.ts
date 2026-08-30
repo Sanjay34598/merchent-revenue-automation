@@ -94,7 +94,6 @@ export function generateMerchantInventory(): ProductItem[] {
     const currentStock = Math.max(5, seed.stock + (i % 11) * 3 - (i % 7) * 2);
     const stockValue = Math.round(currentStock * sellingPrice);
     const dailyVelocity = Math.max(0.1, Math.round((seed.velocity + ((i % 5) - 2) * 0.3) * 10) / 10);
-    const daysOfCover = Math.round((currentStock / Math.max(dailyVelocity, 0.1)) * 10) / 10;
     
     let riskStatus: ProductItem['riskStatus'] = seed.risk;
     if (i % 8 === 0) riskStatus = 'STOCKOUT';

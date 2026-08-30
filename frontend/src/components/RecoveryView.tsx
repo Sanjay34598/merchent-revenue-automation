@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ShieldCheck, TrendingUp, AlertTriangle, CheckCircle2, ArrowRight, Play, RefreshCw, XCircle } from 'lucide-react';
+import { Play, RefreshCw } from 'lucide-react';
 import { getApiUrl } from '../services/apiConfig';
 
 interface RecoveryOpportunity {
