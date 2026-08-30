@@ -21,8 +21,8 @@ export const Header: React.FC<HeaderProps> = ({
   onBrandClick,
   theme,
   setTheme,
-  setShowStoreProfile,
-  setShowStatusModal,
+  setShowStoreProfile: _setShowStoreProfile,
+  setShowStatusModal: _setShowStatusModal,
 }) => {
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);

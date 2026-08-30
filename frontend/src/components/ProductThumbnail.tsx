@@ -6,7 +6,7 @@ interface ProductThumbnailProps {
   size?: number;
 }
 
-export const ProductThumbnail: React.FC<ProductThumbnailProps> = ({ name, category, size = 44 }) => {
+export const ProductThumbnail: React.FC<ProductThumbnailProps> = ({ name, category: _category, size = 44 }) => {
   const n = name.toLowerCase();
 
   // Determine realistic color palette & bottle/pack shape based on product name

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lightbulb, ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
+import { Lightbulb, ChevronDown, ChevronUp } from 'lucide-react';
 
 export const InsightFeed: React.FC = () => {
   const [expandedId, setExpandedId] = useState<number | null>(1);

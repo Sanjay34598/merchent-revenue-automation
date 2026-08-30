@@ -1,5 +1,4 @@
 import React from 'react';
-import { Sparkline } from './Sparkline';
 
 interface FinancialHeroProps {
   merchantName?: string;
@@ -12,11 +11,9 @@ interface FinancialHeroProps {
 }
 
 export const FinancialHero: React.FC<FinancialHeroProps> = ({
-  protectedRevenue = 10482110,
   exposedRevenue = 311937,
   expectedRecovery = 203232,
   activeOpportunitiesCount = 7,
-  onViewRevenue,
 }) => {
   const fmtCurrency = (n?: number) => {
     if (n === undefined || n === null || isNaN(n)) return 'Not calculated';
@@ -28,7 +25,6 @@ export const FinancialHero: React.FC<FinancialHeroProps> = ({
   };
 
   const grossMarginPct = '44.2%';
-  const protectedTrend = [8400000, 8900000, 9200000, 9600000, 10000000, 10200000, protectedRevenue];
 
   return (
     <div style={{ padding: '0 0 4px' }}>

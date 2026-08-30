@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Plus, Trash2, CheckCircle2, ArrowRight, Play, Upload,
-  RefreshCw, ShieldCheck, Zap, X, ChevronRight, Check
+  Plus, Trash2, CheckCircle2, Play, Upload, Zap, X
 } from 'lucide-react';
 import { ProductItem } from '../data/merchantInventory';
 
@@ -134,7 +133,7 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
     });
   });
 
-  const [importCount, setImportCount] = useState(35);
+  const [importCount] = useState(35);
   const [csvSuccessMsg, setCsvSuccessMsg] = useState<string | null>(null);
 
   // Derived totals for manual entry
@@ -354,7 +353,7 @@ export const SalesInputWorkspace: React.FC<SalesInputWorkspaceProps> = ({
       <div style={{
         background: 'var(--bg-surface)', border: '1px solid var(--border-color)',
         borderRadius: 12, padding: '16px 20px', display: 'flex', alignItems: 'center',
-        justify: 'space-between', flexWrap: 'wrap', gap: 16
+        justifyContent: 'space-between', flexWrap: 'wrap', gap: 16
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{

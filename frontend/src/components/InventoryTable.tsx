@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { ProductItem } from '../data/merchantInventory';
 import { Sparkline } from './Sparkline';
 

@@ -3,15 +3,17 @@ import React from 'react';
 interface SparklineProps {
   data?: number[];
   isNegative?: boolean;
+  width?: number;
+  height?: number;
 }
 
-export const Sparkline: React.FC<SparklineProps> = ({ data, isNegative = false }) => {
+export const Sparkline: React.FC<SparklineProps> = ({ data, isNegative = false, width: customWidth, height: customHeight }) => {
   if (!data || data.length < 2) return null;
   const min = Math.min(...data);
   const max = Math.max(...data);
   const range = max - min || 1;
-  const width = 60;
-  const height = 18;
+  const width = customWidth || 60;
+  const height = customHeight || 18;
 
   const points = data
     .map((val, idx) => {
