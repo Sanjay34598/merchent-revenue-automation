@@ -9,7 +9,7 @@
 
 - **Live Demo**: [https://merchintell.vercel.app](https://merchintell.vercel.app)
 - **GitHub Repository**: [https://github.com/Sanjay34598/merchent-revenue-automation](https://github.com/Sanjay34598/merchent-revenue-automation)
-- **Demo Video**: *Demo video coming soon*
+- **Demo Video**: [https://lnkd.in/p/dFj-RQ73](https://lnkd.in/p/dFj-RQ73)
 
 ![Overview Dashboard](docs/images/overview-dashboard.png)
 
